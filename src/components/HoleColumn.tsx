@@ -10,15 +10,28 @@ interface NoteSectionProps {
   isPlayable: boolean
 }
 
-const NoteSection = ({ label, note, frequency, isPlayable }: NoteSectionProps) => (
-  <div
-    className={`note-section ${isPlayable ? 'playable' : ''}`}
-    onClick={() => playTone(frequency)}
-  >
-    <div className="label">{label}</div>
-    <div className="note">{note}</div>
-  </div>
-)
+const NoteSection = ({ label, note, frequency, isPlayable }: NoteSectionProps) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      playTone(frequency)
+    }
+  }
+
+  return (
+    <div
+      className={`note-section ${isPlayable ? 'playable' : ''}`}
+      role="button"
+      tabIndex={0}
+      onClick={() => playTone(frequency)}
+      onKeyDown={handleKeyDown}
+      aria-label={`${label} ${note}${isPlayable ? ', in scale' : ', not in scale'}. Press to play.`}
+    >
+      <div className="label">{label}</div>
+      <div className="note">{note}</div>
+    </div>
+  )
+}
 
 interface HoleColumnProps {
   hole: HoleNote

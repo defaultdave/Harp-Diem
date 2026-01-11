@@ -187,28 +187,20 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
     Note.transpose(note, Interval.fromSemitones(keyDifference))
   )
 
-  // Transpose bends
+  // Transpose bends - only transpose note names, frequencies are calculated by convertNotesToFrequencies
+  const interval = Interval.fromSemitones(keyDifference)
   const transposedLayout = C_HARMONICA_LAYOUT.map((item) => {
     const transposeBends = (bends?: HoleBends): HoleBends | undefined => {
       if (!bends) return undefined
       return {
         halfStepBend: bends.halfStepBend
-          ? { 
-              note: Note.transpose(bends.halfStepBend.note, Interval.fromSemitones(keyDifference)), 
-              frequency: Note.freq(Note.transpose(bends.halfStepBend.note, Interval.fromSemitones(keyDifference))) || 0
-            }
+          ? { note: Note.transpose(bends.halfStepBend.note, interval), frequency: 0 }
           : undefined,
         wholeStepBend: bends.wholeStepBend
-          ? { 
-              note: Note.transpose(bends.wholeStepBend.note, Interval.fromSemitones(keyDifference)), 
-              frequency: Note.freq(Note.transpose(bends.wholeStepBend.note, Interval.fromSemitones(keyDifference))) || 0
-            }
+          ? { note: Note.transpose(bends.wholeStepBend.note, interval), frequency: 0 }
           : undefined,
         minorThirdBend: bends.minorThirdBend
-          ? { 
-              note: Note.transpose(bends.minorThirdBend.note, Interval.fromSemitones(keyDifference)), 
-              frequency: Note.freq(Note.transpose(bends.minorThirdBend.note, Interval.fromSemitones(keyDifference))) || 0
-            }
+          ? { note: Note.transpose(bends.minorThirdBend.note, interval), frequency: 0 }
           : undefined,
       }
     }
@@ -218,16 +210,10 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
       blowBends: item.blowBends ? transposeBends(item.blowBends) : undefined,
       drawBends: item.drawBends ? transposeBends(item.drawBends) : undefined,
       overblow: item.overblow
-        ? { 
-            note: Note.transpose(item.overblow.note, Interval.fromSemitones(keyDifference)), 
-            frequency: Note.freq(Note.transpose(item.overblow.note, Interval.fromSemitones(keyDifference))) || 0
-          }
+        ? { note: Note.transpose(item.overblow.note, interval), frequency: 0 }
         : undefined,
       overdraw: item.overdraw
-        ? { 
-            note: Note.transpose(item.overdraw.note, Interval.fromSemitones(keyDifference)), 
-            frequency: Note.freq(Note.transpose(item.overdraw.note, Interval.fromSemitones(keyDifference))) || 0
-          }
+        ? { note: Note.transpose(item.overdraw.note, interval), frequency: 0 }
         : undefined,
     }
   })

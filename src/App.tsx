@@ -79,9 +79,13 @@ function App() {
           </div>
         </div>
 
-        <div className="harmonica-display">
+        <div
+          className="harmonica-display"
+          role="region"
+          aria-label={`${harmonicaKey} Diatonic Harmonica visualization showing ${songKey} ${scaleType} scale`}
+        >
           <h2>{harmonicaKey} Diatonic Harmonica</h2>
-          <div className="holes-container">
+          <div className="holes-container" role="group" aria-label="Harmonica holes 1 through 10">
             {harmonica.holes.map((hole) => (
               <HoleColumn
                 key={hole.hole}
@@ -93,15 +97,15 @@ function App() {
             ))}
           </div>
 
-          <div className="legend">
+          <div className="legend" role="note" aria-label="Legend for scale visualization">
             <h3>Legend</h3>
             <div className="legend-items">
               <div className="legend-item">
-                <div className="legend-color note-section playable"></div>
+                <div className="legend-color note-section playable" aria-hidden="true"></div>
                 <span>In Scale</span>
               </div>
               <div className="legend-item">
-                <div className="legend-color note-section"></div>
+                <div className="legend-color note-section" aria-hidden="true"></div>
                 <span>Not In Scale</span>
               </div>
             </div>
