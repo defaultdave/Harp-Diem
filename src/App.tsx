@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import './App.css'
+import styles from './App.module.css'
 import type { HarmonicaKey, ScaleType } from './data/harmonicas'
 import { AVAILABLE_KEYS, SCALE_TYPES } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
@@ -17,14 +17,14 @@ function App() {
   )
 
   return (
-    <div className="app">
-      <header>
+    <div className={styles.app}>
+      <header className={styles.header}>
         <h1>🎵 Harp Diem</h1>
       </header>
 
-      <main>
-        <div className="controls">
-          <div className="control-group">
+      <main className={styles.main}>
+        <div className={styles.controls}>
+          <div className={styles.controlGroup}>
             <label htmlFor="harmonica-key">Harmonica Key:</label>
             <select
               id="harmonica-key"
@@ -39,7 +39,7 @@ function App() {
             </select>
           </div>
 
-          <div className="control-group">
+          <div className={styles.controlGroup}>
             <label htmlFor="song-key">Song Key:</label>
             <select value={songKey} onChange={(e) => setSongKey(e.target.value)} id="song-key">
               {AVAILABLE_KEYS.map((key) => (
@@ -50,7 +50,7 @@ function App() {
             </select>
           </div>
 
-          <div className="control-group">
+          <div className={styles.controlGroup}>
             <label htmlFor="scale-type">Scale Type:</label>
             <select
               id="scale-type"
@@ -66,13 +66,13 @@ function App() {
           </div>
         </div>
 
-        <div className="scale-display">
+        <div className={styles.scaleDisplay}>
           <h2>
             {songKey} {scaleType.charAt(0).toUpperCase() + scaleType.slice(1)} Scale
           </h2>
-          <div className="scale-notes">
+          <div className={styles.scaleNotes}>
             {scaleNotes.map((note) => (
-              <span key={note} className="scale-note">
+              <span key={note} className={styles.scaleNote}>
                 {note}
               </span>
             ))}
@@ -80,12 +80,12 @@ function App() {
         </div>
 
         <div
-          className="harmonica-display"
+          className={styles.harmonicaDisplay}
           role="region"
           aria-label={`${harmonicaKey} Diatonic Harmonica visualization showing ${songKey} ${scaleType} scale`}
         >
           <h2>{harmonicaKey} Diatonic Harmonica</h2>
-          <div className="holes-container" role="group" aria-label="Harmonica holes 1 through 10">
+          <div className={styles.holesContainer} role="group" aria-label="Harmonica holes 1 through 10">
             {harmonica.holes.map((hole) => (
               <HoleColumn
                 key={hole.hole}
@@ -97,15 +97,15 @@ function App() {
             ))}
           </div>
 
-          <div className="legend" role="note" aria-label="Legend for scale visualization">
+          <div className={styles.legend} role="note" aria-label="Legend for scale visualization">
             <h3>Legend</h3>
-            <div className="legend-items">
-              <div className="legend-item">
-                <div className="legend-color note-section playable" aria-hidden="true"></div>
+            <div className={styles.legendItems}>
+              <div className={styles.legendItem}>
+                <div className={`${styles.legendColor} ${styles.legendColorPlayable}`} aria-hidden="true"></div>
                 <span>In Scale</span>
               </div>
-              <div className="legend-item">
-                <div className="legend-color note-section" aria-hidden="true"></div>
+              <div className={styles.legendItem}>
+                <div className={`${styles.legendColor} ${styles.legendColorNotPlayable}`} aria-hidden="true"></div>
                 <span>Not In Scale</span>
               </div>
             </div>

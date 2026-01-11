@@ -1,0 +1,92 @@
+.holeColumn {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: top / bottom;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.blowGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 100%;
+  grid-row: top;
+  align-self: end;
+  min-height: 8rem;
+  justify-content: flex-end;
+}
+
+.drawGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 100%;
+  grid-row: bottom;
+  align-self: start;
+  min-height: 8rem;
+  justify-content: flex-start;
+}
+
+.holeNumber {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #333;
+  padding: 0.25rem 0;
+  background: #f0f0f0;
+  border-radius: 4px;
+  width: 100%;
+  text-align: center;
+  grid-row: number;
+}
+
+.noteSection {
+  width: 100%;
+  padding: 0.4rem 0;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  background: #e0e0e0;
+  border: 1.5px solid #9e9e9e;
+  font-weight: 600;
+}
+
+.noteSection {
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.65rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.note {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #616161;
+  margin-top: 0.15rem;
+}
+
+/* Playable notes - green for in scale */
+.playable {
+  background: #c8e6c9;
+  border: 1.5px solid #66bb6a;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
+
+  .note {
+    color: #000000;
+    font-weight: 700;
+  }
+}

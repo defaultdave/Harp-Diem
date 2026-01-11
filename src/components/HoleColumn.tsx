@@ -2,6 +2,7 @@ import { memo } from 'react'
 import type { HoleNote } from '../data/harmonicas'
 import { isNoteInScale } from '../data/scales'
 import { playTone } from '../utils/audioPlayer'
+import styles from './HoleColumn.module.css'
 
 interface NoteSectionProps {
   label: string
@@ -20,15 +21,15 @@ const NoteSection = ({ label, note, frequency, isPlayable }: NoteSectionProps) =
 
   return (
     <div
-      className={`note-section ${isPlayable ? 'playable' : ''}`}
+      className={`${styles.noteSection} ${isPlayable ? styles.playable : ''}`}
       role="button"
       tabIndex={0}
       onClick={() => playTone(frequency)}
       onKeyDown={handleKeyDown}
       aria-label={`${label} ${note}${isPlayable ? ', in scale' : ', not in scale'}. Press to play.`}
     >
-      <div className="label">{label}</div>
-      <div className="note">{note}</div>
+      <div className={styles.label}>{label}</div>
+      <div className={styles.note}>{note}</div>
     </div>
   )
 }
@@ -60,9 +61,9 @@ export const HoleColumn = memo(function HoleColumn({
   const isOverdrawPlayable = hole.overdraw && isNoteInScale(hole.overdraw.note, scaleNotes)
 
   return (
-    <div className="hole-column">
+    <div className={styles.holeColumn}>
       {/* Overblow and Blow Bends - Top */}
-      <div className="note-group blow-group">
+      <div className={styles.blowGroup}>
         {hole.overblow && (
           <NoteSection
             label="OB"
@@ -97,10 +98,10 @@ export const HoleColumn = memo(function HoleColumn({
       </div>
 
       {/* Hole Number */}
-      <div className="hole-number">{hole.hole}</div>
+      <div className={styles.holeNumber}>{hole.hole}</div>
 
       {/* Draw Bends and Overdraw - Bottom */}
-      <div className="note-group draw-group">
+      <div className={styles.drawGroup}>
         {/* Draw Note - Below Blow */}
         <NoteSection
           label="Draw"
