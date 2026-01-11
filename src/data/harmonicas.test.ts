@@ -37,10 +37,10 @@ describe('Harmonicas', () => {
   it('should have overblows and overdraws', () => {
     const cHarmonica = harmonicas.C
     
-    // Hole 7 should have overdraw
+    // Hole 7 should have overdraw (blow=C6 + 1 semitone = Db6)
     const hole7 = cHarmonica.holes[6]
     expect(hole7.overdraw).toBeDefined()
-    expect(hole7.overdraw?.note).toBe('Db5')
+    expect(hole7.overdraw?.note).toBe('Db6')
     
     // Hole 10 should have overdraw
     const hole10 = cHarmonica.holes[9]
