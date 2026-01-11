@@ -34,50 +34,67 @@ const C_HARMONICA_LAYOUT: Omit<HoleNote, 'blow' | 'draw'>[] = [
   {
     hole: 1,
     blowBends: { halfStepBend: { note: 'Eb4', frequency: 0 } },
-    overblow: { note: 'Eb4', frequency: 0 },
+    drawBends: { 
+      wholeStepBend: { note: 'Db4', frequency: 0 }, 
+    },
   },
   {
     hole: 2,
-    blowBends: { 
-      halfStepBend: { note: 'Gb4', frequency: 0 }, 
-      wholeStepBend: { note: 'Bb4', frequency: 0 } 
+    drawBends: { 
+      wholeStepBend: { note: 'Gb4', frequency: 0 }, 
+      minorThirdBend: { note: 'F4', frequency: 0 } 
     },
   },
   {
     hole: 3,
-    blowBends: { halfStepBend: { note: 'Bb4', frequency: 0 } },
+    drawBends: { 
+      halfStepBend: { note: 'Bb4', frequency: 0 }, 
+      wholeStepBend: { note: 'A4', frequency: 0 }, 
+      minorThirdBend: { note: 'Ab4', frequency: 0 } 
+    },
   },
   {
     hole: 4,
+    blowBends: { 
+      halfStepBend: { note: 'Eb5', frequency: 0 }, 
+    },
+    drawBends: { 
+      halfStepBend: { note: 'Db5', frequency: 0 }, 
+    },
   },
   {
     hole: 5,
-    drawBends: { 
-      wholeStepBend: { note: 'F5', frequency: 0 }, 
-      minorThirdBend: { note: 'Ab5', frequency: 0 } 
+    blowBends: { 
+      halfStepBend: { note: 'Gb5', frequency: 0 }, 
     },
   },
   {
     hole: 6,
+    blowBends: { 
+      halfStepBend: { note: 'Bb5', frequency: 0 }, 
+    },
     drawBends: { halfStepBend: { note: 'Ab5', frequency: 0 } },
   },
   {
     hole: 7,
+    overdraw: {  note: 'Db5', frequency: 0 },
   },
   {
     hole: 8,
-    drawBends: { halfStepBend: { note: 'Db6', frequency: 0 } },
-    overdraw: { note: 'Db6', frequency: 0 },
+    blowBends: { 
+      halfStepBend: { note: 'Eb6', frequency: 0 }, 
+    },
   },
   {
     hole: 9,
-    drawBends: { halfStepBend: { note: 'Ab6', frequency: 0 } },
+    blowBends: { 
+      halfStepBend: { note: 'Gb6', frequency: 0 }, 
+    },
     overdraw: { note: 'Ab6', frequency: 0 },
   },
   {
     hole: 10,
-    blowBends: { wholeStepBend: { note: 'Bb6', frequency: 0 } },
-    drawBends: { halfStepBend: { note: 'Ab6', frequency: 0 } },
+    blowBends: { halfStepBend: { note: 'B7', frequency: 0 },  wholeStepBend: { note: 'Bb7', frequency: 0 } },
     overdraw: { note: 'Ab6', frequency: 0 },
   },
 ]
