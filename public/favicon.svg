@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="harmonicaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2c5f99;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Harmonica body -->
+  <rect x="15" y="35" width="70" height="30" rx="4" fill="url(#harmonicaGrad)" stroke="#1a3d66" stroke-width="2"/>
+  
+  <!-- Top cover plate -->
+  <rect x="15" y="33" width="70" height="4" rx="2" fill="#5aa3e8" stroke="#1a3d66" stroke-width="1"/>
+  
+  <!-- Bottom cover plate -->
+  <rect x="15" y="63" width="70" height="4" rx="2" fill="#2c5f99" stroke="#1a3d66" stroke-width="1"/>
+  
+  <!-- Holes -->
+  <rect x="20" y="40" width="6" height="20" rx="1" fill="#1a1a1a" opacity="0.7"/>
+  <rect x="29" y="40" width="6" height="20" rx="1" fill="#1a1a1a" opacity="0.7"/>
+  <rect x="38" y="40" width="6" height="20" rx="1" fill="#1a1a1a" opacity="0.7"/>
+  <rect x="47" y="40" width="6" height="20" rx="1" fill="#1a1a1a" opacity="0.7"/>
+  <rect x="56" y="40" width="6" height="20" rx="1" fill="#1a1a1a" opacity="0.7"/>
+  <rect x="65" y="40" width="6" height="20" rx="1" fill="#1a1a1a" opacity="0.7"/>
+  <rect x="74" y="40" width="6" height="20" rx="1" fill="#1a1a1a" opacity="0.7"/>
+  
+  <!-- Highlights for depth -->
+  <rect x="20" y="42" width="6" height="2" rx="1" fill="#fff" opacity="0.3"/>
+  <rect x="29" y="42" width="6" height="2" rx="1" fill="#fff" opacity="0.3"/>
+  <rect x="38" y="42" width="6" height="2" rx="1" fill="#fff" opacity="0.3"/>
+  <rect x="47" y="42" width="6" height="2" rx="1" fill="#fff" opacity="0.3"/>
+  <rect x="56" y="42" width="6" height="2" rx="1" fill="#fff" opacity="0.3"/>
+  <rect x="65" y="42" width="6" height="2" rx="1" fill="#fff" opacity="0.3"/>
+  <rect x="74" y="42" width="6" height="2" rx="1" fill="#fff" opacity="0.3"/>
+  
+  <!-- Side details -->
+  <circle cx="18" cy="50" r="2" fill="#1a3d66"/>
+  <circle cx="82" cy="50" r="2" fill="#1a3d66"/>
+</svg>
