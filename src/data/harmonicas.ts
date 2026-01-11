@@ -32,7 +32,7 @@ export interface DiatonicHarmonica {
 const C_HARMONICA_LAYOUT: Omit<HoleNote, 'blow' | 'draw'>[] = [
   {
     hole: 1,
-    blowBends: { halfStepBend: { note: 'Eb4', frequency: 0 } },
+    overblow: { note: 'Eb4', frequency: 0 },
     drawBends: { 
       wholeStepBend: { note: 'Db4', frequency: 0 }, 
     },
@@ -54,24 +54,18 @@ const C_HARMONICA_LAYOUT: Omit<HoleNote, 'blow' | 'draw'>[] = [
   },
   {
     hole: 4,
-    blowBends: { 
-      halfStepBend: { note: 'Eb5', frequency: 0 }, 
-    },
+    overblow: { note: 'Eb5', frequency: 0 }, 
     drawBends: { 
       halfStepBend: { note: 'Db5', frequency: 0 }, 
     },
   },
   {
     hole: 5,
-    blowBends: { 
-      halfStepBend: { note: 'Gb5', frequency: 0 }, 
-    },
+    overblow: { note: 'Gb5', frequency: 0 },
   },
   {
     hole: 6,
-    blowBends: { 
-      halfStepBend: { note: 'Bb5', frequency: 0 }, 
-    },
+    overblow: { note: 'Bb5', frequency: 0 }, 
     drawBends: { halfStepBend: { note: 'Ab5', frequency: 0 } },
   },
   {

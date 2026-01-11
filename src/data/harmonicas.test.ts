@@ -25,13 +25,13 @@ describe('Harmonicas', () => {
     
     // Hole 1 should have blow bends
     const hole1 = cHarmonica.holes[0]
-    expect(hole1.blowBends).toBeDefined()
-    expect(hole1.blowBends?.halfStepBend).toBeDefined()
+    expect(hole1.overblow).toBeDefined()
+    expect(hole1.overblow?.note).toBe('Eb4')
     
     // Hole 5 should NOT have draw bends (only blow bends)
     const hole5 = cHarmonica.holes[4]
-    expect(hole5.blowBends).toBeDefined()
-    expect(hole5.blowBends?.halfStepBend).toBeDefined()
+    expect(hole5.overblow).toBeDefined()
+    expect(hole5.overblow?.note).toBe('Gb5')
   })
 
   it('should have overblows and overdraws', () => {
