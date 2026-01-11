@@ -128,8 +128,7 @@
   }
 
   .legendItems {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    display: flex;
     gap: 1rem;
 
     .legendItem {
