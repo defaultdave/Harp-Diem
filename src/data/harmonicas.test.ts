@@ -23,29 +23,29 @@ describe('Harmonicas', () => {
   it('should have bends on specific holes', () => {
     const cHarmonica = harmonicas.C
     
-    // Hole 2 should have blow bends
-    const hole2 = cHarmonica.holes[1]
-    expect(hole2.blowBends).toBeDefined()
-    expect(hole2.blowBends?.halfStepBend).toBeDefined()
+    // Hole 1 should have blow bends
+    const hole1 = cHarmonica.holes[0]
+    expect(hole1.blowBends).toBeDefined()
+    expect(hole1.blowBends?.halfStepBend).toBeDefined()
     
-    // Hole 5 should have draw bends
+    // Hole 5 should NOT have draw bends (only blow bends)
     const hole5 = cHarmonica.holes[4]
-    expect(hole5.drawBends).toBeDefined()
-    expect(hole5.drawBends?.wholeStepBend).toBeDefined()
+    expect(hole5.blowBends).toBeDefined()
+    expect(hole5.blowBends?.halfStepBend).toBeDefined()
   })
 
   it('should have overblows and overdraws', () => {
     const cHarmonica = harmonicas.C
     
-    // Hole 1 should have overblow
-    const hole1 = cHarmonica.holes[0]
-    expect(hole1.overblow).toBeDefined()
-    expect(hole1.overblow?.note).toBe('Eb4')
+    // Hole 7 should have overdraw
+    const hole7 = cHarmonica.holes[6]
+    expect(hole7.overdraw).toBeDefined()
+    expect(hole7.overdraw?.note).toBe('Db5')
     
-    // Hole 8 should have overdraw
-    const hole8 = cHarmonica.holes[7]
-    expect(hole8.overdraw).toBeDefined()
-    expect(hole8.overdraw?.note).toBe('Db6')
+    // Hole 10 should have overdraw
+    const hole10 = cHarmonica.holes[9]
+    expect(hole10.overdraw).toBeDefined()
+    expect(hole10.overdraw?.note).toBe('Db7')
   })
 
   it('should transpose harmonica key correctly', () => {
@@ -65,11 +65,21 @@ describe('Harmonicas', () => {
 
   it('should have all available harmonica keys', () => {
     expect(harmonicas.C).toBeDefined()
+    expect(harmonicas['C#']).toBeDefined()
+    expect(harmonicas.Db).toBeDefined()
     expect(harmonicas.D).toBeDefined()
+    expect(harmonicas['D#']).toBeDefined()
+    expect(harmonicas.Eb).toBeDefined()
     expect(harmonicas.E).toBeDefined()
     expect(harmonicas.F).toBeDefined()
+    expect(harmonicas['F#']).toBeDefined()
+    expect(harmonicas.Gb).toBeDefined()
     expect(harmonicas.G).toBeDefined()
+    expect(harmonicas['G#']).toBeDefined()
+    expect(harmonicas.Ab).toBeDefined()
     expect(harmonicas.A).toBeDefined()
+    expect(harmonicas['A#']).toBeDefined()
+    expect(harmonicas.Bb).toBeDefined()
     expect(harmonicas.B).toBeDefined()
   })
 })

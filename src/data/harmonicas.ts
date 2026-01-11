@@ -1,6 +1,6 @@
 import { Note, Interval } from 'tonal'
 
-export type HarmonicaKey = 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B'
+export type HarmonicaKey = 'C' | 'C#' | 'Db' | 'D' | 'D#' | 'Eb' | 'E' | 'F' | 'F#' | 'Gb' | 'G' | 'G#' | 'Ab' | 'A' | 'A#' | 'Bb' | 'B'
 export type ScaleType = 'major' | 'minor' | 'pentatonic' | 'blues'
 
 export interface HarmonicaNote {
@@ -241,13 +241,23 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
 
 export const harmonicas: Record<HarmonicaKey, DiatonicHarmonica> = {
   C: createDiatonicHarmonica('C'),
+  'C#': createDiatonicHarmonica('C#'),
+  Db: createDiatonicHarmonica('Db'),
   D: createDiatonicHarmonica('D'),
+  'D#': createDiatonicHarmonica('D#'),
+  Eb: createDiatonicHarmonica('Eb'),
   E: createDiatonicHarmonica('E'),
   F: createDiatonicHarmonica('F'),
+  'F#': createDiatonicHarmonica('F#'),
+  Gb: createDiatonicHarmonica('Gb'),
   G: createDiatonicHarmonica('G'),
+  'G#': createDiatonicHarmonica('G#'),
+  Ab: createDiatonicHarmonica('Ab'),
   A: createDiatonicHarmonica('A'),
+  'A#': createDiatonicHarmonica('A#'),
+  Bb: createDiatonicHarmonica('Bb'),
   B: createDiatonicHarmonica('B'),
 }
 
-export const AVAILABLE_KEYS: HarmonicaKey[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+export const AVAILABLE_KEYS: HarmonicaKey[] = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B']
 export const SCALE_TYPES: ScaleType[] = ['major', 'minor', 'pentatonic', 'blues']
