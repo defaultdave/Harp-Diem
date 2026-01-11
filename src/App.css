@@ -114,7 +114,7 @@ main {
 
 .holes-container {
   display: grid;
-  grid-template-rows: [top] auto [blow] auto [number] auto [draw] auto [bottom];
+  grid-template-rows: [top] auto [number] auto [number-end] auto [bottom];
   gap: 0.5rem;
   margin-top: 1rem;
   align-items: start;
@@ -133,7 +133,7 @@ main {
   flex-direction: column;
   gap: 0.2rem;
   width: 100%;
-  grid-row: top / blow;
+  grid-row: top;
   align-self: end;
   min-height: 8rem;
   justify-content: flex-end;
@@ -144,7 +144,7 @@ main {
   flex-direction: column;
   gap: 0.2rem;
   width: 100%;
-  grid-row: bottom / draw;
+  grid-row: bottom;
   align-self: start;
   min-height: 8rem;
   justify-content: flex-start;
@@ -159,7 +159,7 @@ main {
   border-radius: 4px;
   width: 100%;
   text-align: center;
-  grid-row: blow / draw;
+  grid-row: number;
 }
 
 .note-section {
