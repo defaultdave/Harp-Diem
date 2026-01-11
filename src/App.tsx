@@ -86,13 +86,22 @@ function App() {
               const isBlowPlayable = playableBlowHoles.includes(hole.hole)
               const isDrawPlayable = playableDrawHoles.includes(hole.hole)
               
+              // Check if each note type is in the scale
+              const isOverblowPlayable = hole.overblow && scaleNotes.includes(hole.overblow.note)
+              const isBlowWholeStepPlayable = hole.blowBends?.wholeStepBend && scaleNotes.includes(hole.blowBends.wholeStepBend.note)
+              const isBlowHalfStepPlayable = hole.blowBends?.halfStepBend && scaleNotes.includes(hole.blowBends.halfStepBend.note)
+              const isDrawHalfStepPlayable = hole.drawBends?.halfStepBend && scaleNotes.includes(hole.drawBends.halfStepBend.note)
+              const isDrawWholeStepPlayable = hole.drawBends?.wholeStepBend && scaleNotes.includes(hole.drawBends.wholeStepBend.note)
+              const isDrawMinorThirdPlayable = hole.drawBends?.minorThirdBend && scaleNotes.includes(hole.drawBends.minorThirdBend.note)
+              const isOverdrawPlayable = hole.overdraw && scaleNotes.includes(hole.overdraw.note)
+              
               return (
                 <div key={hole.hole} className="hole-column">
                   {/* Overblow and Blow Bends - Top */}
                   <div className="note-group blow-group">
                     {hole.overblow && (
                       <div 
-                        className="note-section overblow" 
+                        className={`note-section ${isOverblowPlayable ? 'playable' : ''}`}
                         onClick={() => playTone(hole.overblow!.frequency)}
                       >
                         <div className="label">OB</div>
@@ -101,7 +110,7 @@ function App() {
                     )}
                     {hole.blowBends?.wholeStepBend && (
                       <div 
-                        className="note-section blow-bend"
+                        className={`note-section ${isBlowWholeStepPlayable ? 'playable' : ''}`}
                         onClick={() => playTone(hole.blowBends!.wholeStepBend!.frequency)}
                       >
                         <div className="label">↑2</div>
@@ -110,7 +119,7 @@ function App() {
                     )}
                     {hole.blowBends?.halfStepBend && (
                       <div 
-                        className="note-section blow-bend"
+                        className={`note-section ${isBlowHalfStepPlayable ? 'playable' : ''}`}
                         onClick={() => playTone(hole.blowBends!.halfStepBend!.frequency)}
                       >
                         <div className="label">↑1</div>
@@ -119,7 +128,7 @@ function App() {
                     )}
                     {/* Blow Note - Middle */}
                     <div 
-                      className={`note-section blow ${isBlowPlayable ? 'playable' : ''}`}
+                      className={`note-section ${isBlowPlayable ? 'playable' : ''}`}
                       onClick={() => playTone(hole.blow.frequency)}
                     >
                       <div className="label">Blow</div>
@@ -136,7 +145,7 @@ function App() {
                   <div className="note-group draw-group">
                     {/* Draw Note - Below Blow */}
                     <div 
-                      className={`note-section draw ${isDrawPlayable ? 'playable' : ''}`}
+                      className={`note-section ${isDrawPlayable ? 'playable' : ''}`}
                       onClick={() => playTone(hole.draw.frequency)}
                     >
                       <div className="label">Draw</div>
@@ -144,7 +153,7 @@ function App() {
                     </div>
                     {hole.drawBends?.halfStepBend && (
                       <div 
-                        className="note-section draw-bend"
+                        className={`note-section ${isDrawHalfStepPlayable ? 'playable' : ''}`}
                         onClick={() => playTone(hole.drawBends!.halfStepBend!.frequency)}
                       >
                         <div className="label">↓1</div>
@@ -153,7 +162,7 @@ function App() {
                     )}
                     {hole.drawBends?.wholeStepBend && (
                       <div 
-                        className="note-section draw-bend"
+                        className={`note-section ${isDrawWholeStepPlayable ? 'playable' : ''}`}
                         onClick={() => playTone(hole.drawBends!.wholeStepBend!.frequency)}
                       >
                         <div className="label">↓2</div>
@@ -162,7 +171,7 @@ function App() {
                     )}
                     {hole.drawBends?.minorThirdBend && (
                       <div 
-                        className="note-section draw-bend"
+                        className={`note-section ${isDrawMinorThirdPlayable ? 'playable' : ''}`}
                         onClick={() => playTone(hole.drawBends!.minorThirdBend!.frequency)}
                       >
                         <div className="label">↓3</div>
@@ -171,7 +180,7 @@ function App() {
                     )}
                     {hole.overdraw && (
                       <div 
-                        className="note-section overdraw"
+                        className={`note-section ${isOverdrawPlayable ? 'playable' : ''}`}
                         onClick={() => playTone(hole.overdraw!.frequency)}
                       >
                         <div className="label">OD</div>
@@ -188,36 +197,12 @@ function App() {
             <h3>Legend</h3>
             <div className="legend-items">
               <div className="legend-item">
-                <div className="legend-color note-section blow"></div>
-                <span>Blow</span>
+                <div className="legend-color note-section playable"></div>
+                <span>In Scale</span>
               </div>
               <div className="legend-item">
-                <div className="legend-color note-section blow playable"></div>
-                <span>Playable Blow</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color note-section draw"></div>
-                <span>Draw</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color note-section draw playable"></div>
-                <span>Playable Draw</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color note-section blow-bend"></div>
-                <span>Blow Bend</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color note-section draw-bend"></div>
-                <span>Draw Bend</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color note-section overblow"></div>
-                <span>Overblow</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color note-section overdraw"></div>
-                <span>Overdraw</span>
+                <div className="legend-color note-section"></div>
+                <span>Not In Scale</span>
               </div>
             </div>
           </div>
