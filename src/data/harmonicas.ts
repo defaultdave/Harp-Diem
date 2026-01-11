@@ -239,25 +239,25 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
   }
 }
 
-export const harmonicas: Record<HarmonicaKey, DiatonicHarmonica> = {
-  C: createDiatonicHarmonica('C'),
-  'C#': createDiatonicHarmonica('C#'),
-  Db: createDiatonicHarmonica('Db'),
-  D: createDiatonicHarmonica('D'),
-  'D#': createDiatonicHarmonica('D#'),
-  Eb: createDiatonicHarmonica('Eb'),
-  E: createDiatonicHarmonica('E'),
-  F: createDiatonicHarmonica('F'),
-  'F#': createDiatonicHarmonica('F#'),
-  Gb: createDiatonicHarmonica('Gb'),
-  G: createDiatonicHarmonica('G'),
-  'G#': createDiatonicHarmonica('G#'),
-  Ab: createDiatonicHarmonica('Ab'),
-  A: createDiatonicHarmonica('A'),
-  'A#': createDiatonicHarmonica('A#'),
-  Bb: createDiatonicHarmonica('Bb'),
-  B: createDiatonicHarmonica('B'),
+// Lazy-loaded cache for harmonicas - only created when requested
+const harmonicaCache: Partial<Record<HarmonicaKey, DiatonicHarmonica>> = {}
+
+export const getHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
+  if (!harmonicaCache[key]) {
+    harmonicaCache[key] = createDiatonicHarmonica(key)
+  }
+  return harmonicaCache[key]
 }
+
+// Kept for backwards compatibility - uses lazy loading via Proxy
+export const harmonicas: Record<HarmonicaKey, DiatonicHarmonica> = new Proxy(
+  {} as Record<HarmonicaKey, DiatonicHarmonica>,
+  {
+    get(_, key: string) {
+      return getHarmonica(key as HarmonicaKey)
+    },
+  }
+)
 
 export const AVAILABLE_KEYS: HarmonicaKey[] = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B']
 

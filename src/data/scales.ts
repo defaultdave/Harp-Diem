@@ -21,6 +21,10 @@ export const getNoteOctave = (note: string): number => {
 }
 
 export const isNoteInScale = (note: string, scaleNotes: string[]): boolean => {
-  const noteWithoutOctave = note.replace(/\d+$/, '')
-  return scaleNotes.some((n) => n.replace(/\d+$/, '') === noteWithoutOctave)
+  // Use chroma (0-11 pitch class) for enharmonic-safe comparison
+  // C# and Db both have chroma 1, so they'll match correctly
+  const noteChroma = Note.chroma(note)
+  if (noteChroma === undefined) return false
+
+  return scaleNotes.some((n) => Note.chroma(n) === noteChroma)
 }
