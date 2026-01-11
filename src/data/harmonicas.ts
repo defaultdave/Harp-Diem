@@ -1,6 +1,32 @@
 import { Note, Interval } from 'tonal'
 
-export type HarmonicaKey = 'C' | 'C#' | 'Db' | 'D' | 'D#' | 'Eb' | 'E' | 'F' | 'F#' | 'Gb' | 'G' | 'G#' | 'Ab' | 'A' | 'A#' | 'Bb' | 'B'
+// Single source of truth for harmonica keys and their starting octaves
+// Keys C through F#/Gb start at middle C (octave 4)
+// Keys G through B start below middle C (octave 3)
+const HARMONICA_KEY_CONFIG = {
+  'C': { startOctave: 4 },
+  'C#': { startOctave: 4 },
+  'Db': { startOctave: 4 },
+  'D': { startOctave: 4 },
+  'D#': { startOctave: 4 },
+  'Eb': { startOctave: 4 },
+  'E': { startOctave: 4 },
+  'F': { startOctave: 4 },
+  'F#': { startOctave: 4 },
+  'Gb': { startOctave: 4 },
+  'G': { startOctave: 3 },
+  'G#': { startOctave: 3 },
+  'Ab': { startOctave: 3 },
+  'A': { startOctave: 3 },
+  'A#': { startOctave: 3 },
+  'Bb': { startOctave: 3 },
+  'B': { startOctave: 3 },
+} as const
+
+export type HarmonicaKey = keyof typeof HARMONICA_KEY_CONFIG
+
+// Reference octave for C harmonica (used for calculating octave shifts)
+const C_START_OCTAVE = 4
 
 export interface HarmonicaNote {
   note: string
@@ -172,29 +198,30 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
 
   // Transpose for other keys
   const keyDifference = Interval.semitones(Interval.distance('C', key)) || 0
+  const octaveShift = HARMONICA_KEY_CONFIG[key].startOctave - C_START_OCTAVE
 
-  const transposeBlow = BLOW_NOTES_C.map((note) =>
-    Note.transpose(note, Interval.fromSemitones(keyDifference))
-  )
+  const transposeNote = (note: string): string => {
+    const transposed = Note.transpose(note, Interval.fromSemitones(keyDifference))
+    if (octaveShift === 0) return transposed
+    return Note.transpose(transposed, Interval.fromSemitones(octaveShift * 12))
+  }
 
-  const transposeDraw = DRAW_NOTES_C.map((note) =>
-    Note.transpose(note, Interval.fromSemitones(keyDifference))
-  )
+  const transposeBlow = BLOW_NOTES_C.map(transposeNote)
+  const transposeDraw = DRAW_NOTES_C.map(transposeNote)
 
   // Transpose bends - only transpose note names, frequencies are calculated by convertNotesToFrequencies
-  const interval = Interval.fromSemitones(keyDifference)
   const transposedLayout = C_HARMONICA_LAYOUT.map((item) => {
     const transposeBends = (bends?: HoleBends): HoleBends | undefined => {
       if (!bends) return undefined
       return {
         halfStepBend: bends.halfStepBend
-          ? { note: Note.transpose(bends.halfStepBend.note, interval), frequency: 0 }
+          ? { note: transposeNote(bends.halfStepBend.note), frequency: 0 }
           : undefined,
         wholeStepBend: bends.wholeStepBend
-          ? { note: Note.transpose(bends.wholeStepBend.note, interval), frequency: 0 }
+          ? { note: transposeNote(bends.wholeStepBend.note), frequency: 0 }
           : undefined,
         minorThirdBend: bends.minorThirdBend
-          ? { note: Note.transpose(bends.minorThirdBend.note, interval), frequency: 0 }
+          ? { note: transposeNote(bends.minorThirdBend.note), frequency: 0 }
           : undefined,
       }
     }
@@ -204,10 +231,10 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
       blowBends: item.blowBends ? transposeBends(item.blowBends) : undefined,
       drawBends: item.drawBends ? transposeBends(item.drawBends) : undefined,
       overblow: item.overblow
-        ? { note: Note.transpose(item.overblow.note, interval), frequency: 0 }
+        ? { note: transposeNote(item.overblow.note), frequency: 0 }
         : undefined,
       overdraw: item.overdraw
-        ? { note: Note.transpose(item.overdraw.note, interval), frequency: 0 }
+        ? { note: transposeNote(item.overdraw.note), frequency: 0 }
         : undefined,
     }
   })
@@ -238,7 +265,7 @@ export const harmonicas: Record<HarmonicaKey, DiatonicHarmonica> = new Proxy(
   }
 )
 
-export const AVAILABLE_KEYS: HarmonicaKey[] = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B']
+export const AVAILABLE_KEYS = Object.keys(HARMONICA_KEY_CONFIG) as HarmonicaKey[]
 
 // Keep to a focused set of common scales for usability
 export const SCALE_TYPES = [
