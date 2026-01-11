@@ -95,7 +95,7 @@ const C_HARMONICA_LAYOUT: Omit<HoleNote, 'blow' | 'draw'>[] = [
   {
     hole: 10,
     blowBends: { halfStepBend: { note: 'B7', frequency: 0 },  wholeStepBend: { note: 'Bb7', frequency: 0 } },
-    overdraw: { note: 'Ab6', frequency: 0 },
+    overdraw: { note: 'Db7', frequency: 0 },
   },
 ]
 

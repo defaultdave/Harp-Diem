@@ -156,7 +156,7 @@ main {
   border-radius: 4px;
   width: 100%;
   text-align: center;
-  grid-row: number;
+  grid-row: blow / draw;
 }
 
 .note-section {
