@@ -4,6 +4,7 @@ import type { HarmonicaKey, ScaleType } from './data/harmonicas'
 import { AVAILABLE_KEYS, SCALE_TYPES } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { playTone } from './utils/audioPlayer'
+import { isNoteInScale } from './data/scales'
 
 function App() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
@@ -86,14 +87,14 @@ function App() {
               const isBlowPlayable = playableBlowHoles.includes(hole.hole)
               const isDrawPlayable = playableDrawHoles.includes(hole.hole)
               
-              // Check if each note type is in the scale
-              const isOverblowPlayable = hole.overblow && scaleNotes.includes(hole.overblow.note)
-              const isBlowWholeStepPlayable = hole.blowBends?.wholeStepBend && scaleNotes.includes(hole.blowBends.wholeStepBend.note)
-              const isBlowHalfStepPlayable = hole.blowBends?.halfStepBend && scaleNotes.includes(hole.blowBends.halfStepBend.note)
-              const isDrawHalfStepPlayable = hole.drawBends?.halfStepBend && scaleNotes.includes(hole.drawBends.halfStepBend.note)
-              const isDrawWholeStepPlayable = hole.drawBends?.wholeStepBend && scaleNotes.includes(hole.drawBends.wholeStepBend.note)
-              const isDrawMinorThirdPlayable = hole.drawBends?.minorThirdBend && scaleNotes.includes(hole.drawBends.minorThirdBend.note)
-              const isOverdrawPlayable = hole.overdraw && scaleNotes.includes(hole.overdraw.note)
+              // Check if each note type is in the scale (using isNoteInScale to ignore octaves)
+              const isOverblowPlayable = hole.overblow && isNoteInScale(hole.overblow.note, scaleNotes)
+              const isBlowWholeStepPlayable = hole.blowBends?.wholeStepBend && isNoteInScale(hole.blowBends.wholeStepBend.note, scaleNotes)
+              const isBlowHalfStepPlayable = hole.blowBends?.halfStepBend && isNoteInScale(hole.blowBends.halfStepBend.note, scaleNotes)
+              const isDrawHalfStepPlayable = hole.drawBends?.halfStepBend && isNoteInScale(hole.drawBends.halfStepBend.note, scaleNotes)
+              const isDrawWholeStepPlayable = hole.drawBends?.wholeStepBend && isNoteInScale(hole.drawBends.wholeStepBend.note, scaleNotes)
+              const isDrawMinorThirdPlayable = hole.drawBends?.minorThirdBend && isNoteInScale(hole.drawBends.minorThirdBend.note, scaleNotes)
+              const isOverdrawPlayable = hole.overdraw && isNoteInScale(hole.overdraw.note, scaleNotes)
               
               return (
                 <div key={hole.hole} className="hole-column">

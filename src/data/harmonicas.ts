@@ -196,19 +196,19 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
         halfStepBend: bends.halfStepBend
           ? { 
               note: Note.transpose(bends.halfStepBend.note, Interval.fromSemitones(keyDifference)), 
-              frequency: 0 
+              frequency: Note.freq(Note.transpose(bends.halfStepBend.note, Interval.fromSemitones(keyDifference))) || 0
             }
           : undefined,
         wholeStepBend: bends.wholeStepBend
           ? { 
               note: Note.transpose(bends.wholeStepBend.note, Interval.fromSemitones(keyDifference)), 
-              frequency: 0 
+              frequency: Note.freq(Note.transpose(bends.wholeStepBend.note, Interval.fromSemitones(keyDifference))) || 0
             }
           : undefined,
         minorThirdBend: bends.minorThirdBend
           ? { 
               note: Note.transpose(bends.minorThirdBend.note, Interval.fromSemitones(keyDifference)), 
-              frequency: 0 
+              frequency: Note.freq(Note.transpose(bends.minorThirdBend.note, Interval.fromSemitones(keyDifference))) || 0
             }
           : undefined,
       }
@@ -221,13 +221,13 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
       overblow: item.overblow
         ? { 
             note: Note.transpose(item.overblow.note, Interval.fromSemitones(keyDifference)), 
-            frequency: 0 
+            frequency: Note.freq(Note.transpose(item.overblow.note, Interval.fromSemitones(keyDifference))) || 0
           }
         : undefined,
       overdraw: item.overdraw
         ? { 
             note: Note.transpose(item.overdraw.note, Interval.fromSemitones(keyDifference)), 
-            frequency: 0 
+            frequency: Note.freq(Note.transpose(item.overdraw.note, Interval.fromSemitones(keyDifference))) || 0
           }
         : undefined,
     }
