@@ -22,30 +22,30 @@ describe('Harmonicas', () => {
 
   it('should have bends on specific holes', () => {
     const cHarmonica = harmonicas.C
-    
-    // Hole 1 should have blow bends
+
+    // Hole 1 should have overblow (D4 + semitone = D#4/Eb4)
     const hole1 = cHarmonica.holes[0]
     expect(hole1.overblow).toBeDefined()
-    expect(hole1.overblow?.note).toBe('Eb4')
-    
-    // Hole 5 should NOT have draw bends (only blow bends)
+    expect(hole1.overblow?.note).toBe('D#4')
+
+    // Hole 5 should have overblow (F5 + semitone = F#5/Gb5)
     const hole5 = cHarmonica.holes[4]
     expect(hole5.overblow).toBeDefined()
-    expect(hole5.overblow?.note).toBe('Gb5')
+    expect(hole5.overblow?.note).toBe('F#5')
   })
 
   it('should have overblows and overdraws', () => {
     const cHarmonica = harmonicas.C
-    
-    // Hole 7 should have overdraw (blow=C6 + 1 semitone = Db6)
+
+    // Hole 7 should have overdraw (blow=C6 + semitone = C#6/Db6)
     const hole7 = cHarmonica.holes[6]
     expect(hole7.overdraw).toBeDefined()
-    expect(hole7.overdraw?.note).toBe('Db6')
-    
-    // Hole 10 should have overdraw
+    expect(hole7.overdraw?.note).toBe('C#6')
+
+    // Hole 10 should have overdraw (blow=C7 + semitone = C#7/Db7)
     const hole10 = cHarmonica.holes[9]
     expect(hole10.overdraw).toBeDefined()
-    expect(hole10.overdraw?.note).toBe('Db7')
+    expect(hole10.overdraw?.note).toBe('C#7')
   })
 
   it('should transpose harmonica key correctly', () => {

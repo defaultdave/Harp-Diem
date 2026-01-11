@@ -1,5 +1,8 @@
 import { Note, Interval } from 'tonal'
 
+// Simplify note names to avoid confusing enharmonic spellings (e.g., Fb → E, Abb → G)
+const simplifyNote = (note: string): string => Note.enharmonic(note)
+
 // Single source of truth for harmonica keys and their starting octaves
 // Keys C through F#/Gb start at middle C (octave 4)
 // Keys G through B start below middle C (octave 3)
@@ -58,9 +61,9 @@ export interface DiatonicHarmonica {
 const buildDrawBends = (drawNote: string, interval: number): HoleBends | undefined => {
   if (interval < 2) return undefined
   const bends: HoleBends = {}
-  if (interval >= 2) bends.halfStepBend = { note: Note.transpose(drawNote, '-2m'), frequency: 0 }
-  if (interval >= 3) bends.wholeStepBend = { note: Note.transpose(drawNote, '-2M'), frequency: 0 }
-  if (interval >= 4) bends.minorThirdBend = { note: Note.transpose(drawNote, '-3m'), frequency: 0 }
+  if (interval >= 2) bends.halfStepBend = { note: simplifyNote(Note.transpose(drawNote, '-2m')), frequency: 0 }
+  if (interval >= 3) bends.wholeStepBend = { note: simplifyNote(Note.transpose(drawNote, '-2M')), frequency: 0 }
+  if (interval >= 4) bends.minorThirdBend = { note: simplifyNote(Note.transpose(drawNote, '-3m')), frequency: 0 }
   return bends
 }
 
@@ -68,8 +71,8 @@ const buildDrawBends = (drawNote: string, interval: number): HoleBends | undefin
 const buildBlowBends = (blowNote: string, interval: number): HoleBends | undefined => {
   if (interval < 2) return undefined
   const bends: HoleBends = {}
-  if (interval >= 2) bends.halfStepBend = { note: Note.transpose(blowNote, '-2m'), frequency: 0 }
-  if (interval >= 3) bends.wholeStepBend = { note: Note.transpose(blowNote, '-2M'), frequency: 0 }
+  if (interval >= 2) bends.halfStepBend = { note: simplifyNote(Note.transpose(blowNote, '-2m')), frequency: 0 }
+  if (interval >= 3) bends.wholeStepBend = { note: simplifyNote(Note.transpose(blowNote, '-2M')), frequency: 0 }
   return bends
 }
 
@@ -91,14 +94,14 @@ const calculateBends = (
     // Draw is higher than blow: draw bends available, overblow on specific holes
     const drawBends = buildDrawBends(drawNote, interval)
     const overblow = OVERBLOW_HOLES.includes(holeNumber)
-      ? { note: Note.transpose(drawNote, '2m'), frequency: 0 }
+      ? { note: simplifyNote(Note.transpose(drawNote, '2m')), frequency: 0 }
       : undefined
     return { drawBends, overblow }
   } else {
     // Blow is higher than draw: blow bends available, overdraw on specific holes
     const blowBends = buildBlowBends(blowNote, Math.abs(interval))
     const overdraw = OVERDRAW_HOLES.includes(holeNumber)
-      ? { note: Note.transpose(blowNote, '2m'), frequency: 0 }
+      ? { note: simplifyNote(Note.transpose(blowNote, '2m')), frequency: 0 }
       : undefined
     return { blowBends, overdraw }
   }
@@ -178,8 +181,8 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
 
   const transposeNote = (note: string): string => {
     const transposed = Note.transpose(note, Interval.fromSemitones(keyDifference))
-    if (octaveShift === 0) return transposed
-    return Note.transpose(transposed, Interval.fromSemitones(octaveShift * 12))
+    if (octaveShift === 0) return simplifyNote(transposed)
+    return simplifyNote(Note.transpose(transposed, Interval.fromSemitones(octaveShift * 12)))
   }
 
   const transposedBlow = BLOW_NOTES_C.map(transposeNote)
