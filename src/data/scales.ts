@@ -7,26 +7,7 @@ export interface ScaleNote {
 }
 
 export const getScaleNotes = (rootKey: string, scaleType: ScaleType): ScaleNote[] => {
-  let scaleName: string
-
-  switch (scaleType) {
-    case 'major':
-      scaleName = 'major'
-      break
-    case 'minor':
-      scaleName = 'minor'
-      break
-    case 'pentatonic':
-      scaleName = 'pentatonic major'
-      break
-    case 'blues':
-      scaleName = 'blues'
-      break
-    default:
-      scaleName = 'major'
-  }
-
-  const notes = Scale.get(`${rootKey} ${scaleName}`)?.notes || []
+  const notes = Scale.get(`${rootKey} ${scaleType}`)?.notes || []
 
   return notes.map((note) => ({
     note,

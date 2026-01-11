@@ -58,7 +58,7 @@ function App() {
             >
               {SCALE_TYPES.map((type) => (
                 <option key={type} value={type}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                  {type.replace(/\b\w/g, (c) => c.toUpperCase())}
                 </option>
               ))}
             </select>
@@ -154,6 +154,44 @@ function App() {
                 </div>
               )
             })}
+          </div>
+
+          <div className="legend">
+            <h3>Legend</h3>
+            <div className="legend-items">
+              <div className="legend-item">
+                <div className="legend-color note-section blow"></div>
+                <span>Blow</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color note-section blow playable"></div>
+                <span>Playable Blow</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color note-section draw"></div>
+                <span>Draw</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color note-section draw playable"></div>
+                <span>Playable Draw</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color note-section blow-bend"></div>
+                <span>Blow Bend</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color note-section draw-bend"></div>
+                <span>Draw Bend</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color note-section overblow"></div>
+                <span>Overblow</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color note-section overdraw"></div>
+                <span>Overdraw</span>
+              </div>
+            </div>
           </div>
         </div>
       </main>

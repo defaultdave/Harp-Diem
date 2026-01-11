@@ -254,3 +254,41 @@ main {
 .note-section.overdraw .note {
   color: #d84315;
 }
+
+/* Legend */
+.legend {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e0e0e0;
+}
+
+.legend h3 {
+  margin: 0 0 1rem 0;
+  color: #667eea;
+  font-size: 1.2rem;
+}
+
+.legend-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 40px;
+  height: 30px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.legend-item span {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+}
