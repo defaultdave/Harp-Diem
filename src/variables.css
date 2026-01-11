@@ -1,0 +1,39 @@
+:root {
+  /* Background colors */
+  --color-bg-primary: #f7fafc;
+  --color-bg-secondary: #edf2f7;
+  --color-bg-card: #ffffff;
+  --color-bg-header: rgba(0, 0, 0, 0.05);
+
+  /* Text colors */
+  --color-text-primary: #1a202c;
+  --color-text-secondary: #4a5568;
+  --color-text-muted: #718096;
+  --color-text-inverse: #ffffff;
+
+  /* Border colors */
+  --color-border-light: #e2e8f0;
+  --color-border-medium: #cbd5e0;
+  --color-border-dark: #a0aec0;
+
+  /* Playable (in-scale) colors - darker green */
+  --color-playable-bg: #276749;
+  --color-playable-border: #22543d;
+  --color-playable-shadow: rgba(34, 84, 61, 0.3);
+  --color-playable-text: #ffffff;
+  --color-playable-label: rgba(255, 255, 255, 0.85);
+
+  /* Not playable colors - neutral */
+  --color-note-bg: #e2e8f0;
+  --color-note-border: #a0aec0;
+  --color-note-text: #4a5568;
+  --color-note-label: #718096;
+
+  /* Interactive states */
+  --color-focus-ring: rgba(74, 85, 104, 0.15);
+  --color-hover-border: #4a5568;
+
+  /* Shadows */
+  --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

@@ -31,9 +31,9 @@
 .holeNumber {
   font-weight: 700;
   font-size: 1.3rem;
-  color: #333;
+  color: var(--color-text-primary);
   padding: 0.25rem 0;
-  background: #f0f0f0;
+  background: var(--color-border-light);
   border-radius: 4px;
   width: 100%;
   text-align: center;
@@ -49,15 +49,15 @@
   transition: all 0.2s ease;
   cursor: pointer;
   user-select: none;
-  background: #e0e0e0;
-  border: 1.5px solid #9e9e9e;
+  background: var(--color-note-bg);
+  border: 1.5px solid var(--color-note-border);
   font-weight: 600;
 }
 
 .noteSection {
   &:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-hover);
   }
   &:active {
     transform: scale(0.98);
@@ -67,7 +67,7 @@
 .label {
   font-weight: 600;
   font-size: 0.65rem;
-  color: #666;
+  color: var(--color-note-label);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -75,18 +75,22 @@
 .note {
   font-weight: 700;
   font-size: 0.85rem;
-  color: #616161;
+  color: var(--color-note-text);
   margin-top: 0.15rem;
 }
 
-/* Playable notes - green for in scale */
+/* Playable notes - darker green for in scale with high contrast */
 .playable {
-  background: #c8e6c9;
-  border: 1.5px solid #66bb6a;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
+  background: var(--color-playable-bg);
+  border: 1.5px solid var(--color-playable-border);
+  box-shadow: 0 2px 4px var(--color-playable-shadow);
+
+  .label {
+    color: var(--color-playable-label);
+  }
 
   .note {
-    color: #000000;
+    color: var(--color-playable-text);
     font-weight: 700;
   }
 }
