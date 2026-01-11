@@ -3,6 +3,7 @@ import './App.css'
 import type { HarmonicaKey, ScaleType } from './data/harmonicas'
 import { AVAILABLE_KEYS, SCALE_TYPES } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
+import { playTone } from './utils/audioPlayer'
 
 function App() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
@@ -90,25 +91,37 @@ function App() {
                   {/* Overblow and Blow Bends - Top */}
                   <div className="note-group blow-group">
                     {hole.overblow && (
-                      <div className="note-section overblow">
+                      <div 
+                        className="note-section overblow" 
+                        onClick={() => playTone(hole.overblow!.frequency)}
+                      >
                         <div className="label">OB</div>
                         <div className="note">{hole.overblow.note}</div>
                       </div>
                     )}
                     {hole.blowBends?.wholeStepBend && (
-                      <div className="note-section blow-bend">
+                      <div 
+                        className="note-section blow-bend"
+                        onClick={() => playTone(hole.blowBends!.wholeStepBend!.frequency)}
+                      >
                         <div className="label">↑2</div>
                         <div className="note">{hole.blowBends.wholeStepBend.note}</div>
                       </div>
                     )}
                     {hole.blowBends?.halfStepBend && (
-                      <div className="note-section blow-bend">
+                      <div 
+                        className="note-section blow-bend"
+                        onClick={() => playTone(hole.blowBends!.halfStepBend!.frequency)}
+                      >
                         <div className="label">↑1</div>
                         <div className="note">{hole.blowBends.halfStepBend.note}</div>
                       </div>
                     )}
                     {/* Blow Note - Middle */}
-                    <div className={`note-section blow ${isBlowPlayable ? 'playable' : ''}`}>
+                    <div 
+                      className={`note-section blow ${isBlowPlayable ? 'playable' : ''}`}
+                      onClick={() => playTone(hole.blow.frequency)}
+                    >
                       <div className="label">Blow</div>
                       <div className="note">{hole.blow.note}</div>
                     </div>
@@ -122,30 +135,45 @@ function App() {
                   {/* Draw Bends and Overdraw - Bottom */}
                   <div className="note-group draw-group">
                     {/* Draw Note - Below Blow */}
-                    <div className={`note-section draw ${isDrawPlayable ? 'playable' : ''}`}>
+                    <div 
+                      className={`note-section draw ${isDrawPlayable ? 'playable' : ''}`}
+                      onClick={() => playTone(hole.draw.frequency)}
+                    >
                       <div className="label">Draw</div>
                       <div className="note">{hole.draw.note}</div>
                     </div>
                     {hole.drawBends?.halfStepBend && (
-                      <div className="note-section draw-bend">
+                      <div 
+                        className="note-section draw-bend"
+                        onClick={() => playTone(hole.drawBends!.halfStepBend!.frequency)}
+                      >
                         <div className="label">↓1</div>
                         <div className="note">{hole.drawBends.halfStepBend.note}</div>
                       </div>
                     )}
                     {hole.drawBends?.wholeStepBend && (
-                      <div className="note-section draw-bend">
+                      <div 
+                        className="note-section draw-bend"
+                        onClick={() => playTone(hole.drawBends!.wholeStepBend!.frequency)}
+                      >
                         <div className="label">↓2</div>
                         <div className="note">{hole.drawBends.wholeStepBend.note}</div>
                       </div>
                     )}
                     {hole.drawBends?.minorThirdBend && (
-                      <div className="note-section draw-bend">
+                      <div 
+                        className="note-section draw-bend"
+                        onClick={() => playTone(hole.drawBends!.minorThirdBend!.frequency)}
+                      >
                         <div className="label">↓3</div>
                         <div className="note">{hole.drawBends.minorThirdBend.note}</div>
                       </div>
                     )}
                     {hole.overdraw && (
-                      <div className="note-section overdraw">
+                      <div 
+                        className="note-section overdraw"
+                        onClick={() => playTone(hole.overdraw!.frequency)}
+                      >
                         <div className="label">OD</div>
                         <div className="note">{hole.overdraw.note}</div>
                       </div>

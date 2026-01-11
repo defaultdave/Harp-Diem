@@ -1,6 +1,4 @@
-import { Note, Interval, Scale } from 'tonal'
-
-console.log(Scale.names())
+import { Note, Interval } from 'tonal'
 
 export type HarmonicaKey = 'C' | 'C#' | 'Db' | 'D' | 'D#' | 'Eb' | 'E' | 'F' | 'F#' | 'Gb' | 'G' | 'G#' | 'Ab' | 'A' | 'A#' | 'Bb' | 'B'
 export type ScaleType = string
@@ -274,7 +272,6 @@ export const SCALE_TYPES: ScaleType[] = [
   'lydian',
   'mixolydian',
   'locrian',
-  'phrygian',
   'major pentatonic',
   'minor pentatonic',
   'blues',
