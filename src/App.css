@@ -115,14 +115,16 @@ main {
 
 .holes-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-rows: [top] auto [blow] auto [number] auto [draw] auto [bottom];
   gap: 0.5rem;
   margin-top: 1rem;
+  align-items: start;
 }
 
 .hole-column {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: top / bottom;
   align-items: center;
   gap: 0.3rem;
 }
@@ -132,6 +134,8 @@ main {
   flex-direction: column;
   gap: 0.2rem;
   width: 100%;
+  grid-row: top;
+  align-self: end;
 }
 
 .draw-bend-group {
@@ -139,6 +143,7 @@ main {
   flex-direction: column;
   gap: 0.2rem;
   width: 100%;
+  grid-row: bottom;
 }
 
 .hole-number {
@@ -150,6 +155,7 @@ main {
   border-radius: 4px;
   width: 100%;
   text-align: center;
+  grid-row: number;
 }
 
 .note-section {
@@ -181,6 +187,8 @@ main {
   background: #e3f2fd;
   border: 1.5px solid #90caf9;
   font-weight: 600;
+  grid-row: blow;
+  align-self: end;
 }
 
 .note-section.blow.playable {
@@ -198,6 +206,8 @@ main {
   background: #f3e5f5;
   border: 1.5px solid #ce93d8;
   font-weight: 600;
+  grid-row: draw;
+  align-self: start;
 }
 
 .note-section.draw.playable {
