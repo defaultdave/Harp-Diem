@@ -88,7 +88,7 @@ function App() {
               return (
                 <div key={hole.hole} className="hole-column">
                   {/* Overblow and Blow Bends - Top */}
-                  <div className="note-group overblow-bend-group">
+                  <div className="note-group blow-group">
                     {hole.overblow && (
                       <div className="note-section overblow">
                         <div className="label">OB</div>
@@ -107,25 +107,25 @@ function App() {
                         <div className="note">{hole.blowBends.halfStepBend.note}</div>
                       </div>
                     )}
+                    {/* Blow Note - Middle */}
+                    <div className={`note-section blow ${isBlowPlayable ? 'playable' : ''}`}>
+                      <div className="label">Blow</div>
+                      <div className="note">{hole.blow.note}</div>
+                    </div>
                   </div>
 
-                  {/* Blow Note - Middle */}
-                  <div className={`note-section blow ${isBlowPlayable ? 'playable' : ''}`}>
-                    <div className="label">Blow</div>
-                    <div className="note">{hole.blow.note}</div>
-                  </div>
 
                   {/* Hole Number */}
                   <div className="hole-number">{hole.hole}</div>
 
-                  {/* Draw Note - Below Blow */}
-                  <div className={`note-section draw ${isDrawPlayable ? 'playable' : ''}`}>
-                    <div className="label">Draw</div>
-                    <div className="note">{hole.draw.note}</div>
-                  </div>
 
                   {/* Draw Bends and Overdraw - Bottom */}
-                  <div className="note-group draw-bend-group">
+                  <div className="note-group draw-group">
+                    {/* Draw Note - Below Blow */}
+                    <div className={`note-section draw ${isDrawPlayable ? 'playable' : ''}`}>
+                      <div className="label">Draw</div>
+                      <div className="note">{hole.draw.note}</div>
+                    </div>
                     {hole.drawBends?.halfStepBend && (
                       <div className="note-section draw-bend">
                         <div className="label">↓1</div>

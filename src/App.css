@@ -129,21 +129,22 @@ main {
   gap: 0.3rem;
 }
 
-.overblow-bend-group {
+.blow-group {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   width: 100%;
-  grid-row: top;
+  grid-row: top / blow;
   align-self: end;
 }
 
-.draw-bend-group {
+.draw-group {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   width: 100%;
-  grid-row: bottom;
+  grid-row: bottom / draw;
+  align-self: start;
 }
 
 .hole-number {
@@ -187,8 +188,6 @@ main {
   background: #e3f2fd;
   border: 1.5px solid #90caf9;
   font-weight: 600;
-  grid-row: blow;
-  align-self: end;
 }
 
 .note-section.blow.playable {
@@ -206,8 +205,6 @@ main {
   background: #f3e5f5;
   border: 1.5px solid #ce93d8;
   font-weight: 600;
-  grid-row: draw;
-  align-self: start;
 }
 
 .note-section.draw.playable {
