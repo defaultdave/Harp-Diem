@@ -54,21 +54,36 @@ export async function playTone(frequency: number, duration: number = 0.5): Promi
     masterGain.gain.linearRampToValueAtTime(0.05, currentTime + duration - 0.1) // Sustain
     masterGain.gain.exponentialRampToValueAtTime(0.001, currentTime + duration) // Release
     
+    // Track completed oscillators for cleanup
+    let completedCount = 0
+    const totalOscillators = harmonics.length
+
     // Create harmonics
     harmonics.forEach(({ freq, gain }) => {
       const oscillator = context.createOscillator()
       const gainNode = context.createGain()
-      
+
       oscillator.type = 'sine'
       oscillator.frequency.value = freq
       gainNode.gain.value = gain
-      
+
       oscillator.connect(gainNode)
       gainNode.connect(masterGain)
-      
+
+      // Cleanup when oscillator finishes
+      oscillator.onended = () => {
+        oscillator.disconnect()
+        gainNode.disconnect()
+        completedCount++
+        // Disconnect master gain when all oscillators are done
+        if (completedCount === totalOscillators) {
+          masterGain.disconnect()
+        }
+      }
+
       oscillator.start(currentTime)
       oscillator.stop(currentTime + duration)
-      
+
       oscillators.push(oscillator)
       gainNodes.push(gainNode)
     })

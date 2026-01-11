@@ -136,6 +136,8 @@ main {
   width: 100%;
   grid-row: top / blow;
   align-self: end;
+  min-height: 8rem;
+  justify-content: flex-end;
 }
 
 .draw-group {
@@ -145,6 +147,8 @@ main {
   width: 100%;
   grid-row: bottom / draw;
   align-self: start;
+  min-height: 8rem;
+  justify-content: flex-start;
 }
 
 .hole-number {

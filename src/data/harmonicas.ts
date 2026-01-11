@@ -1,7 +1,6 @@
 import { Note, Interval } from 'tonal'
 
 export type HarmonicaKey = 'C' | 'C#' | 'Db' | 'D' | 'D#' | 'Eb' | 'E' | 'F' | 'F#' | 'Gb' | 'G' | 'G#' | 'Ab' | 'A' | 'A#' | 'Bb' | 'B'
-export type ScaleType = string
 
 export interface HarmonicaNote {
   note: string
@@ -262,7 +261,7 @@ export const harmonicas: Record<HarmonicaKey, DiatonicHarmonica> = new Proxy(
 export const AVAILABLE_KEYS: HarmonicaKey[] = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B']
 
 // Keep to a focused set of common scales for usability
-export const SCALE_TYPES: ScaleType[] = [
+export const SCALE_TYPES = [
   'major',
   'minor',
   'harmonic minor',
@@ -275,4 +274,6 @@ export const SCALE_TYPES: ScaleType[] = [
   'major pentatonic',
   'minor pentatonic',
   'blues',
-]
+] as const
+
+export type ScaleType = (typeof SCALE_TYPES)[number]
