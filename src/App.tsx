@@ -19,7 +19,7 @@ function App() {
   return (
     <div className="app">
       <header>
-        <h1>🎵 Harmonica Scale Viewer</h1>
+        <h1>🎵 Harp Diem</h1>
       </header>
 
       <main>

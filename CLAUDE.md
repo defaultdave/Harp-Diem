@@ -16,7 +16,7 @@ npm run test:coverage # Generate coverage report
 
 ## Architecture
 
-This is a React + TypeScript + Vite application for visualizing diatonic harmonica scales.
+**Harp Diem** is a React + TypeScript + Vite application for visualizing diatonic harmonica scales.
 
 ### Core Data Flow
 
