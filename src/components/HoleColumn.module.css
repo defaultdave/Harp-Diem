@@ -72,11 +72,24 @@
   letter-spacing: 0.3px;
 }
 
+.noteDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.degree {
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: var(--color-playable-label);
+  opacity: 0.9;
+}
+
 .note {
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--color-note-text);
-  margin-top: 0.15rem;
 }
 
 /* Playable notes - darker green for in scale with high contrast */

@@ -28,3 +28,16 @@ export const isNoteInScale = (note: string, scaleNotes: string[]): boolean => {
 
   return scaleNotes.some((n) => Note.chroma(n) === noteChroma)
 }
+
+export const getNoteDegree = (note: string, scaleNotes: string[]): number | undefined => {
+  const noteChroma = Note.chroma(note)
+  if (noteChroma === undefined) return undefined
+
+  const index = scaleNotes.findIndex((n) => Note.chroma(n) === noteChroma)
+  return index >= 0 ? index + 1 : undefined
+}
+
+export const degreeToRoman = (degree: number): string => {
+  const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
+  return numerals[degree - 1] || ''
+}

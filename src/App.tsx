@@ -9,6 +9,7 @@ function App() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
   const [songKey, setSongKey] = useState('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
+  const [showDegrees, setShowDegrees] = useState(false)
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -93,12 +94,22 @@ function App() {
                 scaleNotes={scaleNotes}
                 isBlowPlayable={playableBlowHoles.includes(hole.hole)}
                 isDrawPlayable={playableDrawHoles.includes(hole.hole)}
+                showDegrees={showDegrees}
               />
             ))}
           </div>
 
           <div className={styles.legend} role="note" aria-label="Legend for scale visualization">
-            <h3>Legend</h3>
+            <div className={styles.legendHeader}>
+              <h3>Legend</h3>
+              <button
+                className={`${styles.toggleButton} ${showDegrees ? styles.toggleActive : ''}`}
+                onClick={() => setShowDegrees(!showDegrees)}
+                aria-pressed={showDegrees}
+              >
+                {showDegrees ? 'Hide' : 'Show'} Degrees
+              </button>
+            </div>
             <div className={styles.legendItems}>
               <div className={styles.legendItem}>
                 <div className={`${styles.legendColor} ${styles.legendColorPlayable}`} aria-hidden="true"></div>

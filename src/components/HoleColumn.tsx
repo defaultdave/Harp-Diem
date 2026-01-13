@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import type { HoleNote } from '../data/harmonicas'
-import { isNoteInScale } from '../data/scales'
+import { isNoteInScale, getNoteDegree, degreeToRoman } from '../data/scales'
 import { playTone } from '../utils/audioPlayer'
 import styles from './HoleColumn.module.css'
 
@@ -9,15 +9,20 @@ interface NoteSectionProps {
   note: string
   frequency: number
   isPlayable: boolean
+  showDegrees: boolean
+  scaleNotes: string[]
 }
 
-const NoteSection = ({ label, note, frequency, isPlayable }: NoteSectionProps) => {
+const NoteSection = ({ label, note, frequency, isPlayable, showDegrees, scaleNotes }: NoteSectionProps) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       playTone(frequency)
     }
   }
+
+  const degree = showDegrees && isPlayable ? getNoteDegree(note, scaleNotes) : undefined
+  const romanNumeral = degree ? degreeToRoman(degree) : undefined
 
   return (
     <div
@@ -26,10 +31,13 @@ const NoteSection = ({ label, note, frequency, isPlayable }: NoteSectionProps) =
       tabIndex={0}
       onClick={() => playTone(frequency)}
       onKeyDown={handleKeyDown}
-      aria-label={`${label} ${note}${isPlayable ? ', in scale' : ', not in scale'}. Press to play.`}
+      aria-label={`${label} ${note}${romanNumeral ? ` (degree ${romanNumeral})` : ''}${isPlayable ? ', in scale' : ', not in scale'}. Press to play.`}
     >
       <div className={styles.label}>{label}</div>
-      <div className={styles.note}>{note}</div>
+      <div className={styles.noteDisplay}>
+        {romanNumeral && <div className={styles.degree}>{romanNumeral}</div>}
+        <div className={styles.note}>{note}</div>
+      </div>
     </div>
   )
 }
@@ -39,6 +47,7 @@ interface HoleColumnProps {
   scaleNotes: string[]
   isBlowPlayable: boolean
   isDrawPlayable: boolean
+  showDegrees: boolean
 }
 
 export const HoleColumn = memo(function HoleColumn({
@@ -46,6 +55,7 @@ export const HoleColumn = memo(function HoleColumn({
   scaleNotes,
   isBlowPlayable,
   isDrawPlayable,
+  showDegrees,
 }: HoleColumnProps) {
   const isOverblowPlayable = hole.overblow && isNoteInScale(hole.overblow.note, scaleNotes)
   const isBlowWholeStepPlayable =
@@ -70,6 +80,8 @@ export const HoleColumn = memo(function HoleColumn({
             note={hole.overblow.note}
             frequency={hole.overblow.frequency}
             isPlayable={!!isOverblowPlayable}
+            showDegrees={showDegrees}
+            scaleNotes={scaleNotes}
           />
         )}
         {hole.blowBends?.wholeStepBend && (
@@ -78,6 +90,8 @@ export const HoleColumn = memo(function HoleColumn({
             note={hole.blowBends.wholeStepBend.note}
             frequency={hole.blowBends.wholeStepBend.frequency}
             isPlayable={!!isBlowWholeStepPlayable}
+            showDegrees={showDegrees}
+            scaleNotes={scaleNotes}
           />
         )}
         {hole.blowBends?.halfStepBend && (
@@ -86,6 +100,8 @@ export const HoleColumn = memo(function HoleColumn({
             note={hole.blowBends.halfStepBend.note}
             frequency={hole.blowBends.halfStepBend.frequency}
             isPlayable={!!isBlowHalfStepPlayable}
+            showDegrees={showDegrees}
+            scaleNotes={scaleNotes}
           />
         )}
         {/* Blow Note - Middle */}
@@ -94,6 +110,8 @@ export const HoleColumn = memo(function HoleColumn({
           note={hole.blow.note}
           frequency={hole.blow.frequency}
           isPlayable={isBlowPlayable}
+          showDegrees={showDegrees}
+          scaleNotes={scaleNotes}
         />
       </div>
 
@@ -108,6 +126,8 @@ export const HoleColumn = memo(function HoleColumn({
           note={hole.draw.note}
           frequency={hole.draw.frequency}
           isPlayable={isDrawPlayable}
+          showDegrees={showDegrees}
+          scaleNotes={scaleNotes}
         />
         {hole.drawBends?.halfStepBend && (
           <NoteSection
@@ -115,6 +135,8 @@ export const HoleColumn = memo(function HoleColumn({
             note={hole.drawBends.halfStepBend.note}
             frequency={hole.drawBends.halfStepBend.frequency}
             isPlayable={!!isDrawHalfStepPlayable}
+            showDegrees={showDegrees}
+            scaleNotes={scaleNotes}
           />
         )}
         {hole.drawBends?.wholeStepBend && (
@@ -123,6 +145,8 @@ export const HoleColumn = memo(function HoleColumn({
             note={hole.drawBends.wholeStepBend.note}
             frequency={hole.drawBends.wholeStepBend.frequency}
             isPlayable={!!isDrawWholeStepPlayable}
+            showDegrees={showDegrees}
+            scaleNotes={scaleNotes}
           />
         )}
         {hole.drawBends?.minorThirdBend && (
@@ -131,6 +155,8 @@ export const HoleColumn = memo(function HoleColumn({
             note={hole.drawBends.minorThirdBend.note}
             frequency={hole.drawBends.minorThirdBend.frequency}
             isPlayable={!!isDrawMinorThirdPlayable}
+            showDegrees={showDegrees}
+            scaleNotes={scaleNotes}
           />
         )}
         {hole.overdraw && (
@@ -139,6 +165,8 @@ export const HoleColumn = memo(function HoleColumn({
             note={hole.overdraw.note}
             frequency={hole.overdraw.frequency}
             isPlayable={!!isOverdrawPlayable}
+            showDegrees={showDegrees}
+            scaleNotes={scaleNotes}
           />
         )}
       </div>
