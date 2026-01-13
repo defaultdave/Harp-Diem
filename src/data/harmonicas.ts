@@ -244,26 +244,30 @@ export const SCALE_TYPES = [
 
 export type ScaleType = (typeof SCALE_TYPES)[number]
 
-// Calculate harmonica position based on harmonica key and song key
-export const getHarmonicaPosition = (harmonicaKey: HarmonicaKey, songKey: HarmonicaKey): number => {
-  const semitonesDiff = Interval.semitones(Interval.distance(harmonicaKey, songKey));
+// Circle of fourths: counter-clockwise on circle of fifths
+// Each step is a perfect fourth (5 semitones)
+// C -> F -> Bb -> Eb -> Ab -> Db -> Gb -> B -> E -> A -> D -> G -> C
+const CIRCLE_OF_FOURTHS: Record<string, number> = {
+  'C': 0,
+  'F': 1,
+  'Bb': 2, 'A#': 2,
+  'Eb': 3, 'D#': 3,
+  'Ab': 4, 'G#': 4,
+  'Db': 5, 'C#': 5,
+  'Gb': 6, 'F#': 6,
+  'B': 7,
+  'E': 8,
+  'A': 9,
+  'D': 10,
+  'G': 11,
+}
 
-  // Map semitone differences to positions (based on circle of fourths)
-  // Each position moves up by a perfect 4th (5 semitones)
-  const positionMap: { [key: number]: number } = {
-    0: 1,   // 1st position (straight harp): same key (C for C harp)
-    5: 2,   // 2nd position (cross harp): perfect 4th up (F for C harp)
-    10: 3,  // 3rd position: major 7th up (Bb for C harp)
-    3: 4,   // 4th position: minor 3rd up (Eb for C harp)
-    8: 5,   // 5th position: minor 6th up (Ab for C harp)
-    1: 6,   // 6th position: minor 2nd up (Db for C harp)
-    6: 7,   // 7th position: tritone up (Gb for C harp)
-    11: 8,  // 8th position: major 7th up (B for C harp)
-    4: 9,   // 9th position: major 3rd up (E for C harp)
-    9: 10,  // 10th position: major 6th up (A for C harp)
-    2: 11,  // 11th position: major 2nd up (D for C harp)
-    7: 12,  // 12th position: perfect 5th up (G for C harp)
-  }
-  
-  return positionMap[semitonesDiff] || 1
+// Calculate harmonica position based on harmonica key and song key
+// Positions are based on the circle of fourths (Pythagorean tuning math)
+export const getHarmonicaPosition = (harmonicaKey: HarmonicaKey, songKey: HarmonicaKey): number => {
+  const harmonicaIndex = CIRCLE_OF_FOURTHS[harmonicaKey]
+  const songIndex = CIRCLE_OF_FOURTHS[songKey]
+
+  // Count fourths from harmonica key to song key (positions are 1-indexed)
+  return ((songIndex - harmonicaIndex + 12) % 12) + 1
 }
