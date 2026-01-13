@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import styles from './App.module.css'
 import type { HarmonicaKey, ScaleType } from './data/harmonicas'
-import { AVAILABLE_KEYS, SCALE_TYPES } from './data/harmonicas'
+import { AVAILABLE_KEYS, SCALE_TYPES, getHarmonicaPosition } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { HoleColumn } from './components/HoleColumn'
 
@@ -16,6 +16,9 @@ function App() {
     songKey,
     scaleType
   )
+
+  const position = useMemo(() => getHarmonicaPosition(harmonicaKey, songKey), [harmonicaKey, songKey])
+  const positionSuffix = position === 1 ? 'st' : position === 2 ? 'nd' : position === 3 ? 'rd' : 'th'
 
   return (
     <div className={styles.app}>
@@ -70,6 +73,9 @@ function App() {
         <div className={styles.scaleDisplay}>
           <h2>
             {songKey} {scaleType.charAt(0).toUpperCase() + scaleType.slice(1)} Scale
+            <span style={{ marginLeft: '12px', fontSize: '0.85em', fontWeight: 'normal', color: '#666' }}>
+              ({position}{positionSuffix} position)
+            </span>
           </h2>
           <div className={styles.scaleNotes}>
             {scaleNotes.map((note) => (

@@ -36,17 +36,17 @@ describe('useHarmonicaScale', () => {
     })
 
     it('works with enharmonic equivalent keys', () => {
-      const { result: cSharpResult } = renderHook(() => useHarmonicaScale('C#', 'C#', 'major'))
       const { result: dbResult } = renderHook(() => useHarmonicaScale('Db', 'Db', 'major'))
+      const { result: fSharpResult } = renderHook(() => useHarmonicaScale('F#', 'F#', 'major'))
 
-      expect(cSharpResult.current.harmonica).toBeDefined()
       expect(dbResult.current.harmonica).toBeDefined()
-      expect(cSharpResult.current.harmonica.holes).toHaveLength(10)
+      expect(fSharpResult.current.harmonica).toBeDefined()
       expect(dbResult.current.harmonica.holes).toHaveLength(10)
+      expect(fSharpResult.current.harmonica.holes).toHaveLength(10)
     })
 
     it('returns harmonicas with 10 holes for all keys', () => {
-      const keys = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C#', 'D#', 'F#', 'G#', 'A#', 'Db', 'Eb', 'Gb', 'Ab', 'Bb'] as const
+      const keys = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Db', 'Eb', 'F#', 'Ab', 'Bb'] as const
 
       keys.forEach((key) => {
         const { result } = renderHook(() => useHarmonicaScale(key, 'C', 'major'))

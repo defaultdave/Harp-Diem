@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { harmonicas, getHarmonica, AVAILABLE_KEYS, SCALE_TYPES } from '../data/harmonicas'
+import { harmonicas, getHarmonica, AVAILABLE_KEYS, SCALE_TYPES, getHarmonicaPosition } from '../data/harmonicas'
 
 describe('Harmonicas', () => {
   describe('Basic Harmonica Structure', () => {
@@ -150,32 +150,29 @@ describe('Harmonicas', () => {
 
     it('should have all available harmonica keys', () => {
       expect(harmonicas.C).toBeDefined()
-      expect(harmonicas['C#']).toBeDefined()
       expect(harmonicas.Db).toBeDefined()
       expect(harmonicas.D).toBeDefined()
-      expect(harmonicas['D#']).toBeDefined()
       expect(harmonicas.Eb).toBeDefined()
       expect(harmonicas.E).toBeDefined()
       expect(harmonicas.F).toBeDefined()
       expect(harmonicas['F#']).toBeDefined()
-      expect(harmonicas.Gb).toBeDefined()
       expect(harmonicas.G).toBeDefined()
-      expect(harmonicas['G#']).toBeDefined()
       expect(harmonicas.Ab).toBeDefined()
       expect(harmonicas.A).toBeDefined()
-      expect(harmonicas['A#']).toBeDefined()
       expect(harmonicas.Bb).toBeDefined()
       expect(harmonicas.B).toBeDefined()
     })
 
     it('should handle enharmonic equivalents', () => {
-      // C# and Db should refer to the same harmonica
-      const cSharpHarmonica = harmonicas['C#']
+      // Db harmonica should be accessible
       const dbHarmonica = harmonicas.Db
+      expect(dbHarmonica.key).toBe('Db')
+      expect(dbHarmonica.holes).toHaveLength(10)
 
-      // Should have same key property (one of them)
-      expect(cSharpHarmonica.key === 'C#' || cSharpHarmonica.key === 'Db').toBe(true)
-      expect(dbHarmonica.key === 'C#' || dbHarmonica.key === 'Db').toBe(true)
+      // F# harmonica should be accessible
+      const fSharpHarmonica = harmonicas['F#']
+      expect(fSharpHarmonica.key).toBe('F#')
+      expect(fSharpHarmonica.holes).toHaveLength(10)
     })
 
     it('should have consistent octave ranges for different keys', () => {
@@ -217,7 +214,7 @@ describe('Harmonicas', () => {
 
   describe('Constants', () => {
     it('should have all 17 available keys', () => {
-      expect(AVAILABLE_KEYS).toHaveLength(17)
+      expect(AVAILABLE_KEYS).toHaveLength(12)
       expect(AVAILABLE_KEYS).toContain('C')
       expect(AVAILABLE_KEYS).toContain('A')
       expect(AVAILABLE_KEYS).toContain('B')
@@ -244,6 +241,74 @@ describe('Harmonicas', () => {
       
       expect(viaProxy.key).toBe(viaFunction.key)
       expect(viaProxy.holes.length).toBe(viaFunction.holes.length)
+    })
+  })
+
+  describe('getHarmonicaPosition', () => {
+    it('should return 1st position when harmonica key equals song key', () => {
+      expect(getHarmonicaPosition('C', 'C')).toBe(1)
+      expect(getHarmonicaPosition('G', 'G')).toBe(1)
+      expect(getHarmonicaPosition('D', 'D')).toBe(1)
+    })
+
+    it('should return 2nd position when song key is a perfect 4th above harmonica key', () => {
+      expect(getHarmonicaPosition('C', 'F')).toBe(2)
+      expect(getHarmonicaPosition('G', 'C')).toBe(2)
+      expect(getHarmonicaPosition('D', 'G')).toBe(2)
+    })
+
+    it('should return 3rd position when song key is a minor 7th above harmonica key', () => {
+      expect(getHarmonicaPosition('C', 'Bb')).toBe(3)
+      expect(getHarmonicaPosition('G', 'F')).toBe(3)
+    })
+
+    it('should handle enharmonic equivalents correctly', () => {
+      // C# and Db are enharmonically equivalent
+      expect(getHarmonicaPosition('C#', 'F#')).toBe(2)
+      expect(getHarmonicaPosition('Db', 'Gb')).toBe(2)
+      
+      // Mixed enharmonics
+      expect(getHarmonicaPosition('C', 'F')).toBe(2)
+      expect(getHarmonicaPosition('C#', 'F#')).toBe(2)
+    })
+
+    it('should map all 12 semitone differences to positions', () => {
+      // Test all positions with C harmonica
+      const expectedPositions: { [key: string]: number } = {
+        'C': 1,   // 0 semitones
+        'Db': 6,  // 1 semitone
+        'D': 11,  // 2 semitones
+        'Eb': 4,  // 3 semitones
+        'E': 9,   // 4 semitones
+        'F': 2,   // 5 semitones
+        'Gb': 7,  // 6 semitones
+        'G': 12,  // 7 semitones
+        'Ab': 5,  // 8 semitones
+        'A': 10,  // 9 semitones
+        'Bb': 3,  // 10 semitones
+        'B': 8,   // 11 semitones
+      }
+
+      Object.entries(expectedPositions).forEach(([songKey, expectedPosition]) => {
+        expect(getHarmonicaPosition('C', songKey)).toBe(expectedPosition)
+      })
+    })
+
+    it('should work with all available harmonica keys', () => {
+      AVAILABLE_KEYS.forEach((key) => {
+        // Each key with itself should be 1st position
+        expect(getHarmonicaPosition(key, key)).toBe(1)
+      })
+    })
+
+    it('should return a valid position number between 1 and 12', () => {
+      AVAILABLE_KEYS.forEach((harmonicaKey) => {
+        AVAILABLE_KEYS.forEach((songKey) => {
+          const position = getHarmonicaPosition(harmonicaKey, songKey)
+          expect(position).toBeGreaterThanOrEqual(1)
+          expect(position).toBeLessThanOrEqual(12)
+        })
+      })
     })
   })
 })

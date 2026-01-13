@@ -8,20 +8,15 @@ const simplifyNote = (note: string): string => Note.enharmonic(note)
 // Keys G through B start below middle C (octave 3)
 const HARMONICA_KEY_CONFIG = {
   'C': { startOctave: 4 },
-  'C#': { startOctave: 4 },
   'Db': { startOctave: 4 },
   'D': { startOctave: 4 },
-  'D#': { startOctave: 4 },
   'Eb': { startOctave: 4 },
   'E': { startOctave: 4 },
   'F': { startOctave: 4 },
   'F#': { startOctave: 4 },
-  'Gb': { startOctave: 4 },
   'G': { startOctave: 3 },
-  'G#': { startOctave: 3 },
   'Ab': { startOctave: 3 },
   'A': { startOctave: 3 },
-  'A#': { startOctave: 3 },
   'Bb': { startOctave: 3 },
   'B': { startOctave: 3 },
 } as const
@@ -230,3 +225,43 @@ export const SCALE_TYPES = [
 ] as const
 
 export type ScaleType = (typeof SCALE_TYPES)[number]
+
+// Calculate harmonica position based on harmonica key and song key
+export const getHarmonicaPosition = (harmonicaKey: string, songKey: string): number => {
+  const noteOrder = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+  const flatToSharpMap: { [key: string]: string } = {
+    'Db': 'C#',
+    'Eb': 'D#',
+    'Gb': 'F#',
+    'Ab': 'G#',
+    'Bb': 'A#',
+  }
+
+  const toSharp = (note: string) => flatToSharpMap[note] || note
+  const harmonicaNormalized = toSharp(harmonicaKey)
+  const songNormalized = toSharp(songKey)
+
+  const harmonicaIndex = noteOrder.indexOf(harmonicaNormalized)
+  const songIndex = noteOrder.indexOf(songNormalized)
+
+  const semitonesDiff = (songIndex - harmonicaIndex + 12) % 12
+
+  // Map semitone differences to positions (based on circle of fourths)
+  // Each position moves up by a perfect 4th (5 semitones)
+  const positionMap: { [key: number]: number } = {
+    0: 1,   // 1st position (straight harp): same key (C for C harp)
+    5: 2,   // 2nd position (cross harp): perfect 4th up (F for C harp)
+    10: 3,  // 3rd position: major 7th up (Bb for C harp)
+    3: 4,   // 4th position: minor 3rd up (Eb for C harp)
+    8: 5,   // 5th position: minor 6th up (Ab for C harp)
+    1: 6,   // 6th position: minor 2nd up (Db for C harp)
+    6: 7,   // 7th position: tritone up (Gb for C harp)
+    11: 8,  // 8th position: major 7th up (B for C harp)
+    4: 9,   // 9th position: major 3rd up (E for C harp)
+    9: 10,  // 10th position: major 6th up (A for C harp)
+    2: 11,  // 11th position: major 2nd up (D for C harp)
+    7: 12,  // 12th position: perfect 5th up (G for C harp)
+  }
+
+  return positionMap[semitonesDiff] || 1
+}
