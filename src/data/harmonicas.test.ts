@@ -399,18 +399,18 @@ describe('Harmonicas', () => {
     it('should map all 12 semitone differences to positions', () => {
       // Test all positions with C harmonica using valid HarmonicaKey values
       const expectedPositions: Record<HarmonicaKey, number> = {
-        'C': 1,   // 0 semitones
-        'Db': 6,  // 1 semitone
-        'D': 11,  // 2 semitones
-        'Eb': 4,  // 3 semitones
-        'E': 9,   // 4 semitones
-        'F': 2,   // 5 semitones
-        'F#': 7,  // 6 semitones
-        'G': 12,  // 7 semitones
-        'Ab': 5,  // 8 semitones
-        'A': 10,  // 9 semitones
-        'Bb': 3,  // 10 semitones
-        'B': 8,   // 11 semitones
+        'C': 1,   // 0 semitones (1st position)
+        'F': 2,   // 5 semitones (2nd position)
+        'Bb': 3,  // 10 semitones (3rd position)
+        'Eb': 4,  // 3 semitones (4th position)
+        'Ab': 5,  // 8 semitones (5th position)
+        'Db': 6,  // 1 semitone (6th position)
+        'F#': 7,  // 6 semitones (7th position)
+        'B': 8,   // 11 semitones (8th position)
+        'E': 9,   // 4 semitones (9th position)
+        'A': 10,  // 9 semitones (10th position)
+        'D': 11,  // 2 semitones (11th position)
+        'G': 12,  // 7 semitones (12th position)
       }
 
       Object.entries(expectedPositions).forEach(([songKey, expectedPosition]) => {

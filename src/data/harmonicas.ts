@@ -246,23 +246,7 @@ export type ScaleType = (typeof SCALE_TYPES)[number]
 
 // Calculate harmonica position based on harmonica key and song key
 export const getHarmonicaPosition = (harmonicaKey: HarmonicaKey, songKey: HarmonicaKey): number => {
-  const noteOrder = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-  const flatToSharpMap: { [key: string]: string } = {
-    'Db': 'C#',
-    'Eb': 'D#',
-    'Gb': 'F#',
-    'Ab': 'G#',
-    'Bb': 'A#',
-  }
-
-  const toSharp = (note: string) => flatToSharpMap[note] || note
-  const harmonicaNormalized = toSharp(harmonicaKey)
-  const songNormalized = toSharp(songKey)
-
-  const harmonicaIndex = noteOrder.indexOf(harmonicaNormalized)
-  const songIndex = noteOrder.indexOf(songNormalized)
-
-  const semitonesDiff = (songIndex - harmonicaIndex + 12) % 12
+  const semitonesDiff = Interval.semitones(Interval.distance(harmonicaKey, songKey));
 
   // Map semitone differences to positions (based on circle of fourths)
   // Each position moves up by a perfect 4th (5 semitones)
@@ -280,6 +264,6 @@ export const getHarmonicaPosition = (harmonicaKey: HarmonicaKey, songKey: Harmon
     2: 11,  // 11th position: major 2nd up (D for C harp)
     7: 12,  // 12th position: perfect 5th up (G for C harp)
   }
-
+  
   return positionMap[semitonesDiff] || 1
 }
