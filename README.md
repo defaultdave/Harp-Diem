@@ -13,6 +13,7 @@
   - **Draw bends** - Half step, whole step, and minor third bends (↓1, ↓2, ↓3)
   - **Overblows/Overdraws** - Advanced techniques (OB, OD)
 - **Scale Highlighting**: Green indicates notes in the selected scale, grey for notes outside the scale
+- **Scale Degrees**: Toggle to display Roman numerals (I-VII) showing each note's position in the scale
 - **Audio Playback**: Click any note to hear it played with piano-like synthesis
 - **Keyboard Accessible**: Full keyboard navigation with Enter/Space to play notes
 - **Fully Tested**: Comprehensive test suite with 20 passing tests
@@ -94,7 +95,8 @@ npm run preview       # Preview production build
 2. **Select Song Key**: Pick the key of the song you want to play
 3. **Choose Scale Type**: Select from 12 available scales
 4. **View Results**: Green highlighted notes are in your selected scale
-5. **Play Notes**: Click or press Enter/Space on any note to hear it
+5. **Show Degrees**: Toggle to display Roman numerals (I-VII) for scale positions
+6. **Play Notes**: Click or press Enter/Space on any note to hear it
 
 ### Harmonica Display
 
