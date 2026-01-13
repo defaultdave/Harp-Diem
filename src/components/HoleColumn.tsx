@@ -2,6 +2,7 @@ import { memo } from 'react'
 import type { HoleNote } from '../data/harmonicas'
 import { isNoteInScale, getNoteDegree, degreeToRoman } from '../data/scales'
 import { playTone } from '../utils/audioPlayer'
+import type { NoteNames } from '../types'
 import styles from './HoleColumn.module.css'
 
 interface NoteSectionProps {
@@ -10,7 +11,7 @@ interface NoteSectionProps {
   frequency: number
   isPlayable: boolean
   showDegrees: boolean
-  scaleNotes: string[]
+  scaleNotes: NoteNames
 }
 
 const NoteSection = ({ label, note, frequency, isPlayable, showDegrees, scaleNotes }: NoteSectionProps) => {
@@ -44,7 +45,7 @@ const NoteSection = ({ label, note, frequency, isPlayable, showDegrees, scaleNot
 
 interface HoleColumnProps {
   hole: HoleNote
-  scaleNotes: string[]
+  scaleNotes: NoteNames
   isBlowPlayable: boolean
   isDrawPlayable: boolean
   showDegrees: boolean

@@ -7,7 +7,7 @@ import { HoleColumn } from './components/HoleColumn'
 
 function App() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
-  const [songKey, setSongKey] = useState('C')
+  const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
   const [showDegrees, setShowDegrees] = useState(false)
@@ -47,7 +47,7 @@ function App() {
 
           <div className={styles.controlGroup}>
             <label htmlFor="song-key">Song Key:</label>
-            <select value={songKey} onChange={(e) => setSongKey(e.target.value)} id="song-key">
+            <select value={songKey} onChange={(e) => setSongKey(e.target.value as HarmonicaKey)} id="song-key">
               {AVAILABLE_KEYS.map((key) => (
                 <option key={key} value={key}>
                   {key}

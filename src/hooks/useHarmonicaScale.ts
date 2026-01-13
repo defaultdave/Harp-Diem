@@ -2,10 +2,11 @@ import { useMemo } from 'react'
 import type { HarmonicaKey, ScaleType, DiatonicHarmonica, TuningType } from '../data/harmonicas'
 import { getScaleNotes, isNoteInScale } from '../data/scales'
 import { getHarmonica } from '../data/harmonicas'
+import type { NoteNames } from '../types'
 
 export interface UseHarmonicaScaleResult {
   harmonica: DiatonicHarmonica
-  scaleNotes: string[]
+  scaleNotes: NoteNames
   playableHoles: number[] // Holes with blow or draw in scale
   playableBlowHoles: number[]
   playableDrawHoles: number[]
@@ -14,7 +15,7 @@ export interface UseHarmonicaScaleResult {
 
 export const useHarmonicaScale = (
   harmonicaKey: HarmonicaKey,
-  songKey: string,
+  songKey: HarmonicaKey,
   scaleType: ScaleType,
   tuning: TuningType = 'richter'
 ): UseHarmonicaScaleResult => {

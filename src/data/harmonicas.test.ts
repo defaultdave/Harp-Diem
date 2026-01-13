@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { harmonicas, getHarmonica, AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from '../data/harmonicas'
+import type { HarmonicaKey } from '../data/harmonicas'
 
 describe('Harmonicas', () => {
   describe('Basic Harmonica Structure', () => {
@@ -387,25 +388,24 @@ describe('Harmonicas', () => {
     })
 
     it('should handle enharmonic equivalents correctly', () => {
-      // C# and Db are enharmonically equivalent
-      expect(getHarmonicaPosition('C#', 'F#')).toBe(2)
-      expect(getHarmonicaPosition('Db', 'Gb')).toBe(2)
-      
-      // Mixed enharmonics
+      // Db/F# gives same position as C/F (2nd position, cross harp)
+      expect(getHarmonicaPosition('Db', 'F#')).toBe(2)
+
+      // Standard 2nd position examples
       expect(getHarmonicaPosition('C', 'F')).toBe(2)
-      expect(getHarmonicaPosition('C#', 'F#')).toBe(2)
+      expect(getHarmonicaPosition('G', 'C')).toBe(2)
     })
 
     it('should map all 12 semitone differences to positions', () => {
-      // Test all positions with C harmonica
-      const expectedPositions: { [key: string]: number } = {
+      // Test all positions with C harmonica using valid HarmonicaKey values
+      const expectedPositions: Record<HarmonicaKey, number> = {
         'C': 1,   // 0 semitones
         'Db': 6,  // 1 semitone
         'D': 11,  // 2 semitones
         'Eb': 4,  // 3 semitones
         'E': 9,   // 4 semitones
         'F': 2,   // 5 semitones
-        'Gb': 7,  // 6 semitones
+        'F#': 7,  // 6 semitones
         'G': 12,  // 7 semitones
         'Ab': 5,  // 8 semitones
         'A': 10,  // 9 semitones
@@ -414,7 +414,7 @@ describe('Harmonicas', () => {
       }
 
       Object.entries(expectedPositions).forEach(([songKey, expectedPosition]) => {
-        expect(getHarmonicaPosition('C', songKey)).toBe(expectedPosition)
+        expect(getHarmonicaPosition('C', songKey as HarmonicaKey)).toBe(expectedPosition)
       })
     })
 

@@ -1,4 +1,5 @@
 import { Note, Interval } from 'tonal'
+import type { MusicalNote, NoteNames } from '../types'
 
 // Simplify note names to avoid confusing enharmonic spellings (e.g., Fb → E, Abb → G)
 const simplifyNote = (note: string): string => Note.enharmonic(note)
@@ -26,10 +27,7 @@ export type HarmonicaKey = keyof typeof HARMONICA_KEY_CONFIG
 // Reference octave for C harmonica (used for calculating octave shifts)
 const C_START_OCTAVE = 4
 
-export interface HarmonicaNote {
-  note: string
-  frequency: number
-}
+export type HarmonicaNote = MusicalNote
 
 export interface HoleBends {
   halfStepBend?: HarmonicaNote // e.g., D♭ from D
@@ -114,8 +112,8 @@ export const TUNING_TYPES: TuningType[] = [
 ]
 
 interface TuningDefinition {
-  blowNotes: string[]
-  drawNotes: string[]
+  blowNotes: NoteNames
+  drawNotes: NoteNames
 }
 
 // Tuning configurations for C harmonica (transposed to other keys)
@@ -163,7 +161,7 @@ const addBendFrequencies = (bends?: HoleBends): HoleBends | undefined => {
 }
 
 // Build holes from blow/draw notes with dynamically calculated bends
-const buildHoles = (blowNotes: string[], drawNotes: string[]): HoleNote[] => {
+const buildHoles = (blowNotes: NoteNames, drawNotes: NoteNames): HoleNote[] => {
   return blowNotes.map((blowNote, idx) => {
     const drawNote = drawNotes[idx]
     const holeNumber = idx + 1
@@ -247,7 +245,7 @@ export const SCALE_TYPES = [
 export type ScaleType = (typeof SCALE_TYPES)[number]
 
 // Calculate harmonica position based on harmonica key and song key
-export const getHarmonicaPosition = (harmonicaKey: string, songKey: string): number => {
+export const getHarmonicaPosition = (harmonicaKey: HarmonicaKey, songKey: HarmonicaKey): number => {
   const noteOrder = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
   const flatToSharpMap: { [key: string]: string } = {
     'Db': 'C#',

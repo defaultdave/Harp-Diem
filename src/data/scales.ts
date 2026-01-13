@@ -1,12 +1,8 @@
 import { Scale, Note } from 'tonal'
-import type { ScaleType } from './harmonicas'
+import type { HarmonicaKey, ScaleType } from './harmonicas'
+import type { MusicalNote, NoteNames } from '../types'
 
-export interface ScaleNote {
-  note: string
-  frequency: number
-}
-
-export const getScaleNotes = (rootKey: string, scaleType: ScaleType): ScaleNote[] => {
+export const getScaleNotes = (rootKey: HarmonicaKey, scaleType: ScaleType): MusicalNote[] => {
   const notes = Scale.get(`${rootKey} ${scaleType}`)?.notes || []
 
   return notes.map((note) => ({
@@ -20,7 +16,7 @@ export const getNoteOctave = (note: string): number => {
   return match ? parseInt(match[0]) : 4
 }
 
-export const isNoteInScale = (note: string, scaleNotes: string[]): boolean => {
+export const isNoteInScale = (note: string, scaleNotes: NoteNames): boolean => {
   // Use chroma (0-11 pitch class) for enharmonic-safe comparison
   // C# and Db both have chroma 1, so they'll match correctly
   const noteChroma = Note.chroma(note)
@@ -29,7 +25,7 @@ export const isNoteInScale = (note: string, scaleNotes: string[]): boolean => {
   return scaleNotes.some((n) => Note.chroma(n) === noteChroma)
 }
 
-export const getNoteDegree = (note: string, scaleNotes: string[]): number | undefined => {
+export const getNoteDegree = (note: string, scaleNotes: NoteNames): number | undefined => {
   const noteChroma = Note.chroma(note)
   if (noteChroma === undefined) return undefined
 
