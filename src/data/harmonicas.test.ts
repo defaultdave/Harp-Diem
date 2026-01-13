@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { harmonicas, getHarmonica, AVAILABLE_KEYS, SCALE_TYPES, getHarmonicaPosition } from '../data/harmonicas'
+import { harmonicas, getHarmonica, AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from '../data/harmonicas'
 
 describe('Harmonicas', () => {
   describe('Basic Harmonica Structure', () => {
@@ -213,7 +213,7 @@ describe('Harmonicas', () => {
   })
 
   describe('Constants', () => {
-    it('should have all 17 available keys', () => {
+    it('should have all 12 available keys', () => {
       expect(AVAILABLE_KEYS).toHaveLength(12)
       expect(AVAILABLE_KEYS).toContain('C')
       expect(AVAILABLE_KEYS).toContain('A')
@@ -225,6 +225,130 @@ describe('Harmonicas', () => {
       expect(SCALE_TYPES).toContain('minor')
       expect(SCALE_TYPES).toContain('blues')
       expect(SCALE_TYPES.length).toBeGreaterThan(0)
+    })
+
+    it('should have all 5 tuning types defined', () => {
+      expect(TUNING_TYPES).toHaveLength(5)
+      expect(TUNING_TYPES).toContain('richter')
+      expect(TUNING_TYPES).toContain('paddy-richter')
+      expect(TUNING_TYPES).toContain('natural-minor')
+      expect(TUNING_TYPES).toContain('country')
+      expect(TUNING_TYPES).toContain('melody-maker')
+    })
+  })
+
+  describe('Alternate Tunings', () => {
+    it('should return different harmonicas for different tunings', () => {
+      const richter = getHarmonica('C', 'richter')
+      const paddyRichter = getHarmonica('C', 'paddy-richter')
+      const naturalMinor = getHarmonica('C', 'natural-minor')
+      const country = getHarmonica('C', 'country')
+      const melodyMaker = getHarmonica('C', 'melody-maker')
+
+      // All should have 10 holes
+      expect(richter.holes).toHaveLength(10)
+      expect(paddyRichter.holes).toHaveLength(10)
+      expect(naturalMinor.holes).toHaveLength(10)
+      expect(country.holes).toHaveLength(10)
+      expect(melodyMaker.holes).toHaveLength(10)
+
+      // They should have different note configurations
+      expect(richter.holes[2].blow.note).not.toBe(paddyRichter.holes[2].blow.note)
+      expect(richter.holes[4].draw.note).not.toBe(country.holes[4].draw.note)
+    })
+
+    it('Paddy Richter should have A instead of G on hole 3 blow', () => {
+      const richter = getHarmonica('C', 'richter')
+      const paddyRichter = getHarmonica('C', 'paddy-richter')
+
+      expect(richter.holes[2].blow.note).toBe('G4')
+      expect(paddyRichter.holes[2].blow.note).toBe('A4')
+    })
+
+    it('Natural Minor should have minor 3rds and 7ths', () => {
+      const naturalMinor = getHarmonica('C', 'natural-minor')
+
+      // Hole 2 blow should be Eb (minor 3rd) instead of E
+      expect(naturalMinor.holes[1].blow.note).toBe('Eb4')
+      // Hole 3 draw should be Bb (minor 7th) instead of B
+      expect(naturalMinor.holes[2].draw.note).toBe('Bb4')
+    })
+
+    it('Country should have raised hole 5 draw', () => {
+      const richter = getHarmonica('C', 'richter')
+      const country = getHarmonica('C', 'country')
+
+      expect(richter.holes[4].draw.note).toBe('F5')
+      expect(country.holes[4].draw.note).toBe('F#5')
+    })
+
+    it('Melody Maker should have raised hole 3 blow and holes 5, 9 draw', () => {
+      const richter = getHarmonica('C', 'richter')
+      const melodyMaker = getHarmonica('C', 'melody-maker')
+
+      // Hole 3 blow: G -> A
+      expect(richter.holes[2].blow.note).toBe('G4')
+      expect(melodyMaker.holes[2].blow.note).toBe('A4')
+
+      // Hole 5 draw: F -> F#
+      expect(richter.holes[4].draw.note).toBe('F5')
+      expect(melodyMaker.holes[4].draw.note).toBe('F#5')
+
+      // Hole 9 draw: F -> F#
+      expect(richter.holes[8].draw.note).toBe('F6')
+      expect(melodyMaker.holes[8].draw.note).toBe('F#6')
+    })
+
+    it('should cache tuned harmonicas correctly', () => {
+      const paddy1 = getHarmonica('C', 'paddy-richter')
+      const paddy2 = getHarmonica('C', 'paddy-richter')
+      expect(paddy1).toBe(paddy2) // Same reference
+
+      const richter = getHarmonica('C', 'richter')
+      expect(paddy1).not.toBe(richter) // Different reference
+    })
+
+    it('should transpose alternate tunings to other keys', () => {
+      const cPaddy = getHarmonica('C', 'paddy-richter')
+      const dPaddy = getHarmonica('D', 'paddy-richter')
+
+      // D Paddy Richter hole 3 blow should be B (A transposed up a whole step)
+      expect(cPaddy.holes[2].blow.note).toBe('A4')
+      expect(dPaddy.holes[2].blow.note).toBe('B4')
+    })
+
+    it('should work with all tuning types for all keys', () => {
+      TUNING_TYPES.forEach((tuning) => {
+        AVAILABLE_KEYS.forEach((key) => {
+          const harmonica = getHarmonica(key, tuning)
+          expect(harmonica).toBeDefined()
+          expect(harmonica.holes).toHaveLength(10)
+          expect(harmonica.holes.every((h) => h.blow && h.draw)).toBe(true)
+        })
+      })
+    })
+
+    it('should calculate bends correctly for alternate tunings', () => {
+      const country = getHarmonica('C', 'country')
+
+      // Hole 5: E5 blow, F#5 draw - interval is 2 semitones, should have half step bend
+      const hole5 = country.holes[4]
+      expect(hole5.drawBends?.halfStepBend).toBeDefined()
+      expect(hole5.drawBends?.halfStepBend?.note).toBe('F5') // F#5 bent down a half step
+
+      // Natural minor hole 3: G4 blow, Bb4 draw - interval is 3 semitones
+      const naturalMinor = getHarmonica('C', 'natural-minor')
+      const nmHole3 = naturalMinor.holes[2]
+      expect(nmHole3.drawBends?.halfStepBend).toBeDefined()
+      expect(nmHole3.drawBends?.wholeStepBend).toBeDefined()
+    })
+
+    it('defaults to richter tuning when not specified', () => {
+      const defaultTuning = getHarmonica('C')
+      const explicitRichter = getHarmonica('C', 'richter')
+
+      expect(defaultTuning.holes[2].blow.note).toBe(explicitRichter.holes[2].blow.note)
+      expect(defaultTuning.holes[4].draw.note).toBe(explicitRichter.holes[4].draw.note)
     })
   })
 

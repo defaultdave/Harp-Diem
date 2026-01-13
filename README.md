@@ -4,7 +4,8 @@
 
 ## Features
 
-- **All Harmonica Keys**: Support for all 17 keys including enharmonic equivalents (C, C#, Db, D, D#, Eb, E, F, F#, Gb, G, G#, Ab, A, A#, Bb, B)
+- **All Harmonica Keys**: Support for all 12 keys (C, Db, D, Eb, E, F, F#, G, Ab, A, Bb, B)
+- **Multiple Tunings**: Richter (standard), Paddy Richter, Natural Minor, Country, and Melody Maker
 - **12 Scale Types**: Major, minor, harmonic minor, melodic minor, dorian, phrygian, lydian, mixolydian, locrian, major pentatonic, minor pentatonic, and blues
 - **Complete Harmonica Layout**: Shows blow notes, draw notes, and all variations:
   - **Blow notes** - Primary notes played by blowing into holes
@@ -35,7 +36,7 @@ src/
 │   ├── HoleColumn.tsx      # Individual harmonica hole display
 │   └── ErrorBoundary.tsx   # Error handling wrapper
 ├── data/
-│   ├── harmonicas.ts       # Diatonic harmonica layouts (Richter tuning)
+│   ├── harmonicas.ts       # Diatonic harmonica layouts (all tunings)
 │   ├── harmonicas.test.ts  # Harmonica data tests
 │   ├── scales.ts           # Scale calculations using tonal.js
 │   └── scales.test.ts      # Scale logic tests
@@ -92,11 +93,12 @@ npm run preview       # Preview production build
 ## How to Use
 
 1. **Select Harmonica Key**: Choose which harmonica you're playing
-2. **Select Song Key**: Pick the key of the song you want to play
-3. **Choose Scale Type**: Select from 12 available scales
-4. **View Results**: Green highlighted notes are in your selected scale
-5. **Show Degrees**: Toggle to display Roman numerals (I-VII) for scale positions
-6. **Play Notes**: Click or press Enter/Space on any note to hear it
+2. **Select Tuning**: Choose your harmonica's tuning (Richter is the default)
+3. **Select Song Key**: Pick the key of the song you want to play
+4. **Choose Scale Type**: Select from 12 available scales
+5. **View Results**: Green highlighted notes are in your selected scale
+6. **Show Degrees**: Toggle to display Roman numerals (I-VII) for scale positions
+7. **Play Notes**: Click or press Enter/Space on any note to hear it
 
 ### Harmonica Display
 
@@ -112,7 +114,21 @@ Each hole displays all available notes and techniques:
 ## Key Concepts
 
 ### Diatonic Harmonica
-A diatonic harmonica has 10 holes with two notes per hole (blow and draw). This app uses Richter tuning, the most common tuning system.
+A diatonic harmonica has 10 holes with two notes per hole (blow and draw). This app supports multiple tuning systems, with Richter being the default.
+
+### Tunings
+
+The app supports 5 harmonica tunings, each optimized for different playing styles:
+
+| Tuning | Best For | Key Differences (in C) |
+|--------|----------|------------------------|
+| **Richter** | General use, blues, rock | Standard tuning - the default for most harmonicas |
+| **Paddy Richter** | Celtic, Irish, folk | Hole 3 blow raised (G→A) for easier melody playing |
+| **Natural Minor** | Minor keys, sad songs | Minor 3rds (Eb) and 7ths (Bb) built in |
+| **Country** | Country, bluegrass | Hole 5 draw raised (F→F#) for major 7th |
+| **Melody Maker** | Melody playing | Hole 3 blow + holes 5,9 draw raised |
+
+Bends are calculated dynamically based on each tuning's note layout, so all tunings show accurate bend availability.
 
 ### Music Theory
 The application uses [tonal.js](https://tonaljs.github.io/tonal/docs) for note transposition, scale generation, frequency calculations, and interval operations.

@@ -308,4 +308,64 @@ describe('useHarmonicaScale', () => {
       }
     })
   })
+
+  describe('Alternate Tunings', () => {
+    it('accepts tuning parameter and returns correct harmonica', () => {
+      const { result: richter } = renderHook(() => useHarmonicaScale('C', 'C', 'major', 'richter'))
+      const { result: paddy } = renderHook(() => useHarmonicaScale('C', 'C', 'major', 'paddy-richter'))
+
+      expect(richter.current.harmonica.holes[2].blow.note).toBe('G4')
+      expect(paddy.current.harmonica.holes[2].blow.note).toBe('A4')
+    })
+
+    it('defaults to richter tuning when not specified', () => {
+      const { result: withDefault } = renderHook(() => useHarmonicaScale('C', 'C', 'major'))
+      const { result: explicit } = renderHook(() => useHarmonicaScale('C', 'C', 'major', 'richter'))
+
+      expect(withDefault.current.harmonica.holes[2].blow.note).toBe(
+        explicit.current.harmonica.holes[2].blow.note
+      )
+    })
+
+    it('calculates playable holes correctly for alternate tunings', () => {
+      // With Paddy Richter, hole 3 blow is A instead of G
+      // In C major scale, both G and A are in scale, so playability similar
+      const { result: richter } = renderHook(() => useHarmonicaScale('C', 'C', 'major', 'richter'))
+      const { result: paddy } = renderHook(() => useHarmonicaScale('C', 'C', 'major', 'paddy-richter'))
+
+      // Both should have playable blow holes
+      expect(richter.current.playableBlowHoles.length).toBeGreaterThan(0)
+      expect(paddy.current.playableBlowHoles.length).toBeGreaterThan(0)
+    })
+
+    it('natural minor tuning works with minor scales', () => {
+      const { result } = renderHook(() => useHarmonicaScale('C', 'C', 'minor', 'natural-minor'))
+
+      // Natural minor tuning should have Eb and Bb which are in C minor scale
+      expect(result.current.harmonica.holes[1].blow.note).toBe('Eb4')
+      expect(result.current.scaleNotes).toContain('Eb')
+      expect(result.current.playableBlowHoles).toContain(2) // Hole 2 blow is Eb, in C minor
+    })
+
+    it('country tuning has different playable holes for major scale', () => {
+      const { result: richter } = renderHook(() => useHarmonicaScale('C', 'C', 'major', 'richter'))
+      const { result: country } = renderHook(() => useHarmonicaScale('C', 'C', 'major', 'country'))
+
+      // Hole 5 draw: F in richter (in C major), F# in country (not in C major)
+      // So richter should have hole 5 in playable draw, country should not
+      expect(richter.current.playableDrawHoles).toContain(5)
+      expect(country.current.playableDrawHoles).not.toContain(5)
+    })
+
+    it('works with all tuning types', () => {
+      const tunings = ['richter', 'paddy-richter', 'natural-minor', 'country', 'melody-maker'] as const
+
+      tunings.forEach((tuning) => {
+        const { result } = renderHook(() => useHarmonicaScale('C', 'C', 'major', tuning))
+        expect(result.current.harmonica).toBeDefined()
+        expect(result.current.harmonica.holes).toHaveLength(10)
+        expect(result.current.scaleNotes.length).toBe(7)
+      })
+    })
+  })
 })

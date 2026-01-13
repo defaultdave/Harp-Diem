@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import styles from './App.module.css'
-import type { HarmonicaKey, ScaleType } from './data/harmonicas'
-import { AVAILABLE_KEYS, SCALE_TYPES, getHarmonicaPosition } from './data/harmonicas'
+import type { HarmonicaKey, ScaleType, TuningType } from './data/harmonicas'
+import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { HoleColumn } from './components/HoleColumn'
 
@@ -9,12 +9,14 @@ function App() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
   const [songKey, setSongKey] = useState('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
+  const [tuning, setTuning] = useState<TuningType>('richter')
   const [showDegrees, setShowDegrees] = useState(false)
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
     songKey,
-    scaleType
+    scaleType,
+    tuning
   )
 
   const position = useMemo(() => getHarmonicaPosition(harmonicaKey, songKey), [harmonicaKey, songKey])
@@ -68,6 +70,21 @@ function App() {
               ))}
             </select>
           </div>
+
+          <div className={styles.controlGroup}>
+            <label htmlFor="tuning">Tuning:</label>
+            <select
+              id="tuning"
+              value={tuning}
+              onChange={(e) => setTuning(e.target.value as TuningType)}
+            >
+              {TUNING_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className={styles.scaleDisplay}>
@@ -91,7 +108,14 @@ function App() {
           role="region"
           aria-label={`${harmonicaKey} Diatonic Harmonica visualization showing ${songKey} ${scaleType} scale`}
         >
-          <h2>{harmonicaKey} Diatonic Harmonica</h2>
+          <h2>
+            {harmonicaKey} Diatonic Harmonica
+            {tuning !== 'richter' && (
+              <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: '#666' }}>
+                ({tuning.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')})
+              </span>
+            )}
+          </h2>
           <div className={styles.holesContainer} role="group" aria-label="Harmonica holes 1 through 10">
             {harmonica.holes.map((hole) => (
               <HoleColumn

@@ -102,32 +102,49 @@ const calculateBends = (
   }
 }
 
-// Blow and draw notes for C harmonica (standard Richter tuning)
-const BLOW_NOTES_C = [
-  'C4',
-  'E4',
-  'G4',
-  'C5',
-  'E5',
-  'G5',
-  'C6',
-  'E6',
-  'G6',
-  'C7',
+// Tuning type definitions
+export type TuningType = 'richter' | 'paddy-richter' | 'natural-minor' | 'country' | 'melody-maker'
+
+export const TUNING_TYPES: TuningType[] = [
+  'richter',
+  'paddy-richter',
+  'natural-minor',
+  'country',
+  'melody-maker',
 ]
 
-const DRAW_NOTES_C = [
-  'D4',
-  'G4',
-  'B4',
-  'D5',
-  'F5',
-  'A5',
-  'B5',
-  'D6',
-  'F6',
-  'A6',
-]
+interface TuningDefinition {
+  blowNotes: string[]
+  drawNotes: string[]
+}
+
+// Tuning configurations for C harmonica (transposed to other keys)
+const TUNINGS: Record<TuningType, TuningDefinition> = {
+  'richter': {
+    blowNotes: ['C4', 'E4', 'G4', 'C5', 'E5', 'G5', 'C6', 'E6', 'G6', 'C7'],
+    drawNotes: ['D4', 'G4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6'],
+  },
+  'paddy-richter': {
+    // Hole 3 blow raised from G to A for easier melody playing in Celtic/Irish music
+    blowNotes: ['C4', 'E4', 'A4', 'C5', 'E5', 'G5', 'C6', 'E6', 'G6', 'C7'],
+    drawNotes: ['D4', 'G4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6'],
+  },
+  'natural-minor': {
+    // Minor 3rds and 7ths for playing in minor keys
+    blowNotes: ['C4', 'Eb4', 'G4', 'C5', 'Eb5', 'G5', 'C6', 'Eb6', 'G6', 'C7'],
+    drawNotes: ['D4', 'G4', 'Bb4', 'D5', 'F5', 'Ab5', 'Bb5', 'D6', 'F6', 'Ab6'],
+  },
+  'country': {
+    // Hole 5 draw raised by half step for country/bluegrass
+    blowNotes: ['C4', 'E4', 'G4', 'C5', 'E5', 'G5', 'C6', 'E6', 'G6', 'C7'],
+    drawNotes: ['D4', 'G4', 'B4', 'D5', 'F#5', 'A5', 'B5', 'D6', 'F6', 'A6'],
+  },
+  'melody-maker': {
+    // Lee Oskar design: Hole 3 blow raised, holes 5 and 9 draw raised
+    blowNotes: ['C4', 'E4', 'A4', 'C5', 'E5', 'G5', 'C6', 'E6', 'G6', 'C7'],
+    drawNotes: ['D4', 'G4', 'B4', 'D5', 'F#5', 'A5', 'B5', 'D6', 'F#6', 'A6'],
+  },
+}
 
 // Add frequencies to a HoleBends object
 const addBendFrequencies = (bends?: HoleBends): HoleBends | undefined => {
@@ -164,10 +181,12 @@ const buildHoles = (blowNotes: string[], drawNotes: string[]): HoleNote[] => {
   })
 }
 
-const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
+const createDiatonicHarmonica = (key: HarmonicaKey, tuning: TuningType = 'richter'): DiatonicHarmonica => {
+  const tuningDef = TUNINGS[tuning]
+
   // For C harmonica, use base notes directly
   if (key === 'C') {
-    return { key, holes: buildHoles(BLOW_NOTES_C, DRAW_NOTES_C) }
+    return { key, holes: buildHoles(tuningDef.blowNotes, tuningDef.drawNotes) }
   }
 
   // Transpose blow/draw notes for other keys - bends are calculated dynamically
@@ -180,20 +199,21 @@ const createDiatonicHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
     return simplifyNote(Note.transpose(transposed, Interval.fromSemitones(octaveShift * 12)))
   }
 
-  const transposedBlow = BLOW_NOTES_C.map(transposeNote)
-  const transposedDraw = DRAW_NOTES_C.map(transposeNote)
+  const transposedBlow = tuningDef.blowNotes.map(transposeNote)
+  const transposedDraw = tuningDef.drawNotes.map(transposeNote)
 
   return { key, holes: buildHoles(transposedBlow, transposedDraw) }
 }
 
-// Lazy-loaded cache for harmonicas - only created when requested
-const harmonicaCache: Partial<Record<HarmonicaKey, DiatonicHarmonica>> = {}
+// Lazy-loaded cache for harmonicas - keyed by "key:tuning"
+const harmonicaCache: Map<string, DiatonicHarmonica> = new Map()
 
-export const getHarmonica = (key: HarmonicaKey): DiatonicHarmonica => {
-  if (!harmonicaCache[key]) {
-    harmonicaCache[key] = createDiatonicHarmonica(key)
+export const getHarmonica = (key: HarmonicaKey, tuning: TuningType = 'richter'): DiatonicHarmonica => {
+  const cacheKey = `${key}:${tuning}`
+  if (!harmonicaCache.has(cacheKey)) {
+    harmonicaCache.set(cacheKey, createDiatonicHarmonica(key, tuning))
   }
-  return harmonicaCache[key]
+  return harmonicaCache.get(cacheKey)!
 }
 
 // Kept for backwards compatibility - uses lazy loading via Proxy

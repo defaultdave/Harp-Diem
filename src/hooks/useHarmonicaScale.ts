@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import type { HarmonicaKey, ScaleType, DiatonicHarmonica } from '../data/harmonicas'
+import type { HarmonicaKey, ScaleType, DiatonicHarmonica, TuningType } from '../data/harmonicas'
 import { getScaleNotes, isNoteInScale } from '../data/scales'
 import { getHarmonica } from '../data/harmonicas'
 
@@ -15,9 +15,10 @@ export interface UseHarmonicaScaleResult {
 export const useHarmonicaScale = (
   harmonicaKey: HarmonicaKey,
   songKey: string,
-  scaleType: ScaleType
+  scaleType: ScaleType,
+  tuning: TuningType = 'richter'
 ): UseHarmonicaScaleResult => {
-  const harmonica = useMemo(() => getHarmonica(harmonicaKey), [harmonicaKey])
+  const harmonica = useMemo(() => getHarmonica(harmonicaKey, tuning), [harmonicaKey, tuning])
 
   const scaleNotes = useMemo(() => {
     const notes = getScaleNotes(songKey, scaleType)
