@@ -5,6 +5,7 @@ import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from 
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
+import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
 import { DisplaySettingsProvider } from './context'
 
 function AppContent() {
@@ -21,7 +22,6 @@ function AppContent() {
   )
 
   const position = useMemo(() => getHarmonicaPosition(harmonicaKey, songKey), [harmonicaKey, songKey])
-  const positionSuffix = position === 1 ? 'st' : position === 2 ? 'nd' : position === 3 ? 'rd' : 'th'
 
   return (
     <div className={styles.app}>
@@ -88,21 +88,13 @@ function AppContent() {
           </div>
         </div>
 
-        <div className={styles.scaleDisplay}>
-          <h2>
-            {songKey} {scaleType.charAt(0).toUpperCase() + scaleType.slice(1)} Scale
-            <span style={{ marginLeft: '12px', fontSize: '0.85em', fontWeight: 'normal', color: '#666' }}>
-              ({position}{positionSuffix} position)
-            </span>
-          </h2>
-          <div className={styles.scaleNotes}>
-            {scaleNotes.map((note) => (
-              <span key={note} className={styles.scaleNote}>
-                {note}
-              </span>
-            ))}
-          </div>
-        </div>
+        <ScaleDisplay
+          songKey={songKey}
+          scaleType={scaleType}
+          position={position}
+          scaleNotes={scaleNotes}
+          harmonica={harmonica}
+        />
 
         <div
           className={styles.harmonicaDisplay}

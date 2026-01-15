@@ -66,35 +66,6 @@
   }
 }
 
-.scaleDisplay {
-  background: var(--color-bg-card);
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-  box-shadow: var(--shadow-card);
-
-  h2 {
-    margin-top: 0;
-    color: var(--color-text-secondary);
-  }
-}
-
-.scaleNotes {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
-
-.scaleNote {
-  background: var(--color-playable-bg);
-  color: var(--color-playable-text);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
 .harmonicaDisplay {
   background: var(--color-bg-card);
   padding: 1.5rem;
