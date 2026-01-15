@@ -154,7 +154,7 @@ export function ScaleDisplay({
         {scaleNotes.map((note) => (
           <span
             key={note}
-            className={`${styles.scaleNote} ${currentlyPlayingNote === note ? styles.scaleNotePlaying : ''}`}
+            className={`${styles.scaleNote} ${currentlyPlayingNote && isNoteInScale(currentlyPlayingNote, [note]) ? styles.scaleNotePlaying : ''}`}
           >
             {note}
           </span>
