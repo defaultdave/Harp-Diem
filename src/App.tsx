@@ -11,13 +11,14 @@ interface PlayableNote {
   note: string
   frequency: number
 }
+import { Legend } from './components/Legend'
+import { DisplaySettingsProvider } from './context'
 
-function App() {
+function AppContent() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
   const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
-  const [showDegrees, setShowDegrees] = useState(false)
   const [isPlayingScale, setIsPlayingScale] = useState(false)
   const [currentlyPlayingNote, setCurrentlyPlayingNote] = useState<string | null>(null)
 
@@ -248,36 +249,22 @@ function App() {
                 scaleNotes={scaleNotes}
                 isBlowPlayable={playableBlowHoles.includes(hole.hole)}
                 isDrawPlayable={playableDrawHoles.includes(hole.hole)}
-                showDegrees={showDegrees}
               />
             ))}
           </div>
 
-          <div className={styles.legend} role="note" aria-label="Legend for scale visualization">
-            <div className={styles.legendHeader}>
-              <h3>Legend</h3>
-              <button
-                className={`${styles.toggleButton} ${showDegrees ? styles.toggleActive : ''}`}
-                onClick={() => setShowDegrees(!showDegrees)}
-                aria-pressed={showDegrees}
-              >
-                {showDegrees ? 'Hide' : 'Show'} Degrees
-              </button>
-            </div>
-            <div className={styles.legendItems}>
-              <div className={styles.legendItem}>
-                <div className={`${styles.legendColor} ${styles.legendColorPlayable}`} aria-hidden="true"></div>
-                <span>In Scale</span>
-              </div>
-              <div className={styles.legendItem}>
-                <div className={`${styles.legendColor} ${styles.legendColorNotPlayable}`} aria-hidden="true"></div>
-                <span>Not In Scale</span>
-              </div>
-            </div>
-          </div>
+          <Legend />
         </div>
       </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <DisplaySettingsProvider>
+      <AppContent />
+    </DisplaySettingsProvider>
   )
 }
 
