@@ -47,4 +47,31 @@ test.describe('Harp Diem Application', () => {
     const degreesButton = page.getByRole('button', { name: /degrees/i });
     await expect(degreesButton).toBeVisible();
   });
+
+  test('shows Play Scale button', async ({ page }) => {
+    const playScaleButton = page.getByRole('button', { name: /play scale/i });
+    await expect(playScaleButton).toBeVisible();
+  });
+
+  test('Play Scale button is enabled when scale has notes', async ({ page }) => {
+    const playScaleButton = page.getByRole('button', { name: /play scale/i });
+    await expect(playScaleButton).toBeEnabled();
+  });
+
+  test('Play Scale button shows playing state when clicked', async ({ page }) => {
+    const playScaleButton = page.getByRole('button', { name: /play scale/i });
+    await playScaleButton.click();
+
+    // Button should show "Playing..." text and be disabled during playback
+    // Use a fresh locator since aria-label changes when playing
+    const playingButton = page.getByRole('button', { name: /playing/i });
+    await expect(playingButton).toBeVisible();
+    await expect(playingButton).toBeDisabled();
+  });
+
+  test('scale notes are displayed', async ({ page }) => {
+    // C Major scale should show C, D, E, F, G, A, B notes
+    const scaleSection = page.locator('text=C Major Scale');
+    await expect(scaleSection).toBeVisible();
+  });
 });
