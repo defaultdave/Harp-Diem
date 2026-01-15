@@ -57,38 +57,18 @@
 }
 
 .playScaleButtonPlaying {
-  background: #dc3545;
-  border-color: #dc3545;
+  background: var(--color-stop-bg);
+  border-color: var(--color-stop-bg);
   color: white;
 
   &:hover:not(:disabled) {
-    background: #bb2d3b;
-    border-color: #bb2d3b;
+    background: var(--color-stop-bg-hover);
+    border-color: var(--color-stop-bg-hover);
   }
 }
 
 .stopIcon {
   font-size: 0.8em;
-}
-
-.playingIndicator {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: currentColor;
-  border-radius: 50%;
-  animation: pulse 0.6s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(0.8);
-  }
 }
 
 .scaleNotes {

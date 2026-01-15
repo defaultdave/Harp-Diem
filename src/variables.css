@@ -33,6 +33,10 @@
   --color-focus-ring: rgba(74, 85, 104, 0.15);
   --color-hover-border: #4a5568;
 
+  /* Stop/danger colors */
+  --color-stop-bg: #dc3545;
+  --color-stop-bg-hover: #bb2d3b;
+
   /* Shadows */
   --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
