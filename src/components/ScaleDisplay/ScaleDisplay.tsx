@@ -116,17 +116,19 @@ export function ScaleDisplay({
 
     // Calculate timing from BPM
     // BPM = beats per minute, interval = time between note starts
-    const noteInterval = 60000 / tempoBpm // ms between note starts
-    // Note duration is 80% of interval, capped at 0.8s for clarity
-    const noteDuration = Math.min(0.8, (noteInterval / 1000) * 0.8) // seconds
-    const gapBetweenNotes = Math.max(50, noteInterval - noteDuration * 1000) // ms
+    const beatInterval = 60000 / tempoBpm // ms between beats
+    // Note duration is 80% of beat interval, capped at 0.8s for clarity
+    const noteDuration = Math.min(0.8, (beatInterval / 1000) * 0.8) // seconds
+    // playTone is non-blocking (schedules audio and returns immediately)
+    // so we wait the full beat interval between note starts
+    const waitBetweenNotes = Math.max(50, beatInterval) // ms
 
     for (const note of playableNotesWithFrequencies) {
       if (signal.aborted) break
       setCurrentlyPlayingNote(note.note)
-      await playTone(note.frequency, noteDuration)
+      playTone(note.frequency, noteDuration) // non-blocking, no await needed
       if (signal.aborted) break
-      await new Promise((resolve) => setTimeout(resolve, gapBetweenNotes))
+      await new Promise((resolve) => setTimeout(resolve, waitBetweenNotes))
     }
 
     setCurrentlyPlayingNote(null)
