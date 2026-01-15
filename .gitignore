@@ -23,3 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 .aider*
+.claude-workspace/
+.worktrees/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
