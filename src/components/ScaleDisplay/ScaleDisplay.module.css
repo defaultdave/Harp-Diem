@@ -57,8 +57,18 @@
 }
 
 .playScaleButtonPlaying {
-  background: var(--color-playable-bg);
-  color: var(--color-playable-text);
+  background: #dc3545;
+  border-color: #dc3545;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: #bb2d3b;
+    border-color: #bb2d3b;
+  }
+}
+
+.stopIcon {
+  font-size: 0.8em;
 }
 
 .playingIndicator {
