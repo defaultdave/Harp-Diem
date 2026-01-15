@@ -74,8 +74,71 @@
   box-shadow: var(--shadow-card);
 
   h2 {
-    margin-top: 0;
+    margin: 0;
     color: var(--color-text-secondary);
+  }
+}
+
+.scaleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.playScaleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--color-playable-bg);
+  border-radius: 8px;
+  background: var(--color-bg-card);
+  color: var(--color-playable-bg);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: var(--color-playable-bg);
+    color: var(--color-playable-text);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.playScaleButtonPlaying {
+  background: var(--color-playable-bg);
+  color: var(--color-playable-text);
+}
+
+.playingIndicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  border-radius: 50%;
+  animation: pulse 0.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
   }
 }
 
@@ -93,6 +156,12 @@
   border-radius: 20px;
   font-weight: 600;
   font-size: 1.1rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.scaleNotePlaying {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 3px rgba(39, 103, 73, 0.4), 0 4px 12px rgba(39, 103, 73, 0.3);
 }
 
 .harmonicaDisplay {
