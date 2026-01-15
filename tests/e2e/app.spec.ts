@@ -58,15 +58,30 @@ test.describe('Harp Diem Application', () => {
     await expect(playScaleButton).toBeEnabled();
   });
 
-  test('Play Scale button shows playing state when clicked', async ({ page }) => {
+  test('Play Scale button changes to Stop when playing', async ({ page }) => {
     const playScaleButton = page.getByRole('button', { name: /play scale/i });
     await playScaleButton.click();
 
-    // Button should show "Playing..." text and be disabled during playback
-    // Use a fresh locator since aria-label changes when playing
-    const playingButton = page.getByRole('button', { name: /playing/i });
-    await expect(playingButton).toBeVisible();
-    await expect(playingButton).toBeDisabled();
+    // Button should show "Stop" and be enabled during playback
+    const stopButton = page.getByRole('button', { name: /stop/i });
+    await expect(stopButton).toBeVisible();
+    await expect(stopButton).toBeEnabled();
+  });
+
+  test('Stop button halts playback and reverts to Play Scale', async ({ page }) => {
+    // Start playback
+    const playScaleButton = page.getByRole('button', { name: /play scale/i });
+    await playScaleButton.click();
+
+    // Wait for Stop button to appear
+    const stopButton = page.getByRole('button', { name: /stop/i });
+    await expect(stopButton).toBeVisible();
+
+    // Click Stop
+    await stopButton.click();
+
+    // Button should revert to Play Scale
+    await expect(page.getByRole('button', { name: /play scale/i })).toBeVisible();
   });
 
   test('scale notes are displayed', async ({ page }) => {

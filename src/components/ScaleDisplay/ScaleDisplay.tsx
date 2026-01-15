@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 import type { DiatonicHarmonica } from '../../data/harmonicas'
 import type { NoteNames } from '../../types'
 import { isNoteInScale } from '../../data/scales'
@@ -28,6 +28,7 @@ export function ScaleDisplay({
   const [isPlayingScale, setIsPlayingScale] = useState(false)
   const [currentlyPlayingNote, setCurrentlyPlayingNote] = useState<string | null>(null)
   const [tempoBpm, setTempoBpm] = useState(120)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const positionSuffix = position === 1 ? 'st' : position === 2 ? 'nd' : position === 3 ? 'rd' : 'th'
 
@@ -109,6 +110,8 @@ export function ScaleDisplay({
   const playScale = useCallback(async () => {
     if (isPlayingScale || playableNotesWithFrequencies.length === 0) return
 
+    abortControllerRef.current = new AbortController()
+    const signal = abortControllerRef.current.signal
     setIsPlayingScale(true)
 
     // Calculate timing from BPM
@@ -119,14 +122,23 @@ export function ScaleDisplay({
     const gapBetweenNotes = Math.max(50, noteInterval - noteDuration * 1000) // ms
 
     for (const note of playableNotesWithFrequencies) {
+      if (signal.aborted) break
       setCurrentlyPlayingNote(note.note)
       await playTone(note.frequency, noteDuration)
+      if (signal.aborted) break
       await new Promise((resolve) => setTimeout(resolve, gapBetweenNotes))
     }
 
     setCurrentlyPlayingNote(null)
     setIsPlayingScale(false)
+    abortControllerRef.current = null
   }, [isPlayingScale, playableNotesWithFrequencies, tempoBpm])
+
+  const stopScale = useCallback(() => {
+    abortControllerRef.current?.abort()
+    setCurrentlyPlayingNote(null)
+    setIsPlayingScale(false)
+  }, [])
 
   return (
     <div className={styles.scaleDisplay}>
@@ -140,14 +152,13 @@ export function ScaleDisplay({
         <div className={styles.playbackControls}>
           <button
             className={`${styles.playScaleButton} ${isPlayingScale ? styles.playScaleButtonPlaying : ''}`}
-            onClick={playScale}
-            disabled={isPlayingScale || playableNotesWithFrequencies.length === 0}
-            aria-label={isPlayingScale ? 'Playing scale' : 'Play scale ascending'}
+            onClick={isPlayingScale ? stopScale : playScale}
+            disabled={playableNotesWithFrequencies.length === 0}
+            aria-label={isPlayingScale ? 'Stop scale playback' : 'Play scale ascending'}
           >
             {isPlayingScale ? (
               <>
-                <span className={styles.playingIndicator} aria-hidden="true"></span>
-                Playing...
+                <span className={styles.stopIcon} aria-hidden="true">&#9632;</span> Stop
               </>
             ) : (
               <>
