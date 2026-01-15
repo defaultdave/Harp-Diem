@@ -4,16 +4,14 @@ import type { HarmonicaKey, ScaleType, TuningType } from './data/harmonicas'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { HoleColumn } from './components/HoleColumn'
+import { DisplaySettingsProvider, useDisplaySettings } from './context'
 
-export type NoteDisplayMode = 'notes' | 'tab'
-
-function App() {
+function AppContent() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
   const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
-  const [showDegrees, setShowDegrees] = useState(false)
-  const [noteDisplay, setNoteDisplay] = useState<NoteDisplayMode>('notes')
+  const { noteDisplay, showDegrees, setNoteDisplay, setShowDegrees } = useDisplaySettings()
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -127,8 +125,6 @@ function App() {
                 scaleNotes={scaleNotes}
                 isBlowPlayable={playableBlowHoles.includes(hole.hole)}
                 isDrawPlayable={playableDrawHoles.includes(hole.hole)}
-                showDegrees={showDegrees}
-                noteDisplay={noteDisplay}
               />
             ))}
           </div>
@@ -167,6 +163,14 @@ function App() {
         </div>
       </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <DisplaySettingsProvider>
+      <AppContent />
+    </DisplaySettingsProvider>
   )
 }
 
