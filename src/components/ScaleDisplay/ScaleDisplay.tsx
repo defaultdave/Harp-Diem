@@ -27,6 +27,7 @@ export function ScaleDisplay({
 }: ScaleDisplayProps) {
   const [isPlayingScale, setIsPlayingScale] = useState(false)
   const [currentlyPlayingNote, setCurrentlyPlayingNote] = useState<string | null>(null)
+  const [tempoBpm, setTempoBpm] = useState(120)
 
   const positionSuffix = position === 1 ? 'st' : position === 2 ? 'nd' : position === 3 ? 'rd' : 'th'
 
@@ -110,8 +111,12 @@ export function ScaleDisplay({
 
     setIsPlayingScale(true)
 
-    const noteDuration = 1 // seconds
-    const gapBetweenNotes = 500 // milliseconds
+    // Calculate timing from BPM
+    // BPM = beats per minute, interval = time between note starts
+    const noteInterval = 60000 / tempoBpm // ms between note starts
+    // Note duration is 80% of interval, capped at 0.8s for clarity
+    const noteDuration = Math.min(0.8, (noteInterval / 1000) * 0.8) // seconds
+    const gapBetweenNotes = Math.max(50, noteInterval - noteDuration * 1000) // ms
 
     for (const note of playableNotesWithFrequencies) {
       setCurrentlyPlayingNote(note.note)
@@ -121,7 +126,7 @@ export function ScaleDisplay({
 
     setCurrentlyPlayingNote(null)
     setIsPlayingScale(false)
-  }, [isPlayingScale, playableNotesWithFrequencies])
+  }, [isPlayingScale, playableNotesWithFrequencies, tempoBpm])
 
   return (
     <div className={styles.scaleDisplay}>
@@ -132,23 +137,42 @@ export function ScaleDisplay({
             ({position}{positionSuffix} position)
           </span>
         </h2>
-        <button
-          className={`${styles.playScaleButton} ${isPlayingScale ? styles.playScaleButtonPlaying : ''}`}
-          onClick={playScale}
-          disabled={isPlayingScale || playableNotesWithFrequencies.length === 0}
-          aria-label={isPlayingScale ? 'Playing scale' : 'Play scale ascending'}
-        >
-          {isPlayingScale ? (
-            <>
-              <span className={styles.playingIndicator} aria-hidden="true"></span>
-              Playing...
-            </>
-          ) : (
-            <>
-              <span aria-hidden="true">&#9654;</span> Play Scale
-            </>
-          )}
-        </button>
+        <div className={styles.playbackControls}>
+          <button
+            className={`${styles.playScaleButton} ${isPlayingScale ? styles.playScaleButtonPlaying : ''}`}
+            onClick={playScale}
+            disabled={isPlayingScale || playableNotesWithFrequencies.length === 0}
+            aria-label={isPlayingScale ? 'Playing scale' : 'Play scale ascending'}
+          >
+            {isPlayingScale ? (
+              <>
+                <span className={styles.playingIndicator} aria-hidden="true"></span>
+                Playing...
+              </>
+            ) : (
+              <>
+                <span aria-hidden="true">&#9654;</span> Play Scale
+              </>
+            )}
+          </button>
+          <div className={styles.tempoControl}>
+            <label htmlFor="tempo-slider" className={styles.tempoLabel}>
+              Tempo
+            </label>
+            <input
+              id="tempo-slider"
+              type="range"
+              min={40}
+              max={200}
+              value={tempoBpm}
+              onChange={(e) => setTempoBpm(Number(e.target.value))}
+              disabled={isPlayingScale}
+              className={styles.tempoSlider}
+              aria-label={`Tempo: ${tempoBpm} BPM`}
+            />
+            <span className={styles.tempoValue}>{tempoBpm} BPM</span>
+          </div>
+        </div>
       </div>
       <div className={styles.scaleNotes}>
         {scaleNotes.map((note) => (
