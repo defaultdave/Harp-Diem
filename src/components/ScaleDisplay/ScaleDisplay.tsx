@@ -110,8 +110,8 @@ export function ScaleDisplay({
 
     setIsPlayingScale(true)
 
-    const noteDuration = 0.4 // seconds
-    const gapBetweenNotes = 100 // milliseconds
+    const noteDuration = 1 // seconds
+    const gapBetweenNotes = 500 // milliseconds
 
     for (const note of playableNotesWithFrequencies) {
       setCurrentlyPlayingNote(note.note)
