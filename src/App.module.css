@@ -202,3 +202,8 @@
     border-color: var(--color-playable-border);
   }
 }
+
+.toggleGroup {
+  display: flex;
+  gap: 0.5rem;
+}

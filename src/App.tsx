@@ -5,12 +5,15 @@ import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from 
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { HoleColumn } from './components/HoleColumn'
 
+export type NoteDisplayMode = 'notes' | 'tab'
+
 function App() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
   const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
   const [showDegrees, setShowDegrees] = useState(false)
+  const [noteDisplay, setNoteDisplay] = useState<NoteDisplayMode>('notes')
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -125,6 +128,7 @@ function App() {
                 isBlowPlayable={playableBlowHoles.includes(hole.hole)}
                 isDrawPlayable={playableDrawHoles.includes(hole.hole)}
                 showDegrees={showDegrees}
+                noteDisplay={noteDisplay}
               />
             ))}
           </div>
@@ -132,13 +136,22 @@ function App() {
           <div className={styles.legend} role="note" aria-label="Legend for scale visualization">
             <div className={styles.legendHeader}>
               <h3>Legend</h3>
-              <button
-                className={`${styles.toggleButton} ${showDegrees ? styles.toggleActive : ''}`}
-                onClick={() => setShowDegrees(!showDegrees)}
-                aria-pressed={showDegrees}
-              >
-                {showDegrees ? 'Hide' : 'Show'} Degrees
-              </button>
+              <div className={styles.toggleGroup}>
+                <button
+                  className={`${styles.toggleButton} ${noteDisplay === 'tab' ? styles.toggleActive : ''}`}
+                  onClick={() => setNoteDisplay(noteDisplay === 'notes' ? 'tab' : 'notes')}
+                  aria-pressed={noteDisplay === 'tab'}
+                >
+                  {noteDisplay === 'notes' ? 'Show' : 'Hide'} Tab
+                </button>
+                <button
+                  className={`${styles.toggleButton} ${showDegrees ? styles.toggleActive : ''}`}
+                  onClick={() => setShowDegrees(!showDegrees)}
+                  aria-pressed={showDegrees}
+                >
+                  {showDegrees ? 'Hide' : 'Show'} Degrees
+                </button>
+              </div>
             </div>
             <div className={styles.legendItems}>
               <div className={styles.legendItem}>
