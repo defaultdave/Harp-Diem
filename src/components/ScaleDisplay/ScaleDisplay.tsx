@@ -27,6 +27,7 @@ export function ScaleDisplay({
 }: ScaleDisplayProps) {
   const [isPlayingScale, setIsPlayingScale] = useState(false)
   const [currentlyPlayingNote, setCurrentlyPlayingNote] = useState<string | null>(null)
+  const [tempoBpm, setTempoBpm] = useState(120)
   const abortControllerRef = useRef<AbortController | null>(null)
 
   const positionSuffix = position === 1 ? 'st' : position === 2 ? 'nd' : position === 3 ? 'rd' : 'th'
@@ -113,21 +114,27 @@ export function ScaleDisplay({
     const signal = abortControllerRef.current.signal
     setIsPlayingScale(true)
 
-    const noteDuration = 1 // seconds
-    const gapBetweenNotes = 500 // milliseconds
+    // Calculate timing from BPM
+    // BPM = beats per minute, interval = time between note starts
+    const beatInterval = 60000 / tempoBpm // ms between beats
+    // Note duration is 80% of beat interval, capped at 0.8s for clarity
+    const noteDuration = Math.min(0.8, (beatInterval / 1000) * 0.8) // seconds
+    // playTone is non-blocking (schedules audio and returns immediately)
+    // so we wait the full beat interval between note starts
+    const waitBetweenNotes = Math.max(50, beatInterval) // ms
 
     for (const note of playableNotesWithFrequencies) {
       if (signal.aborted) break
       setCurrentlyPlayingNote(note.note)
-      await playTone(note.frequency, noteDuration)
+      playTone(note.frequency, noteDuration) // non-blocking, no await needed
       if (signal.aborted) break
-      await new Promise((resolve) => setTimeout(resolve, gapBetweenNotes))
+      await new Promise((resolve) => setTimeout(resolve, waitBetweenNotes))
     }
 
     setCurrentlyPlayingNote(null)
     setIsPlayingScale(false)
     abortControllerRef.current = null
-  }, [isPlayingScale, playableNotesWithFrequencies])
+  }, [isPlayingScale, playableNotesWithFrequencies, tempoBpm])
 
   const stopScale = useCallback(() => {
     abortControllerRef.current?.abort()
@@ -144,22 +151,41 @@ export function ScaleDisplay({
             ({position}{positionSuffix} position)
           </span>
         </h2>
-        <button
-          className={`${styles.playScaleButton} ${isPlayingScale ? styles.playScaleButtonPlaying : ''}`}
-          onClick={isPlayingScale ? stopScale : playScale}
-          disabled={playableNotesWithFrequencies.length === 0}
-          aria-label={isPlayingScale ? 'Stop scale playback' : 'Play scale ascending'}
-        >
-          {isPlayingScale ? (
-            <>
-              <span className={styles.stopIcon} aria-hidden="true">&#9632;</span> Stop
-            </>
-          ) : (
-            <>
-              <span aria-hidden="true">&#9654;</span> Play Scale
-            </>
-          )}
-        </button>
+        <div className={styles.playbackControls}>
+          <button
+            className={`${styles.playScaleButton} ${isPlayingScale ? styles.playScaleButtonPlaying : ''}`}
+            onClick={isPlayingScale ? stopScale : playScale}
+            disabled={playableNotesWithFrequencies.length === 0}
+            aria-label={isPlayingScale ? 'Stop scale playback' : 'Play scale ascending'}
+          >
+            {isPlayingScale ? (
+              <>
+                <span className={styles.stopIcon} aria-hidden="true">&#9632;</span> Stop
+              </>
+            ) : (
+              <>
+                <span aria-hidden="true">&#9654;</span> Play Scale
+              </>
+            )}
+          </button>
+          <div className={styles.tempoControl}>
+            <label htmlFor="tempo-slider" className={styles.tempoLabel}>
+              Tempo
+            </label>
+            <input
+              id="tempo-slider"
+              type="range"
+              min={40}
+              max={200}
+              value={tempoBpm}
+              onChange={(e) => setTempoBpm(Number(e.target.value))}
+              disabled={isPlayingScale}
+              className={styles.tempoSlider}
+              aria-label={`Tempo: ${tempoBpm} BPM`}
+            />
+            <span className={styles.tempoValue}>{tempoBpm} BPM</span>
+          </div>
+        </div>
       </div>
       <div className={styles.scaleNotes}>
         {scaleNotes.map((note) => (
