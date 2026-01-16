@@ -19,7 +19,6 @@ function AppContent() {
   const [isPinching, setIsPinching] = useState(false)
 
   const mainRef = useRef<HTMLDivElement>(null)
-  const harmonicaDisplayRef = useRef<HTMLDivElement>(null)
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -158,7 +157,6 @@ function AppContent() {
 
         <div
           className={styles.harmonicaDisplay}
-          ref={harmonicaDisplayRef}
           style={{ 
             transform: `scale(${zoomScale})`, 
             transformOrigin: 'center top', 

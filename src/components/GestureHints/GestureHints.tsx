@@ -8,12 +8,12 @@ interface GestureHintsProps {
 export const GestureHints = ({ onDismiss }: GestureHintsProps) => {
   const [isVisible, setIsVisible] = useState(false)
   
-  // Safe localStorage access
+  // Check localStorage once on mount
   const getHintsShown = () => {
     try {
-      return localStorage.getItem('gestureHintsShown')
+      return localStorage.getItem('gestureHintsShown') !== null
     } catch {
-      return null
+      return false
     }
   }
   
