@@ -40,7 +40,8 @@ export const degreeToRoman = (degree: number): string => {
 
 export const getIntervalBetweenNotes = (note1: string, note2: string): 'W' | 'H' | '' => {
   // Calculate interval distance in semitones
-  const distance = Interval.semitones(Interval.distance(note1, note2))
+  const intervalDistance = Interval.distance(note1, note2)
+  const distance = Interval.semitones(intervalDistance)
   
   if (distance === undefined || distance === null) return ''
   
