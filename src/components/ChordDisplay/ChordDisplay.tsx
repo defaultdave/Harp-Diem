@@ -9,6 +9,13 @@ interface ChordDisplayProps {
   onChordSelect?: (chord: ChordVoicing | null) => void
 }
 
+const getOrdinalSuffix = (num: number): string => {
+  if (num === 1) return 'st'
+  if (num === 2) return 'nd'
+  if (num === 3) return 'rd'
+  return 'th'
+}
+
 export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps) {
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
   const chords = getCommonChords(harmonicaKey)
@@ -84,7 +91,7 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
 
             <div className={styles.chordPosition}>
               <span className={styles.positionBadge}>
-                {chord.position}{chord.position === 1 ? 'st' : chord.position === 2 ? 'nd' : chord.position === 3 ? 'rd' : 'th'} pos
+                {chord.position}{getOrdinalSuffix(chord.position)} pos
               </span>
               <span className={styles.romanNumeral}>{chord.romanNumeral}</span>
             </div>

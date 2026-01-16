@@ -55,12 +55,12 @@ export const getHarmonicaChords = (harmonicaKey: HarmonicaKey): ChordVoicing[] =
     { quality: 'major', holes: [4, 5, 6], breath: 'blow', position: 1, romanNumeral: 'I', rootNoteIndex: 0 },
     { quality: 'major', holes: [7, 8, 9], breath: 'blow', position: 1, romanNumeral: 'I', rootNoteIndex: 0 },
     
-    // Draw chords - various
-    { quality: 'minor', holes: [1, 2, 3, 4], breath: 'draw', position: 1, romanNumeral: 'ii', rootNoteIndex: 0 },
-    { quality: 'dominant7', holes: [2, 3, 4, 5], breath: 'draw', position: 1, romanNumeral: 'V7', rootNoteIndex: 0 },
-    { quality: 'minor', holes: [4, 5, 6], breath: 'draw', position: 1, romanNumeral: 'ii', rootNoteIndex: 0 },
-    { quality: 'diminished', holes: [8, 9, 10], breath: 'draw', position: 1, romanNumeral: 'vii°', rootNoteIndex: 0 },
-    { quality: 'major', holes: [2, 3, 4], breath: 'draw', position: 2, romanNumeral: 'I', rootNoteIndex: 0 },
+    // Draw chords - various functions
+    { quality: 'minor', holes: [1, 2, 3, 4], breath: 'draw', position: 1, romanNumeral: 'ii', rootNoteIndex: 0 }, // D minor in C key
+    { quality: 'dominant7', holes: [2, 3, 4, 5], breath: 'draw', position: 1, romanNumeral: 'V7', rootNoteIndex: 0 }, // G7 in C key
+    { quality: 'minor', holes: [4, 5, 6], breath: 'draw', position: 1, romanNumeral: 'ii', rootNoteIndex: 0 }, // D minor partial
+    { quality: 'diminished', holes: [8, 9, 10], breath: 'draw', position: 1, romanNumeral: 'vii°', rootNoteIndex: 0 }, // B diminished
+    { quality: 'major', holes: [2, 3, 4], breath: 'draw', position: 2, romanNumeral: 'I', rootNoteIndex: 0 }, // G major (2nd position)
   ]
   
   return chordDefs.map((def) => {
