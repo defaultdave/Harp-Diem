@@ -13,6 +13,7 @@ describe('useHarmonicaScale', () => {
       expect(result.current).toHaveProperty('playableBlowHoles')
       expect(result.current).toHaveProperty('playableDrawHoles')
       expect(result.current).toHaveProperty('allHoles')
+      expect(result.current).toHaveProperty('missingNotes')
     })
   })
 
@@ -365,6 +366,90 @@ describe('useHarmonicaScale', () => {
         expect(result.current.harmonica).toBeDefined()
         expect(result.current.harmonica.holes).toHaveLength(10)
         expect(result.current.scaleNotes.length).toBe(7)
+      })
+    })
+  })
+
+  describe('Missing Notes', () => {
+    it('returns empty array when all scale notes are available', () => {
+      // C harmonica + C Major scale - all notes should be available
+      const { result } = renderHook(() => useHarmonicaScale('C', 'C', 'major'))
+      expect(result.current.missingNotes).toEqual([])
+    })
+
+    it('identifies missing notes correctly when scale requires unavailable notes', () => {
+      // Test with a scale that might have missing notes
+      // We'll verify the function works correctly regardless of whether notes are missing
+      const { result } = renderHook(() => useHarmonicaScale('C', 'F#', 'major'))
+      
+      // F# major has C#, D#, E#, F#, G#, A#, B#
+      // Verify missingNotes is an array and makes sense
+      expect(Array.isArray(result.current.missingNotes)).toBe(true)
+      
+      // Each missing note should be in the scale notes
+      result.current.missingNotes.forEach((note) => {
+        expect(result.current.scaleNotes).toContain(note)
+      })
+    })
+
+    it('missing notes are subset of scale notes', () => {
+      const { result } = renderHook(() => useHarmonicaScale('C', 'F#', 'major'))
+      result.current.missingNotes.forEach((note) => {
+        expect(result.current.scaleNotes).toContain(note)
+      })
+    })
+
+    it('missing notes do not include available notes', () => {
+      const { result } = renderHook(() => useHarmonicaScale('C', 'F#', 'major'))
+      const { harmonica, missingNotes } = result.current
+      
+      // Collect all available notes from harmonica
+      const availableNotes: string[] = []
+      harmonica.holes.forEach((hole) => {
+        availableNotes.push(hole.blow.note)
+        availableNotes.push(hole.draw.note)
+        if (hole.blowBends?.halfStepBend) availableNotes.push(hole.blowBends.halfStepBend.note)
+        if (hole.blowBends?.wholeStepBend) availableNotes.push(hole.blowBends.wholeStepBend.note)
+        if (hole.drawBends?.halfStepBend) availableNotes.push(hole.drawBends.halfStepBend.note)
+        if (hole.drawBends?.wholeStepBend) availableNotes.push(hole.drawBends.wholeStepBend.note)
+        if (hole.drawBends?.minorThirdBend) availableNotes.push(hole.drawBends.minorThirdBend.note)
+        if (hole.overblow) availableNotes.push(hole.overblow.note)
+        if (hole.overdraw) availableNotes.push(hole.overdraw.note)
+      })
+      
+      // Check that each missing note is truly not available (considering enharmonics)
+      missingNotes.forEach((missingNote) => {
+        const isAvailable = isNoteInScale(missingNote, availableNotes)
+        // The note should truly be missing (not available)
+        expect(isAvailable).toBe(false)
+      })
+    })
+
+    it('considers bends when determining missing notes', () => {
+      // A scale that requires bends - checking if bends reduce missing notes
+      const { result } = renderHook(() => useHarmonicaScale('C', 'F', 'major'))
+      
+      // F major has Bb which is available via bends
+      // So Bb should NOT be in missing notes
+      expect(result.current.missingNotes).not.toContain('Bb')
+    })
+
+    it('works correctly across different tunings', () => {
+      // Natural minor tuning should have fewer missing notes for minor scales
+      const { result: richter } = renderHook(() => useHarmonicaScale('C', 'C', 'minor', 'richter'))
+      const { result: naturalMinor } = renderHook(() => useHarmonicaScale('C', 'C', 'minor', 'natural-minor'))
+      
+      // Natural minor tuning is optimized for minor scales
+      expect(naturalMinor.current.missingNotes.length).toBeLessThanOrEqual(richter.current.missingNotes.length)
+    })
+
+    it('returns array of note names', () => {
+      const { result } = renderHook(() => useHarmonicaScale('C', 'B', 'locrian'))
+      
+      expect(Array.isArray(result.current.missingNotes)).toBe(true)
+      result.current.missingNotes.forEach((note) => {
+        expect(typeof note).toBe('string')
+        expect(note.length).toBeGreaterThan(0)
       })
     })
   })

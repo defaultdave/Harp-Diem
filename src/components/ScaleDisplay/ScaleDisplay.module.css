@@ -183,3 +183,34 @@
   transform: scale(1.15);
   box-shadow: 0 0 0 3px rgba(39, 103, 73, 0.4), 0 4px 12px rgba(39, 103, 73, 0.3);
 }
+
+.missingNotesInfo {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 152, 0, 0.1);
+  border-left: 4px solid var(--color-warning, #ff9800);
+  border-radius: 6px;
+}
+
+.missingNotesCount {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-warning, #ff9800);
+}
+
+.scaleNoteMissing {
+  background: var(--color-bg-input, #e0e0e0);
+  color: var(--color-text-secondary, #666);
+  opacity: 0.6;
+  position: relative;
+  text-decoration: line-through;
+  text-decoration-color: var(--color-warning, #ff9800);
+  text-decoration-thickness: 2px;
+}
+
+.missingIndicator {
+  margin-left: 0.35rem;
+  font-size: 0.85em;
+  color: var(--color-warning, #ff9800);
+  font-weight: bold;
+}

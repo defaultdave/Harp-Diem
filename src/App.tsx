@@ -14,7 +14,7 @@ function AppContent() {
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
 
-  const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
+  const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles, missingNotes } = useHarmonicaScale(
     harmonicaKey,
     songKey,
     scaleType,
@@ -94,6 +94,7 @@ function AppContent() {
           position={position}
           scaleNotes={scaleNotes}
           harmonica={harmonica}
+          missingNotes={missingNotes}
         />
 
         <div

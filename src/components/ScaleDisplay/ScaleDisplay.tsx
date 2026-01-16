@@ -17,6 +17,7 @@ interface ScaleDisplayProps {
   position: number
   scaleNotes: NoteNames
   harmonica: DiatonicHarmonica
+  missingNotes: NoteNames
 }
 
 export function ScaleDisplay({
@@ -25,6 +26,7 @@ export function ScaleDisplay({
   position,
   scaleNotes,
   harmonica,
+  missingNotes,
 }: ScaleDisplayProps) {
   const {
     isPlaying: isPlayingScale,
@@ -192,15 +194,27 @@ export function ScaleDisplay({
           </div>
         </div>
       </div>
-      <div className={styles.scaleNotes}>
-        {scaleNotes.map((note) => (
-          <span
-            key={note}
-            className={`${styles.scaleNote} ${isNoteCurrentlyPlaying(note) ? styles.scaleNotePlaying : ''}`}
-          >
-            {note}
+      {missingNotes.length > 0 && (
+        <div className={styles.missingNotesInfo} role="status" aria-live="polite">
+          <span className={styles.missingNotesCount}>
+            ⚠️ {missingNotes.length} note{missingNotes.length !== 1 ? 's' : ''} unavailable on this harmonica
           </span>
-        ))}
+        </div>
+      )}
+      <div className={styles.scaleNotes}>
+        {scaleNotes.map((note) => {
+          const isMissing = missingNotes.includes(note)
+          return (
+            <span
+              key={note}
+              className={`${styles.scaleNote} ${isMissing ? styles.scaleNoteMissing : ''} ${isNoteCurrentlyPlaying(note) ? styles.scaleNotePlaying : ''}`}
+              title={isMissing ? `${note} is not available on this harmonica` : undefined}
+            >
+              {note}
+              {isMissing && <span className={styles.missingIndicator} aria-label="unavailable">✕</span>}
+            </span>
+          )
+        })}
       </div>
     </div>
   )
