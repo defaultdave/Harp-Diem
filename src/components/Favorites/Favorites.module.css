@@ -1,0 +1,202 @@
+.favorites {
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.header {
+  background: var(--color-bg-header);
+}
+
+.toggleButton {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s;
+}
+
+.toggleButton:hover {
+  background: var(--color-bg-secondary);
+}
+
+.arrow {
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+.actions {
+  margin-bottom: 1rem;
+}
+
+.saveButton {
+  padding: 0.75rem 1.5rem;
+  background: var(--color-hover-border);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveButton:hover {
+  background: #0056b3;
+}
+
+.saveForm {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nameInput {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid var(--color-border-medium);
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.nameInput:focus {
+  outline: none;
+  border-color: var(--color-hover-border);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.confirmButton {
+  padding: 0.75rem 1.5rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.confirmButton:hover:not(:disabled) {
+  background: #218838;
+}
+
+.confirmButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  padding: 0.75rem 1.5rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+  background: #5a6268;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 2rem;
+  font-style: italic;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border-medium);
+  transition: background-color 0.2s;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item:hover {
+  background: var(--color-bg-secondary);
+}
+
+.itemInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.itemName {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+.itemDetails {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.itemActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loadButton {
+  padding: 0.5rem 1rem;
+  background: var(--color-hover-border);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.loadButton:hover {
+  background: #0056b3;
+}
+
+.deleteButton {
+  padding: 0.5rem 0.75rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.deleteButton:hover {
+  background: #c82333;
+}

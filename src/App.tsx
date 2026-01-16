@@ -6,7 +6,9 @@ import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
+import { Favorites } from './components/Favorites'
 import { DisplaySettingsProvider, PlaybackProvider } from './context'
+import type { Favorite } from './types'
 
 function AppContent() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
@@ -23,6 +25,13 @@ function AppContent() {
 
   const position = useMemo(() => getHarmonicaPosition(harmonicaKey, songKey), [harmonicaKey, songKey])
 
+  const handleLoadFavorite = (favorite: Favorite) => {
+    setHarmonicaKey(favorite.harmonicaKey as HarmonicaKey)
+    setTuning(favorite.tuning as TuningType)
+    setSongKey(favorite.songKey as HarmonicaKey)
+    setScaleType(favorite.scaleType as ScaleType)
+  }
+
   return (
     <div className={styles.app}>
       <header className={styles.header}>
@@ -30,6 +39,14 @@ function AppContent() {
       </header>
 
       <main className={styles.main}>
+        <Favorites
+          currentHarmonicaKey={harmonicaKey}
+          currentTuning={tuning}
+          currentSongKey={songKey}
+          currentScaleType={scaleType}
+          onLoadFavorite={handleLoadFavorite}
+        />
+
         <div className={styles.controls}>
           <div className={styles.controlGroup}>
             <label htmlFor="harmonica-key">Harmonica Key:</label>
