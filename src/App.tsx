@@ -114,8 +114,6 @@ function AppContent() {
           harmonica={harmonica}
         />
 
-        <ChordDisplay harmonicaKey={harmonicaKey} onChordSelect={handleChordSelect} />
-
         <div
           className={styles.harmonicaDisplay}
           role="region"
@@ -145,6 +143,8 @@ function AppContent() {
 
           <Legend />
         </div>
+
+        <ChordDisplay harmonicaKey={harmonicaKey} onChordSelect={handleChordSelect} />
       </main>
     </div>
   )
