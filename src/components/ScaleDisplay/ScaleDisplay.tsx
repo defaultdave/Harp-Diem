@@ -3,6 +3,7 @@ import type { DiatonicHarmonica } from '../../data/harmonicas'
 import type { NoteNames } from '../../types'
 import { isNoteInScale } from '../../data/scales'
 import { playTone } from '../../utils/audioPlayer'
+import { usePlayback } from '../../context'
 import styles from './ScaleDisplay.module.css'
 
 interface PlayableNote {
@@ -25,8 +26,12 @@ export function ScaleDisplay({
   scaleNotes,
   harmonica,
 }: ScaleDisplayProps) {
-  const [isPlayingScale, setIsPlayingScale] = useState(false)
-  const [currentlyPlayingNote, setCurrentlyPlayingNote] = useState<string | null>(null)
+  const {
+    isPlaying: isPlayingScale,
+    setCurrentlyPlayingNote,
+    setIsPlaying: setIsPlayingScale,
+    isNoteCurrentlyPlaying,
+  } = usePlayback()
   const [tempoBpm, setTempoBpm] = useState(120)
   const abortControllerRef = useRef<AbortController | null>(null)
 
@@ -134,13 +139,13 @@ export function ScaleDisplay({
     setCurrentlyPlayingNote(null)
     setIsPlayingScale(false)
     abortControllerRef.current = null
-  }, [isPlayingScale, playableNotesWithFrequencies, tempoBpm])
+  }, [isPlayingScale, playableNotesWithFrequencies, tempoBpm, setCurrentlyPlayingNote, setIsPlayingScale])
 
   const stopScale = useCallback(() => {
     abortControllerRef.current?.abort()
     setCurrentlyPlayingNote(null)
     setIsPlayingScale(false)
-  }, [])
+  }, [setCurrentlyPlayingNote, setIsPlayingScale])
 
   return (
     <div className={styles.scaleDisplay}>
@@ -191,7 +196,7 @@ export function ScaleDisplay({
         {scaleNotes.map((note) => (
           <span
             key={note}
-            className={`${styles.scaleNote} ${currentlyPlayingNote && isNoteInScale(currentlyPlayingNote, [note]) ? styles.scaleNotePlaying : ''}`}
+            className={`${styles.scaleNote} ${isNoteCurrentlyPlaying(note) ? styles.scaleNotePlaying : ''}`}
           >
             {note}
           </span>

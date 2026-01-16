@@ -6,7 +6,7 @@ import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
-import { DisplaySettingsProvider } from './context'
+import { DisplaySettingsProvider, PlaybackProvider } from './context'
 
 function AppContent() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
@@ -131,7 +131,9 @@ function AppContent() {
 function App() {
   return (
     <DisplaySettingsProvider>
-      <AppContent />
+      <PlaybackProvider>
+        <AppContent />
+      </PlaybackProvider>
     </DisplaySettingsProvider>
   )
 }
