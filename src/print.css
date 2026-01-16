@@ -1,0 +1,135 @@
+/* Print-specific styles for clean, printer-friendly output */
+
+@media print {
+  * {
+    /* Force consistent colors for printing */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background: white !important;
+    margin: 0;
+    padding: 20px;
+  }
+
+  /* Hide controls and interactive elements */
+  .controls,
+  button,
+  input[type='range'],
+  select {
+    display: none !important;
+  }
+
+  /* Ensure main content is visible */
+  .app {
+    background: white !important;
+  }
+
+  .main {
+    padding: 0 !important;
+  }
+
+  /* Optimize harmonica display for printing */
+  .harmonicaDisplay {
+    page-break-inside: avoid;
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc;
+    padding: 20px !important;
+  }
+
+  .harmonicaDisplay h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+
+  /* Scale display optimization */
+  .scaleDisplay {
+    page-break-inside: avoid;
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc;
+    padding: 15px !important;
+    margin-bottom: 20px;
+  }
+
+  .scaleHeader {
+    margin-bottom: 10px;
+  }
+
+  .scaleHeader h2 {
+    font-size: 1.3rem;
+  }
+
+  /* Hide playback controls in print */
+  .playbackControls {
+    display: none !important;
+  }
+
+  /* Ensure scale notes are visible and well-formatted */
+  .scaleNotes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .scaleNote {
+    padding: 4px 8px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background: white !important;
+    color: #333 !important;
+  }
+
+  /* Holes container should be clearly visible */
+  .holesContainer {
+    margin-top: 20px;
+  }
+
+  /* Ensure legend is visible in print */
+  .legend {
+    page-break-inside: avoid;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #ccc;
+  }
+
+  /* Hide any modal overlays or tooltips */
+  [role='dialog'],
+  [role='tooltip'],
+  .modal,
+  .tooltip {
+    display: none !important;
+  }
+
+  /* Ensure text is dark and readable */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  div {
+    color: #000 !important;
+  }
+
+  /* Prevent page breaks in critical areas */
+  .holeColumn {
+    page-break-inside: avoid;
+  }
+
+  /* Optimize for A4/Letter size paper in landscape */
+  @page {
+    size: landscape;
+    margin: 1cm;
+  }
+
+  /* Hide header in print to save space */
+  .header {
+    display: none !important;
+  }
+}

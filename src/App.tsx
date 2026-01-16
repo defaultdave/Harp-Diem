@@ -1,11 +1,13 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import styles from './App.module.css'
+import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType } from './data/harmonicas'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
+import { ExportButton } from './components/ExportButton'
 import { DisplaySettingsProvider, PlaybackProvider } from './context'
 
 function AppContent() {
@@ -13,6 +15,7 @@ function AppContent() {
   const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
+  const exportTargetRef = useRef<HTMLDivElement>(null)
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -27,9 +30,18 @@ function AppContent() {
     <div className={styles.app}>
       <header className={styles.header}>
         <h1>🎵 Harp Diem</h1>
+        <ExportButton
+          exportOptions={{
+            harmonicaKey,
+            songKey,
+            scaleType,
+            position,
+          }}
+          targetRef={exportTargetRef}
+        />
       </header>
 
-      <main className={styles.main}>
+      <main className={styles.main} ref={exportTargetRef}>
         <div className={styles.controls}>
           <div className={styles.controlGroup}>
             <label htmlFor="harmonica-key">Harmonica Key:</label>
