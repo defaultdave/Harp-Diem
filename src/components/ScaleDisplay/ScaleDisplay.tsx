@@ -1,9 +1,9 @@
 import { useState, useMemo, useCallback, useRef } from 'react'
 import type { DiatonicHarmonica } from '../../data/harmonicas'
 import type { NoteNames } from '../../types'
-import { isNoteInScale } from '../../data/scales'
+import { isNoteInScale, getIntervalBetweenNotes } from '../../data/scales'
 import { playTone } from '../../utils/audioPlayer'
-import { usePlayback } from '../../context'
+import { usePlayback, useDisplaySettings } from '../../context'
 import styles from './ScaleDisplay.module.css'
 
 interface PlayableNote {
@@ -32,6 +32,7 @@ export function ScaleDisplay({
     setIsPlaying: setIsPlayingScale,
     isNoteCurrentlyPlaying,
   } = usePlayback()
+  const { showIntervals, setShowIntervals } = useDisplaySettings()
   const [tempoBpm, setTempoBpm] = useState(120)
   const abortControllerRef = useRef<AbortController | null>(null)
 
@@ -190,15 +191,30 @@ export function ScaleDisplay({
             />
             <span className={styles.tempoValue}>{tempoBpm} BPM</span>
           </div>
+          <label className={styles.intervalToggle}>
+            <input
+              type="checkbox"
+              checked={showIntervals}
+              onChange={(e) => setShowIntervals(e.target.checked)}
+              aria-label="Show intervals between notes"
+            />
+            <span>Show Intervals</span>
+          </label>
         </div>
       </div>
       <div className={styles.scaleNotes}>
-        {scaleNotes.map((note) => (
-          <span
-            key={note}
-            className={`${styles.scaleNote} ${isNoteCurrentlyPlaying(note) ? styles.scaleNotePlaying : ''}`}
-          >
-            {note}
+        {scaleNotes.map((note, index) => (
+          <span key={note} className={styles.noteWithInterval}>
+            <span
+              className={`${styles.scaleNote} ${isNoteCurrentlyPlaying(note) ? styles.scaleNotePlaying : ''}`}
+            >
+              {note}
+            </span>
+            {showIntervals && index < scaleNotes.length - 1 && (
+              <span className={styles.interval}>
+                {getIntervalBetweenNotes(note, scaleNotes[index + 1])}
+              </span>
+            )}
           </span>
         ))}
       </div>

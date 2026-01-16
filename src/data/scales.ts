@@ -1,4 +1,4 @@
-import { Scale, Note } from 'tonal'
+import { Scale, Note, Interval } from 'tonal'
 import type { HarmonicaKey, ScaleType } from './harmonicas'
 import type { MusicalNote, NoteNames } from '../types'
 
@@ -36,4 +36,20 @@ export const getNoteDegree = (note: string, scaleNotes: NoteNames): number | und
 export const degreeToRoman = (degree: number): string => {
   const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
   return numerals[degree - 1] || ''
+}
+
+export const getIntervalBetweenNotes = (note1: string, note2: string): 'W' | 'H' | '' => {
+  // Calculate interval distance in semitones
+  const intervalDistance = Interval.distance(note1, note2)
+  const distance = Interval.semitones(intervalDistance)
+  
+  if (distance === undefined || distance === null) return ''
+  
+  // Normalize to positive value (handle both ascending and descending)
+  const absSemitones = Math.abs(distance)
+  
+  if (absSemitones === 1) return 'H' // Half step
+  if (absSemitones === 2) return 'W' // Whole step
+  
+  return '' // Other intervals (not used in standard scales between adjacent notes)
 }
