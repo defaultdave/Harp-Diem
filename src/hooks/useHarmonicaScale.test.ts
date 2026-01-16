@@ -393,39 +393,34 @@ describe('useHarmonicaScale', () => {
     })
 
     it('missing notes are subset of scale notes', () => {
-      const { result } = renderHook(() => useHarmonicaScale('C', 'B', 'locrian'))
+      const { result } = renderHook(() => useHarmonicaScale('C', 'F#', 'major'))
       result.current.missingNotes.forEach((note) => {
         expect(result.current.scaleNotes).toContain(note)
       })
     })
 
     it('missing notes do not include available notes', () => {
-      const { result } = renderHook(() => useHarmonicaScale('C', 'B', 'locrian'))
-      const { harmonica, missingNotes, scaleNotes } = result.current
+      const { result } = renderHook(() => useHarmonicaScale('C', 'F#', 'major'))
+      const { harmonica, missingNotes } = result.current
       
-      // Collect all available notes
-      const availableNotes = new Set<string>()
+      // Collect all available notes from harmonica
+      const availableNotes: string[] = []
       harmonica.holes.forEach((hole) => {
-        availableNotes.add(hole.blow.note)
-        availableNotes.add(hole.draw.note)
-        if (hole.blowBends?.halfStepBend) availableNotes.add(hole.blowBends.halfStepBend.note)
-        if (hole.blowBends?.wholeStepBend) availableNotes.add(hole.blowBends.wholeStepBend.note)
-        if (hole.drawBends?.halfStepBend) availableNotes.add(hole.drawBends.halfStepBend.note)
-        if (hole.drawBends?.wholeStepBend) availableNotes.add(hole.drawBends.wholeStepBend.note)
-        if (hole.drawBends?.minorThirdBend) availableNotes.add(hole.drawBends.minorThirdBend.note)
-        if (hole.overblow) availableNotes.add(hole.overblow.note)
-        if (hole.overdraw) availableNotes.add(hole.overdraw.note)
+        availableNotes.push(hole.blow.note)
+        availableNotes.push(hole.draw.note)
+        if (hole.blowBends?.halfStepBend) availableNotes.push(hole.blowBends.halfStepBend.note)
+        if (hole.blowBends?.wholeStepBend) availableNotes.push(hole.blowBends.wholeStepBend.note)
+        if (hole.drawBends?.halfStepBend) availableNotes.push(hole.drawBends.halfStepBend.note)
+        if (hole.drawBends?.wholeStepBend) availableNotes.push(hole.drawBends.wholeStepBend.note)
+        if (hole.drawBends?.minorThirdBend) availableNotes.push(hole.drawBends.minorThirdBend.note)
+        if (hole.overblow) availableNotes.push(hole.overblow.note)
+        if (hole.overdraw) availableNotes.push(hole.overdraw.note)
       })
       
-      // Check that no missing note is actually available (considering enharmonics)
+      // Check that each missing note is truly not available (considering enharmonics)
       missingNotes.forEach((missingNote) => {
-        const isAvailable = Array.from(availableNotes).some((availNote) => {
-          // Compare using chroma (pitch class) to handle enharmonics
-          const missingChroma = missingNote.replace(/\d+$/, '')
-          const availChroma = availNote.replace(/\d+$/, '')
-          return scaleNotes.includes(missingChroma) && scaleNotes.includes(availChroma)
-        })
-        // The note should truly be missing
+        const isAvailable = isNoteInScale(missingNote, availableNotes)
+        // The note should truly be missing (not available)
         expect(isAvailable).toBe(false)
       })
     })
