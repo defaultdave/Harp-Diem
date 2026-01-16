@@ -89,18 +89,18 @@ describe('PlaybackContext', () => {
       expect(result.current.isNoteCurrentlyPlaying('C4')).toBe(true)
     })
 
-    it('returns true for same note in different octave (chroma match)', () => {
+    it('returns false for same note in different octave (exact octave match required)', () => {
       const { result } = renderHook(() => usePlayback(), { wrapper })
 
       act(() => {
         result.current.setCurrentlyPlayingNote('C4')
       })
 
-      expect(result.current.isNoteCurrentlyPlaying('C5')).toBe(true)
-      expect(result.current.isNoteCurrentlyPlaying('C3')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('C5')).toBe(false)
+      expect(result.current.isNoteCurrentlyPlaying('C3')).toBe(false)
     })
 
-    it('handles enharmonic equivalents correctly', () => {
+    it('handles enharmonic equivalents in same octave correctly', () => {
       const { result } = renderHook(() => usePlayback(), { wrapper })
 
       act(() => {
@@ -108,7 +108,7 @@ describe('PlaybackContext', () => {
       })
 
       expect(result.current.isNoteCurrentlyPlaying('Db4')).toBe(true)
-      expect(result.current.isNoteCurrentlyPlaying('Db5')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('Db5')).toBe(false)
     })
 
     it('returns false for different pitch classes', () => {
@@ -123,7 +123,7 @@ describe('PlaybackContext', () => {
       expect(result.current.isNoteCurrentlyPlaying('C#4')).toBe(false)
     })
 
-    it('handles all enharmonic pairs', () => {
+    it('handles all enharmonic pairs in same octave', () => {
       const { result } = renderHook(() => usePlayback(), { wrapper })
       const enharmonicPairs = [
         ['C#4', 'Db4'],

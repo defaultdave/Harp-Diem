@@ -23,9 +23,11 @@ export function PlaybackProvider({ children }: PlaybackProviderProps) {
   const isNoteCurrentlyPlaying = useCallback(
     (note: string): boolean => {
       if (!currentlyPlayingNote) return false
-      const playingChroma = Note.chroma(currentlyPlayingNote)
-      const noteChroma = Note.chroma(note)
-      return playingChroma !== undefined && playingChroma === noteChroma
+      // Use MIDI number for exact pitch matching (includes octave)
+      // This ensures C4 only matches C4, not C5
+      const playingMidi = Note.midi(currentlyPlayingNote)
+      const noteMidi = Note.midi(note)
+      return playingMidi !== null && playingMidi === noteMidi
     },
     [currentlyPlayingNote]
   )
