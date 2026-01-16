@@ -162,11 +162,39 @@
   text-align: right;
 }
 
+.intervalToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  
+  input[type="checkbox"] {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+  }
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
 .scaleNotes {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
   margin-top: 1rem;
+  align-items: center;
+}
+
+.noteWithInterval {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .scaleNote {
@@ -182,4 +210,16 @@
 .scaleNotePlaying {
   transform: scale(1.15);
   box-shadow: 0 0 0 3px rgba(39, 103, 73, 0.4), 0 4px 12px rgba(39, 103, 73, 0.3);
+}
+
+.interval {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding: 0.25rem 0.5rem;
+  background: var(--color-bg-input, #f0f0f0);
+  border-radius: 8px;
+  min-width: 24px;
+  text-align: center;
+  user-select: none;
 }

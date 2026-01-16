@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getScaleNotes, isNoteInScale, getNoteOctave, getNoteDegree, degreeToRoman } from '../data/scales'
+import { getScaleNotes, isNoteInScale, getNoteOctave, getNoteDegree, degreeToRoman, getIntervalBetweenNotes } from '../data/scales'
 
 describe('Scales', () => {
   describe('getScaleNotes', () => {
@@ -143,6 +143,39 @@ describe('Scales', () => {
       expect(degreeToRoman(8)).toBe('')
       expect(degreeToRoman(-1)).toBe('')
       expect(degreeToRoman(100)).toBe('')
+    })
+  })
+
+  describe('getIntervalBetweenNotes', () => {
+    it('should return H for half step intervals', () => {
+      expect(getIntervalBetweenNotes('C', 'C#')).toBe('H')
+      expect(getIntervalBetweenNotes('C', 'Db')).toBe('H')
+      expect(getIntervalBetweenNotes('E', 'F')).toBe('H')
+      expect(getIntervalBetweenNotes('B', 'C')).toBe('H')
+    })
+
+    it('should return W for whole step intervals', () => {
+      expect(getIntervalBetweenNotes('C', 'D')).toBe('W')
+      expect(getIntervalBetweenNotes('D', 'E')).toBe('W')
+      expect(getIntervalBetweenNotes('F', 'G')).toBe('W')
+      expect(getIntervalBetweenNotes('G', 'A')).toBe('W')
+      expect(getIntervalBetweenNotes('A', 'B')).toBe('W')
+    })
+
+    it('should handle enharmonic equivalents', () => {
+      expect(getIntervalBetweenNotes('C', 'Db')).toBe('H')
+      expect(getIntervalBetweenNotes('C#', 'D')).toBe('H')
+      expect(getIntervalBetweenNotes('Gb', 'Ab')).toBe('W')
+    })
+
+    it('should return empty string for larger intervals', () => {
+      expect(getIntervalBetweenNotes('C', 'E')).toBe('') // Major third
+      expect(getIntervalBetweenNotes('C', 'G')).toBe('') // Perfect fifth
+    })
+
+    it('should return empty string for invalid notes', () => {
+      expect(getIntervalBetweenNotes('invalid', 'C')).toBe('')
+      expect(getIntervalBetweenNotes('C', 'invalid')).toBe('')
     })
   })
 })
