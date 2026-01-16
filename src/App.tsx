@@ -3,6 +3,7 @@ import styles from './App.module.css'
 import type { HarmonicaKey, ScaleType, TuningType } from './data/harmonicas'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
+import { useTheme } from './hooks/useTheme'
 import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
@@ -13,6 +14,7 @@ function AppContent() {
   const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
+  const { theme, toggleTheme } = useTheme()
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -27,6 +29,14 @@ function AppContent() {
     <div className={styles.app}>
       <header className={styles.header}>
         <h1>🎵 Harp Diem</h1>
+        <button
+          className={styles.themeToggle}
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+        >
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
       </header>
 
       <main className={styles.main}>
