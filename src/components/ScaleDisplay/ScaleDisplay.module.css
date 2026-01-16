@@ -217,7 +217,7 @@
   font-weight: 600;
   color: var(--color-text-secondary);
   padding: 0.25rem 0.5rem;
-  background: var(--color-bg-input, #f0f0f0);
+  background: var(--color-bg-input, #e0e0e0);
   border-radius: 8px;
   min-width: 24px;
   text-align: center;
