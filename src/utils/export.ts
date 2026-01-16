@@ -28,9 +28,13 @@ export async function exportAsPNG(element: HTMLElement | null, options: ExportOp
     })
 
     // Convert canvas to blob
-    const blob = await new Promise<Blob>((resolve) => {
+    const blob = await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((b) => {
-        if (b) resolve(b)
+        if (b) {
+          resolve(b)
+        } else {
+          reject(new Error('Failed to convert canvas to blob'))
+        }
       }, 'image/png')
     })
 
@@ -118,7 +122,19 @@ function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): str
   const { harmonicaKey, songKey, scaleType, position } = options
   const timestamp = new Date().toISOString().split('T')[0] // YYYY-MM-DD
   const scaleName = scaleType.charAt(0).toUpperCase() + scaleType.slice(1)
-  const positionSuffix = position === 1 ? 'st' : position === 2 ? 'nd' : position === 3 ? 'rd' : 'th'
+  const positionSuffix = getOrdinalSuffix(position)
   
   return `harp-diem_${harmonicaKey}-harp_${songKey}-${scaleName}_${position}${positionSuffix}-pos_${timestamp}.${extension}`
+}
+
+/**
+ * Gets the ordinal suffix for a position number (1st, 2nd, 3rd, etc.)
+ * @param position - Position number
+ * @returns Ordinal suffix (st, nd, rd, th)
+ */
+function getOrdinalSuffix(position: number): string {
+  if (position === 1) return 'st'
+  if (position === 2) return 'nd'
+  if (position === 3) return 'rd'
+  return 'th'
 }

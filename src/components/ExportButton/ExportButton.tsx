@@ -33,6 +33,7 @@ export function ExportButton({ exportOptions, targetRef }: ExportButtonProps) {
       }
     } catch (error) {
       console.error('Export failed:', error)
+      // Note: Using alert for simplicity. In production, consider using a toast notification system.
       alert('Export failed. Please try again.')
     } finally {
       setIsExporting(false)
