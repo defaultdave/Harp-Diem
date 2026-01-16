@@ -14,16 +14,21 @@
   - **Draw bends** - Half step, whole step, and minor third bends (↓1, ↓2, ↓3)
   - **Overblows/Overdraws** - Advanced techniques (OB, OD)
 - **Scale Highlighting**: Green indicates notes in the selected scale, grey for notes outside the scale
+- **Tab Notation Toggle**: Switch between standard note names (C, D, E) and harmonica tablature (+1, -1, -4', etc.)
 - **Scale Degrees**: Toggle to display Roman numerals (I-VII) showing each note's position in the scale
+- **Play Scale**: Automatically play all notes in the selected scale in ascending order with visual highlighting
+- **Playback Controls**: Stop button to halt playback mid-scale and tempo slider (40-200 BPM) to adjust playback speed
+- **Visual Feedback**: Harmonica holes highlight during scale playback to guide playing
 - **Audio Playback**: Click any note to hear it played with piano-like synthesis
 - **Keyboard Accessible**: Full keyboard navigation with Enter/Space to play notes
-- **Fully Tested**: Comprehensive test suite with 20 passing tests
+- **Fully Tested**: Comprehensive test suite with unit tests and E2E tests using Playwright
 
 ## Tech Stack
 
 - **Frontend**: React 19 with TypeScript
 - **Build Tool**: Vite 7
-- **Testing**: Vitest with React Testing Library
+- **Testing**: Vitest with React Testing Library, Playwright for E2E testing
+- **State Management**: React Context API (DisplaySettingsContext, PlaybackContext)
 - **Music Theory**: [tonal.js](https://github.com/tonaljs/tonal)
 - **Audio**: Web Audio API with additive synthesis
 - **Styling**: CSS Grid with responsive design
@@ -34,7 +39,16 @@
 src/
 ├── components/
 │   ├── HoleColumn.tsx      # Individual harmonica hole display
+│   ├── Legend/             # Scale legend with display toggles
+│   │   ├── Legend.tsx      # Legend component
+│   │   └── index.ts        # Legend exports
+│   ├── ScaleDisplay/       # Scale information and playback controls
+│   │   └── ScaleDisplay.tsx # Scale display component
 │   └── ErrorBoundary.tsx   # Error handling wrapper
+├── context/
+│   ├── DisplaySettingsContext.tsx # Global display state (tab/notes, degrees)
+│   ├── PlaybackContext.tsx        # Playback state management
+│   └── index.ts                   # Context exports
 ├── data/
 │   ├── harmonicas.ts       # Diatonic harmonica layouts (all tunings)
 │   ├── harmonicas.test.ts  # Harmonica data tests
@@ -44,7 +58,9 @@ src/
 │   ├── useHarmonicaScale.ts      # Custom hook for scale logic
 │   └── useHarmonicaScale.test.ts # Hook tests
 ├── utils/
-│   └── audioPlayer.ts      # Web Audio API tone generation
+│   ├── audioPlayer.ts      # Web Audio API tone generation
+│   ├── tabNotation.ts      # Harmonica tablature notation utilities
+│   └── tabNotation.test.ts # Tab notation tests
 ├── test/
 │   └── setup.ts            # Vitest configuration
 ├── App.tsx                 # Main application component
@@ -97,8 +113,15 @@ npm run preview       # Preview production build
 3. **Select Song Key**: Pick the key of the song you want to play
 4. **Choose Scale Type**: Select from 12 available scales
 5. **View Results**: Green highlighted notes are in your selected scale
-6. **Show Degrees**: Toggle to display Roman numerals (I-VII) for scale positions
+6. **Toggle Display Modes**: 
+   - Click "Show Tab" to switch between note names (C, D, E) and harmonica tablature (+1, -1, -4', etc.)
+   - Click "Show Degrees" to display Roman numerals (I-VII) for scale positions
 7. **Play Notes**: Click or press Enter/Space on any note to hear it
+8. **Play Scale**: Click the "Play Scale" button to hear all notes in the scale automatically
+9. **Control Playback**: 
+   - Adjust tempo with the slider (40-200 BPM) before or between playbacks
+   - Click "Stop" to halt playback mid-scale
+   - Watch notes and harmonica holes highlight as each note plays
 
 ### Harmonica Display
 
@@ -144,6 +167,9 @@ The application uses [tonal.js](https://tonaljs.github.io/tonal/docs) for note t
 | `npm test -- --run` | Run tests once |
 | `npm run test:ui` | Open interactive test UI |
 | `npm run test:coverage` | Generate coverage report |
+| `npm run test:e2e` | Run E2E tests with Playwright |
+| `npm run test:e2e:ui` | Run E2E tests in interactive UI mode |
+| `npm run test:e2e:headed` | Run E2E tests in headed browser mode |
 | `npm run lint` | Run ESLint |
 
 ## Contributing
