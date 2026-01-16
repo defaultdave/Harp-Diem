@@ -123,16 +123,48 @@
 /* When note is both playable and currently playing */
 .playable.currentlyPlaying {
   background: linear-gradient(
-    135deg,
+    to top,
     var(--color-playable-bg) 0%,
     var(--color-playing-bg) 50%,
     var(--color-playable-bg) 100%
   );
-  background-size: 200% 200%;
+  background-size: 100% 200%;
   animation:
     pulse 0.4s ease-in-out infinite alternate,
-    shimmer 0.8s ease-in-out infinite;
+    shimmerUp 0.8s ease-in-out infinite;
 }
+
+/* Blow notes: shimmer from bottom to top */
+.blowNote.playable.currentlyPlaying {
+  background: linear-gradient(
+    to top,
+    var(--color-playable-bg) 0%,
+    var(--color-playing-bg) 50%,
+    var(--color-playable-bg) 100%
+  );
+  background-size: 100% 200%;
+  animation:
+    pulse 0.4s ease-in-out infinite alternate,
+    shimmerDown 0.8s ease-in-out infinite;
+}
+
+/* Draw notes: shimmer from top to bottom */
+.drawNote.playable.currentlyPlaying {
+  background: linear-gradient(
+    to bottom,
+    var(--color-playable-bg) 0%,
+    var(--color-playing-bg) 50%,
+    var(--color-playable-bg) 100%
+  );
+  background-size: 100% 200%;
+  animation:
+    pulse 0.4s ease-in-out infinite alternate,
+    shimmerUp 0.8s ease-in-out infinite;
+}
+
+/* Empty classes for breath direction (used for specificity) */
+.blowNote {}
+.drawNote {}
 
 @keyframes pulse {
   0% {
@@ -147,14 +179,28 @@
   }
 }
 
-@keyframes shimmer {
+/* Shimmer animation: bottom to top (for blow notes) */
+@keyframes shimmerUp {
   0% {
-    background-position: 0% 50%;
+    background-position: 50% 100%;
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 50% 0%;
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 50% 100%;
+  }
+}
+
+/* Shimmer animation: top to bottom (for draw notes) */
+@keyframes shimmerDown {
+  0% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 50% 100%;
+  }
+  100% {
+    background-position: 50% 0%;
   }
 }

@@ -38,9 +38,9 @@
   --color-stop-bg-hover: #bb2d3b;
 
   /* Currently playing highlight colors */
-  --color-playing-glow: rgba(255, 193, 7, 0.6);
-  --color-playing-border: #ffc107;
-  --color-playing-bg: #fff8e1;
+  --color-playing-glow: rgba(104, 211, 145, 0.7);
+  --color-playing-border: #48bb78;
+  --color-playing-bg: #38a169;
 
   /* Shadows */
   --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.1);
