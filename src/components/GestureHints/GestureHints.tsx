@@ -7,7 +7,17 @@ interface GestureHintsProps {
 
 export const GestureHints = ({ onDismiss }: GestureHintsProps) => {
   const [isVisible, setIsVisible] = useState(false)
-  const hasBeenShown = localStorage.getItem('gestureHintsShown')
+  
+  // Safe localStorage access
+  const getHintsShown = () => {
+    try {
+      return localStorage.getItem('gestureHintsShown')
+    } catch {
+      return null
+    }
+  }
+  
+  const hasBeenShown = getHintsShown()
 
   useEffect(() => {
     if (!hasBeenShown) {
@@ -22,7 +32,11 @@ export const GestureHints = ({ onDismiss }: GestureHintsProps) => {
 
   const handleDismiss = () => {
     setIsVisible(false)
-    localStorage.setItem('gestureHintsShown', 'true')
+    try {
+      localStorage.setItem('gestureHintsShown', 'true')
+    } catch {
+      // Silently fail if localStorage is unavailable
+    }
     onDismiss?.()
   }
 

@@ -16,6 +16,7 @@ function AppContent() {
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
   const [zoomScale, setZoomScale] = useState(1)
+  const [isPinching, setIsPinching] = useState(false)
 
   const mainRef = useRef<HTMLDivElement>(null)
   const harmonicaDisplayRef = useRef<HTMLDivElement>(null)
@@ -57,9 +58,14 @@ function AppContent() {
 
   // Pinch to zoom handler
   const handlePinch = (scale: number) => {
+    setIsPinching(true)
     // Clamp scale between 0.5 and 2
     const clampedScale = Math.max(0.5, Math.min(2, scale))
     setZoomScale(clampedScale)
+  }
+
+  const handlePinchEnd = () => {
+    setIsPinching(false)
   }
 
   // Attach gestures to the main container
@@ -73,6 +79,7 @@ function AppContent() {
     },
     {
       onPinch: handlePinch,
+      onPinchEnd: handlePinchEnd,
     }
   )
 
@@ -152,7 +159,11 @@ function AppContent() {
         <div
           className={styles.harmonicaDisplay}
           ref={harmonicaDisplayRef}
-          style={{ transform: `scale(${zoomScale})`, transformOrigin: 'center top', transition: 'transform 0.1s ease-out' }}
+          style={{ 
+            transform: `scale(${zoomScale})`, 
+            transformOrigin: 'center top', 
+            transition: isPinching ? 'none' : 'transform 0.2s ease-out' 
+          }}
           role="region"
           aria-label={`${harmonicaKey} Diatonic Harmonica visualization showing ${songKey} ${scaleType} scale`}
         >

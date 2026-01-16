@@ -9,6 +9,7 @@ export interface SwipeHandlers {
 
 export interface PinchHandler {
   onPinch?: (scale: number) => void
+  onPinchEnd?: () => void
 }
 
 interface TouchPoint {
@@ -60,21 +61,32 @@ export const useTouchGestures = (
     (e: TouchEvent) => {
       if (e.touches.length === 1) {
         touchEnd.current = getTouchPoint(e.touches[0])
-      } else if (e.touches.length === 2 && pinchHandler && initialPinchDistance.current > 0) {
-        // Pinch zoom
-        const currentDistance = getDistance(e.touches[0], e.touches[1])
-        const scale = currentDistance / initialPinchDistance.current
-        currentScale.current = scale
-        pinchHandler.onPinch?.(scale)
-        
-        // Prevent default to stop scrolling during pinch
-        e.preventDefault()
+      } else if (e.touches.length === 2 && pinchHandler) {
+        // Reinitialize pinch if starting from non-pinch state
+        if (initialPinchDistance.current === 0) {
+          initialPinchDistance.current = getDistance(e.touches[0], e.touches[1])
+        } else {
+          // Pinch zoom
+          const currentDistance = getDistance(e.touches[0], e.touches[1])
+          const scale = currentDistance / initialPinchDistance.current
+          currentScale.current = scale
+          pinchHandler.onPinch?.(scale)
+          
+          // Prevent default to stop scrolling during pinch
+          e.preventDefault()
+        }
       }
     },
     [getTouchPoint, getDistance, pinchHandler]
   )
 
   const handleTouchEnd = useCallback(() => {
+    // Call pinch end handler if we were pinching
+    if (initialPinchDistance.current > 0 && pinchHandler?.onPinchEnd) {
+      pinchHandler.onPinchEnd()
+    }
+
+    // Don't process swipe if this is a multi-touch gesture ending
     if (!touchStart.current || !touchEnd.current) {
       // Reset pinch
       initialPinchDistance.current = 0
@@ -115,7 +127,7 @@ export const useTouchGestures = (
     touchEnd.current = null
     initialPinchDistance.current = 0
     currentScale.current = 1
-  }, [swipeHandlers])
+  }, [swipeHandlers, pinchHandler])
 
   useEffect(() => {
     const element = elementRef.current
