@@ -17,13 +17,24 @@ export const getFavorites = (): Favorite[] => {
 }
 
 /**
+ * Generate a unique ID (fallback for environments without crypto.randomUUID)
+ */
+const generateId = (): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  // Fallback: timestamp + random number
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+}
+
+/**
  * Save a new favorite to localStorage
  */
 export const saveFavorite = (favorite: Omit<Favorite, 'id' | 'createdAt'>): Favorite => {
   const favorites = getFavorites()
   const newFavorite: Favorite = {
     ...favorite,
-    id: crypto.randomUUID(),
+    id: generateId(),
     createdAt: Date.now(),
   }
   favorites.push(newFavorite)
