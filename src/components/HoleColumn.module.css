@@ -205,3 +205,23 @@
     background-position: 50% 0%;
   }
 }
+
+/* Chord highlighting - notes that are part of the selected chord */
+.inChord {
+  border: 2.5px solid #ff9800;
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.6);
+  background: linear-gradient(135deg, var(--color-note-bg) 0%, rgba(255, 152, 0, 0.15) 100%);
+}
+
+/* When a note is both playable (in scale) and in chord */
+.playable.inChord {
+  border: 2.5px solid #ff9800;
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.6);
+  background: linear-gradient(135deg, var(--color-playable-bg) 0%, rgba(255, 152, 0, 0.2) 100%);
+}
+
+/* Hover state for chord notes */
+.inChord:hover {
+  box-shadow: 0 0 12px rgba(255, 152, 0, 0.8);
+  transform: scale(1.08);
+}

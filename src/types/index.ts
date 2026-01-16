@@ -11,3 +11,9 @@ export interface MusicalNote {
  * Used for scale membership checking
  */
 export type NoteNames = string[]
+
+/**
+ * Chord-related types are defined in src/data/chords.ts
+ * Re-exported here for convenience
+ */
+export type { ChordVoicing, ChordQuality } from '../data/chords'
