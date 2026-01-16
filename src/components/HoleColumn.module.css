@@ -109,9 +109,10 @@
 }
 
 /* Currently playing note highlight with animation */
-.currentlyPlaying {
+/* Use .noteSection.currentlyPlaying for specificity to override .playable border */
+.noteSection.currentlyPlaying {
   animation: pulse 0.4s ease-in-out infinite alternate;
-  border-color: var(--color-playing-border) !important;
+  border-color: var(--color-playing-border);
   box-shadow:
     0 0 0 3px var(--color-playing-glow),
     0 0 16px var(--color-playing-glow);
