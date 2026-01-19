@@ -99,6 +99,28 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
         ))}
       </div>
 
+      <div className={styles.qualityLegend} role="note" aria-label="Chord quality color legend">
+        <span className={styles.legendLabel}>Chord Quality:</span>
+        <div className={styles.legendItems}>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendColor} ${styles.legendMajor}`} aria-hidden="true" />
+            Major
+          </span>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendColor} ${styles.legendMinor}`} aria-hidden="true" />
+            Minor
+          </span>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendColor} ${styles.legendDominant}`} aria-hidden="true" />
+            Dominant 7th
+          </span>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendColor} ${styles.legendDiminished}`} aria-hidden="true" />
+            Diminished
+          </span>
+        </div>
+      </div>
+
       {selectedChord && (
         <div className={styles.selectedChordInfo} role="status" aria-live="polite">
           Selected: {selectedChord.name} (holes {selectedChord.holes.join('-')} {selectedChord.breath})

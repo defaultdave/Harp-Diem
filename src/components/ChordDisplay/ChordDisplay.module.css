@@ -165,8 +165,64 @@
   border: 1px solid var(--color-playable-border);
   border-radius: 6px;
   text-align: center;
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   font-weight: 500;
+}
+
+/* Quality legend */
+.qualityLegend {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg-secondary);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.legendLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.legendItems {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--color-text-primary);
+}
+
+.legendColor {
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.legendMajor {
+  background: #4caf50;
+}
+
+.legendMinor {
+  background: #ff9800;
+}
+
+.legendDominant {
+  background: #f44336;
+}
+
+.legendDiminished {
+  background: #9c27b0;
 }
 
 /* Quality color variants */
