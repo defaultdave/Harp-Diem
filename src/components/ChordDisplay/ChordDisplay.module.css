@@ -56,14 +56,14 @@
 }
 
 .chordCardSelected {
-  border-color: #000000;
+  border-color: #ff9800;
   border-width: 3px;
   background: var(--color-bg-secondary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.4);
 }
 
 .chordCardSelected:hover {
-  border-color: #000000;
+  border-color: #ff9800;
 }
 
 .chordName {
