@@ -6,13 +6,16 @@ import { useHarmonicaScale } from './hooks/useHarmonicaScale'
 import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
+import { ChordDisplay } from './components/ChordDisplay'
 import { DisplaySettingsProvider, PlaybackProvider } from './context'
+import type { ChordVoicing } from './data/chords'
 
 function AppContent() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
   const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
+  const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -22,6 +25,21 @@ function AppContent() {
   )
 
   const position = useMemo(() => getHarmonicaPosition(harmonicaKey, songKey), [harmonicaKey, songKey])
+
+  // Determine which holes are in the selected chord
+  const chordBlowHoles = useMemo(() => {
+    if (!selectedChord || selectedChord.breath !== 'blow') return []
+    return selectedChord.holes
+  }, [selectedChord])
+
+  const chordDrawHoles = useMemo(() => {
+    if (!selectedChord || selectedChord.breath !== 'draw') return []
+    return selectedChord.holes
+  }, [selectedChord])
+
+  const handleChordSelect = (chord: ChordVoicing | null) => {
+    setSelectedChord(chord)
+  }
 
   return (
     <div className={styles.app}>
@@ -117,12 +135,16 @@ function AppContent() {
                 scaleNotes={scaleNotes}
                 isBlowPlayable={playableBlowHoles.includes(hole.hole)}
                 isDrawPlayable={playableDrawHoles.includes(hole.hole)}
+                isBlowInChord={chordBlowHoles.includes(hole.hole)}
+                isDrawInChord={chordDrawHoles.includes(hole.hole)}
               />
             ))}
           </div>
 
           <Legend />
         </div>
+
+        <ChordDisplay harmonicaKey={harmonicaKey} onChordSelect={handleChordSelect} />
       </main>
     </div>
   )
