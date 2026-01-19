@@ -165,7 +165,7 @@
   border: 1px solid var(--color-playable-border);
   border-radius: 6px;
   text-align: center;
-  color: var(--color-text-secondary);
+  color: var(--color-text-inverse);
   font-weight: 500;
 }
 
