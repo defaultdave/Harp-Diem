@@ -89,7 +89,7 @@
   align-items: center;
 }
 
-.chordHoles, .chordBreath, .chordNotes {
+.chordHoles, .chordBreath {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -127,34 +127,6 @@
   background: var(--color-breath-draw-bg);
   color: var(--color-breath-draw);
   border: 1px solid var(--color-breath-draw-border);
-}
-
-.chordNotes {
-  font-size: 0.85rem;
-}
-
-.chordPosition {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--color-border-light);
-}
-
-.positionBadge {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  background: var(--color-bg-card);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  border: 1px solid var(--color-border-light);
-}
-
-.romanNumeral {
-  font-size: 0.85rem;
-  font-weight: bold;
-  color: var(--color-text-secondary);
-  font-family: 'Georgia', serif;
 }
 
 .selectedChordInfo {

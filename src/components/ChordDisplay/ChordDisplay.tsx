@@ -9,13 +9,6 @@ interface ChordDisplayProps {
   onChordSelect?: (chord: ChordVoicing | null) => void
 }
 
-const getOrdinalSuffix = (num: number): string => {
-  if (num === 1) return 'st'
-  if (num === 2) return 'nd'
-  if (num === 3) return 'rd'
-  return 'th'
-}
-
 export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps) {
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
   const chords = getCommonChords(harmonicaKey)
@@ -74,26 +67,12 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
                 <span className={styles.chordLabel}>Holes:</span>
                 <span className={styles.chordValue}>{chord.holes.join('-')}</span>
               </div>
-              
+
               <div className={styles.chordBreath}>
                 <span className={styles.breathDirection} data-breath={chord.breath}>
                   {chord.breath === 'blow' ? '↑ Blow' : '↓ Draw'}
                 </span>
               </div>
-            </div>
-
-            <div className={styles.chordNotes}>
-              <span className={styles.chordLabel}>Notes:</span>
-              <span className={styles.chordValue}>
-                {chord.notes.map(note => note.replace(/\d+$/, '')).join(' • ')}
-              </span>
-            </div>
-
-            <div className={styles.chordPosition}>
-              <span className={styles.positionBadge}>
-                {chord.position}{getOrdinalSuffix(chord.position)} pos
-              </span>
-              <span className={styles.romanNumeral}>{chord.romanNumeral}</span>
             </div>
           </button>
         ))}
