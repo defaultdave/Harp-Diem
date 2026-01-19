@@ -33,6 +33,7 @@ export function ScaleDisplay({
     isNoteCurrentlyPlaying,
   } = usePlayback()
   const [tempoBpm, setTempoBpm] = useState(120)
+  const [playDirection, setPlayDirection] = useState<'asc' | 'desc'>('asc')
   const abortControllerRef = useRef<AbortController | null>(null)
 
   const positionSuffix = position === 1 ? 'st' : position === 2 ? 'nd' : position === 3 ? 'rd' : 'th'
@@ -128,7 +129,12 @@ export function ScaleDisplay({
     // so we wait the full beat interval between note starts
     const waitBetweenNotes = Math.max(50, beatInterval) // ms
 
-    for (const note of playableNotesWithFrequencies) {
+    // Get notes in the correct order based on direction
+    const notesToPlay = playDirection === 'desc' 
+      ? [...playableNotesWithFrequencies].reverse() 
+      : playableNotesWithFrequencies
+
+    for (const note of notesToPlay) {
       if (signal.aborted) break
       setCurrentlyPlayingNote(note.note)
       playTone(note.frequency, noteDuration) // non-blocking, no await needed
@@ -139,7 +145,7 @@ export function ScaleDisplay({
     setCurrentlyPlayingNote(null)
     setIsPlayingScale(false)
     abortControllerRef.current = null
-  }, [isPlayingScale, playableNotesWithFrequencies, tempoBpm, setCurrentlyPlayingNote, setIsPlayingScale])
+  }, [isPlayingScale, playableNotesWithFrequencies, tempoBpm, playDirection, setCurrentlyPlayingNote, setIsPlayingScale])
 
   const stopScale = useCallback(() => {
     abortControllerRef.current?.abort()
@@ -157,22 +163,33 @@ export function ScaleDisplay({
           </span>
         </h2>
         <div className={styles.playbackControls}>
-          <button
-            className={`${styles.playScaleButton} ${isPlayingScale ? styles.playScaleButtonPlaying : ''}`}
-            onClick={isPlayingScale ? stopScale : playScale}
-            disabled={playableNotesWithFrequencies.length === 0}
-            aria-label={isPlayingScale ? 'Stop scale playback' : 'Play scale ascending'}
-          >
-            {isPlayingScale ? (
-              <>
-                <span className={styles.stopIcon} aria-hidden="true">&#9632;</span> Stop
-              </>
-            ) : (
-              <>
-                <span aria-hidden="true">&#9654;</span> Play Scale
-              </>
-            )}
-          </button>
+          <div className={styles.playControlsRow}>
+            <button
+              className={`${styles.directionToggle} ${playDirection === 'desc' ? styles.directionToggleDesc : ''}`}
+              onClick={() => setPlayDirection(playDirection === 'asc' ? 'desc' : 'asc')}
+              disabled={isPlayingScale}
+              aria-label={`Toggle direction (currently ${playDirection === 'asc' ? 'ascending' : 'descending'})`}
+              title={playDirection === 'asc' ? 'Switch to descending' : 'Switch to ascending'}
+            >
+              {playDirection === 'asc' ? '↑' : '↓'}
+            </button>
+            <button
+              className={`${styles.playScaleButton} ${isPlayingScale ? styles.playScaleButtonPlaying : ''}`}
+              onClick={isPlayingScale ? stopScale : playScale}
+              disabled={playableNotesWithFrequencies.length === 0}
+              aria-label={isPlayingScale ? 'Stop scale playback' : `Play scale ${playDirection === 'asc' ? 'ascending' : 'descending'}`}
+            >
+              {isPlayingScale ? (
+                <>
+                  <span className={styles.stopIcon} aria-hidden="true">&#9632;</span> Stop
+                </>
+              ) : (
+                <>
+                  <span aria-hidden="true">&#9654;</span> Play Scale
+                </>
+              )}
+            </button>
+          </div>
           <div className={styles.tempoControl}>
             <label htmlFor="tempo-slider" className={styles.tempoLabel}>
               Tempo
