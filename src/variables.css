@@ -45,6 +45,22 @@
   /* Shadows */
   --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  /* Chord quality colors */
+  --color-chord-selected: #ff9800;
+  --color-chord-selected-glow: rgba(255, 152, 0, 0.4);
+  --color-chord-major: #4caf50;
+  --color-chord-minor: #ff9800;
+  --color-chord-dominant: #f44336;
+  --color-chord-diminished: #9c27b0;
+
+  /* Breath direction colors */
+  --color-breath-blow: #4caf50;
+  --color-breath-blow-bg: rgba(76, 175, 80, 0.2);
+  --color-breath-blow-border: rgba(76, 175, 80, 0.4);
+  --color-breath-draw: #2196f3;
+  --color-breath-draw-bg: rgba(33, 150, 243, 0.2);
+  --color-breath-draw-border: rgba(33, 150, 243, 0.4);
 }
 
 /* Dark theme */
