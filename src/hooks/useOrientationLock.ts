@@ -21,10 +21,13 @@ interface OrientationLockState {
   isFullscreen: boolean
   isLocked: boolean
   isSupported: boolean
+  isNarrowScreen: boolean
   error: string | null
 }
 
-// TODO(refactor): Add proper platform detection utility
+// TODO(refactor): Make threshold configurable
+const NARROW_SCREEN_THRESHOLD = 768
+
 function detectSupport(): { fullscreen: boolean; orientationLock: boolean } {
   // Check if we're in a browser environment
   if (typeof document === 'undefined' || typeof screen === 'undefined') {
@@ -36,7 +39,6 @@ function detectSupport(): { fullscreen: boolean; orientationLock: boolean } {
     'webkitRequestFullscreen' in document.documentElement
 
   // Screen Orientation API - check if lock method exists
-  // Note: iOS Safari does NOT support screen.orientation.lock
   const orientationLock =
     'orientation' in screen &&
     screen.orientation !== null &&
@@ -45,27 +47,10 @@ function detectSupport(): { fullscreen: boolean; orientationLock: boolean } {
   return { fullscreen, orientationLock }
 }
 
-// TODO(refactor): Add proper mobile detection utility
-function isMobileDevice(): boolean {
-  if (typeof navigator === 'undefined') return false
-
-  // Quick and dirty mobile detection - check touch support and screen size
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-  const isNarrow = window.innerWidth < 768
-
-  // Also check user agent for mobile keywords
-  const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  )
-
-  return (hasTouch && isNarrow) || mobileUA
-}
-
-// TODO(refactor): Add proper iOS detection
-function isIOS(): boolean {
-  if (typeof navigator === 'undefined') return false
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+// Simple screen width check - works on any device
+function isNarrowScreen(): boolean {
+  if (typeof window === 'undefined') return false
+  return window.innerWidth < NARROW_SCREEN_THRESHOLD
 }
 
 export function useOrientationLock() {
@@ -74,10 +59,24 @@ export function useOrientationLock() {
     return {
       isFullscreen: false,
       isLocked: false,
-      isSupported: support.fullscreen && support.orientationLock && !isIOS(),
+      isSupported: support.fullscreen && support.orientationLock,
+      isNarrowScreen: isNarrowScreen(),
       error: null,
     }
   })
+
+  // Track screen width changes
+  useEffect(() => {
+    const handleResize = () => {
+      setState((prev) => ({
+        ...prev,
+        isNarrowScreen: isNarrowScreen(),
+      }))
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Check if currently in fullscreen
   useEffect(() => {
@@ -124,10 +123,12 @@ export function useOrientationLock() {
         setState((prev) => ({ ...prev, isFullscreen: true, isLocked: true }))
         console.log('Orientation locked to landscape')
       } else {
-        throw new Error('Orientation lock not supported')
+        // Fullscreen worked but orientation lock didn't - still useful!
+        setState((prev) => ({ ...prev, isFullscreen: true, isLocked: false }))
+        console.log('Fullscreen entered (orientation lock not supported)')
       }
     } catch (err) {
-      console.error('Orientation lock failed:', err)
+      console.error('Fullscreen/orientation lock failed:', err)
       setState((prev) => ({
         ...prev,
         error: err instanceof Error ? err.message : 'Unknown error',
@@ -154,12 +155,15 @@ export function useOrientationLock() {
     }
   }, [])
 
-  // TODO(refactor): Consider adding unlock-only function for finer control
+  // Show button if: screen is narrow AND fullscreen is supported
+  // (orientation lock is nice-to-have, fullscreen alone helps on narrow screens)
+  const shouldShowButton = state.isNarrowScreen && (state.isSupported ||
+    'requestFullscreen' in document.documentElement ||
+    'webkitRequestFullscreen' in document.documentElement)
 
   return {
     ...state,
-    isMobile: isMobileDevice(),
-    isIOS: isIOS(),
+    shouldShowButton,
     enterFullscreenAndLock,
     exitFullscreen,
   }

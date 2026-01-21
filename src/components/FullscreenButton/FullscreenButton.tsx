@@ -7,21 +7,16 @@ const EXIT_ICON = '✕'
 
 export function FullscreenButton() {
   const {
-    isSupported,
     isFullscreen,
     isLocked,
-    isMobile,
-    isIOS,
+    shouldShowButton,
     error,
     enterFullscreenAndLock,
     exitFullscreen,
   } = useOrientationLock()
 
-  // Only show on mobile devices where the API is supported
-  // Don't show on iOS since it doesn't support orientation lock
-  if (!isMobile || !isSupported) {
-    // TODO(refactor): Consider showing a tooltip or message explaining why button isn't shown
-    console.log('FullscreenButton hidden:', { isMobile, isSupported, isIOS })
+  // Show on any narrow screen where fullscreen is supported
+  if (!shouldShowButton) {
     return null
   }
 
@@ -38,12 +33,12 @@ export function FullscreenButton() {
       <button
         className={`${styles.button} ${isFullscreen ? styles.active : ''}`}
         onClick={handleClick}
-        aria-label={isFullscreen ? 'Exit fullscreen mode' : 'Enter fullscreen landscape mode'}
-        title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen + Lock landscape'}
+        aria-label={isFullscreen ? 'Exit fullscreen mode' : 'Enter fullscreen mode'}
+        title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
       >
         <span className={styles.icon}>{isFullscreen ? EXIT_ICON : FULLSCREEN_ICON}</span>
         <span className={styles.label}>
-          {isFullscreen ? 'Exit' : 'Landscape'}
+          {isFullscreen ? 'Exit' : 'Fullscreen'}
         </span>
       </button>
 

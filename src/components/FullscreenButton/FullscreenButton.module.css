@@ -63,9 +63,4 @@
   font-size: 0.75rem;
 }
 
-/* Hide on larger screens - users can resize browser */
-@media (min-width: 768px) and (orientation: landscape) {
-  .container {
-    display: none;
-  }
-}
+/* Visibility now controlled by JS based on screen width */
