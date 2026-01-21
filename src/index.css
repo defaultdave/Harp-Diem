@@ -15,6 +15,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
 a {
   font-weight: 500;
   color: var(--color-text-secondary);
