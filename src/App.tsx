@@ -132,7 +132,7 @@ function AppContent() {
           <h2>
             {harmonicaKey} Diatonic Harmonica
             {tuning !== 'richter' && (
-              <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: '#666' }}>
+              <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: 'var(--color-text-muted)' }}>
                 ({tuning.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')})
               </span>
             )}

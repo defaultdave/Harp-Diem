@@ -167,10 +167,110 @@ describe('useTheme', () => {
   describe('Return Value', () => {
     it('returns current theme and toggle function', () => {
       const { result } = renderHook(() => useTheme())
-      
+
       expect(result.current).toHaveProperty('theme')
       expect(result.current).toHaveProperty('toggleTheme')
       expect(typeof result.current.toggleTheme).toBe('function')
+    })
+  })
+
+  describe('System Preference Sync', () => {
+    it('syncs theme when system preference changes and no stored preference', () => {
+      let changeHandler: ((e: MediaQueryListEvent) => void) | null = null
+
+      Object.defineProperty(window, 'matchMedia', {
+        writable: true,
+        value: vi.fn().mockImplementation((query) => ({
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn((event, handler) => {
+            if (event === 'change') {
+              changeHandler = handler
+            }
+          }),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+        })),
+      })
+
+      const { result } = renderHook(() => useTheme())
+      expect(result.current.theme).toBe('light')
+
+      // Clear localStorage to simulate no stored preference
+      localStorage.clear()
+
+      // Simulate system preference change to dark
+      act(() => {
+        if (changeHandler) {
+          changeHandler({ matches: true } as MediaQueryListEvent)
+        }
+      })
+
+      expect(result.current.theme).toBe('dark')
+    })
+
+    it('does not sync theme when system preference changes but stored preference exists', () => {
+      let changeHandler: ((e: MediaQueryListEvent) => void) | null = null
+
+      Object.defineProperty(window, 'matchMedia', {
+        writable: true,
+        value: vi.fn().mockImplementation((query) => ({
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn((event, handler) => {
+            if (event === 'change') {
+              changeHandler = handler
+            }
+          }),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+        })),
+      })
+
+      const { result } = renderHook(() => useTheme())
+      expect(result.current.theme).toBe('light')
+
+      // localStorage should have 'light' stored from the initial render
+      expect(localStorage.getItem('harp-diem-theme')).toBe('light')
+
+      // Simulate system preference change to dark
+      act(() => {
+        if (changeHandler) {
+          changeHandler({ matches: true } as MediaQueryListEvent)
+        }
+      })
+
+      // Theme should remain light because stored preference exists
+      expect(result.current.theme).toBe('light')
+    })
+
+    it('cleans up event listener on unmount', () => {
+      const removeEventListenerMock = vi.fn()
+
+      Object.defineProperty(window, 'matchMedia', {
+        writable: true,
+        value: vi.fn().mockImplementation((query) => ({
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: removeEventListenerMock,
+          dispatchEvent: vi.fn(),
+        })),
+      })
+
+      const { unmount } = renderHook(() => useTheme())
+      unmount()
+
+      expect(removeEventListenerMock).toHaveBeenCalledWith('change', expect.any(Function))
     })
   })
 })
