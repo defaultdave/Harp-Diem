@@ -8,6 +8,7 @@ import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
 import { ChordDisplay } from './components/ChordDisplay'
+import { FullscreenButton } from './components/FullscreenButton'
 import { DisplaySettingsProvider, PlaybackProvider } from './context'
 import type { ChordVoicing } from './data/chords'
 
@@ -156,6 +157,9 @@ function AppContent() {
 
         <ChordDisplay harmonicaKey={harmonicaKey} onChordSelect={handleChordSelect} />
       </main>
+
+      {/* Experimental: Fullscreen + Orientation Lock button for mobile */}
+      <FullscreenButton />
     </div>
   )
 }
