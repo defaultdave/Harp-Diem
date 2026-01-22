@@ -1,19 +1,19 @@
 .chordDisplay {
-  margin: 2rem 0;
-  padding: 1.5rem;
+  margin: var(--spacing-xl) 0;
+  padding: var(--spacing-lg);
   background: var(--color-bg-card);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   border: 2px solid var(--color-border-medium);
 }
 
 .chordHeader {
-  margin-bottom: 1.5rem;
-}
+  margin-bottom: var(--spacing-lg);
 
-.chordHeader h2 {
-  margin: 0 0 0.5rem 0;
-  color: var(--color-text-primary);
-  font-size: 1.5rem;
+  h2 {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-xl);
+  }
 }
 
 .chordSubheading {
@@ -25,34 +25,34 @@
 .chordGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
 }
 
 .chordCard {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 1rem;
+  padding: var(--spacing-md);
   background: var(--color-bg-secondary);
   border: 2px solid var(--color-border-light);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
   position: relative;
-}
 
-.chordCard:hover {
-  border-color: var(--color-hover-border);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+  &:hover {
+    border-color: var(--color-hover-border);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
 
-.chordCard:focus {
-  outline: none;
-  border-color: var(--color-hover-border);
-  box-shadow: 0 0 0 3px var(--color-focus-ring);
+  &:focus {
+    outline: none;
+    border-color: var(--color-hover-border);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+  }
 }
 
 .chordCard.chordCardSelected,
@@ -67,13 +67,13 @@
 .chordName {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--spacing-xs);
   border-bottom: 1px solid var(--color-border-light);
-  padding-bottom: 0.5rem;
+  padding-bottom: var(--spacing-sm);
 }
 
 .chordShortName {
-  font-size: 1.5rem;
+  font-size: var(--font-xl);
   font-weight: bold;
   color: var(--color-text-primary);
 }
@@ -92,11 +92,11 @@
 .chordHoles, .chordBreath {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--spacing-xs);
 }
 
 .chordLabel {
-  font-size: 0.75rem;
+  font-size: var(--font-sm);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -111,9 +111,9 @@
 .breathDirection {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
+  padding: var(--spacing-xs) 0.75rem;
+  border-radius: var(--radius-xs);
+  font-size: var(--font-md);
   font-weight: 600;
 }
 
@@ -133,7 +133,7 @@
   padding: 0.75rem;
   background: var(--color-playable-bg);
   border: 1px solid var(--color-playable-border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   text-align: center;
   color: var(--color-text-inverse);
   font-weight: 500;
@@ -144,10 +144,10 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem var(--spacing-md);
   background: var(--color-bg-secondary);
-  border-radius: 6px;
-  margin-bottom: 1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-md);
   flex-wrap: wrap;
 }
 
