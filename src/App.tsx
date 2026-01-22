@@ -8,6 +8,7 @@ import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
 import { ChordDisplay } from './components/ChordDisplay'
+import { RotateOverlay } from './components/RotateOverlay'
 import { DisplaySettingsProvider, PlaybackProvider } from './context'
 import type { ChordVoicing } from './data/chords'
 
@@ -165,6 +166,7 @@ function App() {
     <DisplaySettingsProvider>
       <PlaybackProvider>
         <AppContent />
+        <RotateOverlay />
       </PlaybackProvider>
     </DisplaySettingsProvider>
   )
