@@ -1,8 +1,8 @@
 .scaleDisplay {
   background: var(--color-bg-card);
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
   box-shadow: var(--shadow-card);
 
   h2 {
@@ -16,7 +16,7 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--spacing-md);
 }
 
 .positionLabel {
@@ -29,13 +29,13 @@
 .playScaleButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   padding: 0.6rem 1.2rem;
   border: 2px solid var(--color-playable-bg);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: var(--color-bg-card);
   color: var(--color-playable-bg);
-  font-size: 0.95rem;
+  font-size: var(--font-base);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -47,7 +47,7 @@
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
   }
 
   &:disabled {
@@ -91,10 +91,10 @@
   width: 42px;
   height: 42px;
   border: 2px solid var(--color-playable-bg);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: var(--color-bg-card);
   color: var(--color-playable-bg);
-  font-size: 1.5rem;
+  font-size: var(--font-xl);
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s;
@@ -106,7 +106,7 @@
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
   }
 
   &:disabled {
@@ -123,16 +123,18 @@
 .tempoControl {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
 }
 
 .tempoLabel {
-  font-size: 0.85rem;
+  font-size: var(--font-md);
   color: var(--color-text-secondary);
   font-weight: 500;
 }
 
 .tempoSlider {
+  --slider-thumb-size: 16px;
+
   width: 100px;
   height: 6px;
   -webkit-appearance: none;
@@ -144,8 +146,8 @@
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: var(--slider-thumb-size);
+    height: var(--slider-thumb-size);
     border-radius: 50%;
     background: var(--color-playable-bg);
     cursor: pointer;
@@ -153,8 +155,8 @@
   }
 
   &::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
+    width: var(--slider-thumb-size);
+    height: var(--slider-thumb-size);
     border: none;
     border-radius: 50%;
     background: var(--color-playable-bg);
@@ -175,11 +177,11 @@
   }
 
   &:focus::-webkit-slider-thumb {
-    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
   }
 
   &:focus::-moz-range-thumb {
-    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
   }
 
   &:disabled {
@@ -197,7 +199,7 @@
 }
 
 .tempoValue {
-  font-size: 0.85rem;
+  font-size: var(--font-md);
   font-weight: 600;
   color: var(--color-text-primary);
   min-width: 60px;
@@ -208,13 +210,13 @@
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin-top: 1rem;
+  margin-top: var(--spacing-md);
 }
 
 .scaleNote {
   background: var(--color-playable-bg);
   color: var(--color-playable-text);
-  padding: 0.5rem 1rem;
+  padding: var(--spacing-sm) var(--spacing-md);
   border-radius: 20px;
   font-weight: 600;
   font-size: 1.1rem;
