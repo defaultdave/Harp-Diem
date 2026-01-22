@@ -3,16 +3,23 @@ import styles from './App.module.css'
 import type { HarmonicaKey, ScaleType, TuningType } from './data/harmonicas'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
+import { useTheme } from './hooks/useTheme'
 import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
+import { ChordDisplay } from './components/ChordDisplay'
+import { RotateOverlay } from './components/RotateOverlay'
 import { DisplaySettingsProvider, PlaybackProvider } from './context'
+import type { ChordVoicing } from './data/chords'
+import { capitalizeWords } from './utils/string'
 
 function AppContent() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
   const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
+  const { theme, toggleTheme } = useTheme()
+  const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -23,10 +30,33 @@ function AppContent() {
 
   const position = useMemo(() => getHarmonicaPosition(harmonicaKey, songKey), [harmonicaKey, songKey])
 
+  // Determine which holes are in the selected chord
+  const chordBlowHoles = useMemo(() => {
+    if (!selectedChord || selectedChord.breath !== 'blow') return []
+    return selectedChord.holes
+  }, [selectedChord])
+
+  const chordDrawHoles = useMemo(() => {
+    if (!selectedChord || selectedChord.breath !== 'draw') return []
+    return selectedChord.holes
+  }, [selectedChord])
+
+  const handleChordSelect = (chord: ChordVoicing | null) => {
+    setSelectedChord(chord)
+  }
+
   return (
     <div className={styles.app}>
       <header className={styles.header}>
         <h1>🎵 Harp Diem</h1>
+        <button
+          className={styles.themeToggle}
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+        >
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
       </header>
 
       <main className={styles.main}>
@@ -66,7 +96,7 @@ function AppContent() {
             >
               {SCALE_TYPES.map((type) => (
                 <option key={type} value={type}>
-                  {type.replace(/\b\w/g, (c) => c.toUpperCase())}
+                  {capitalizeWords(type, ' ')}
                 </option>
               ))}
             </select>
@@ -81,7 +111,7 @@ function AppContent() {
             >
               {TUNING_TYPES.map((t) => (
                 <option key={t} value={t}>
-                  {t.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                  {capitalizeWords(t)}
                 </option>
               ))}
             </select>
@@ -104,8 +134,8 @@ function AppContent() {
           <h2>
             {harmonicaKey} Diatonic Harmonica
             {tuning !== 'richter' && (
-              <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: '#666' }}>
-                ({tuning.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')})
+              <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: 'var(--color-text-muted)' }}>
+                ({capitalizeWords(tuning)})
               </span>
             )}
           </h2>
@@ -117,12 +147,16 @@ function AppContent() {
                 scaleNotes={scaleNotes}
                 isBlowPlayable={playableBlowHoles.includes(hole.hole)}
                 isDrawPlayable={playableDrawHoles.includes(hole.hole)}
+                isBlowInChord={chordBlowHoles.includes(hole.hole)}
+                isDrawInChord={chordDrawHoles.includes(hole.hole)}
               />
             ))}
           </div>
 
           <Legend />
         </div>
+
+        <ChordDisplay harmonicaKey={harmonicaKey} onChordSelect={handleChordSelect} />
       </main>
     </div>
   )
@@ -133,6 +167,7 @@ function App() {
     <DisplaySettingsProvider>
       <PlaybackProvider>
         <AppContent />
+        <RotateOverlay />
       </PlaybackProvider>
     </DisplaySettingsProvider>
   )
