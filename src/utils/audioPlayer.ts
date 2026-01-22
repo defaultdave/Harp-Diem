@@ -2,6 +2,9 @@
  * Audio player utility for playing musical notes with piano-like sound using Web Audio API
  */
 
+import { Note } from 'tonal'
+import type { ChordInProgression } from '../data/progressions'
+
 let audioContext: AudioContext | null = null
 
 /**
@@ -89,5 +92,55 @@ export async function playTone(frequency: number, duration: number = 0.5): Promi
     })
   } catch (error) {
     console.error('Failed to play tone:', error)
+  }
+}
+
+interface ChordProgressionOptions {
+  chordDuration?: number
+  arpeggiate?: boolean
+}
+
+/**
+ * Play a chord progression with optional arpeggio effect
+ * @param progression - Array of chords to play
+ * @param options - Playback options (chordDuration, arpeggiate)
+ * @param signal - Optional AbortSignal for cancellation
+ */
+export async function playChordProgression(
+  progression: ChordInProgression[],
+  options?: ChordProgressionOptions,
+  signal?: AbortSignal
+): Promise<void> {
+  const { chordDuration = 1.5, arpeggiate = true } = options ?? {}
+
+  for (const chord of progression) {
+    if (signal?.aborted) break
+
+    // Get frequencies for all notes in the chord
+    const frequencies = chord.notes
+      .map(note => Note.freq(note))
+      .filter((freq): freq is number => freq !== null && freq > 0)
+
+    if (frequencies.length === 0) continue
+
+    if (arpeggiate) {
+      // Stagger note attacks by 30ms for a more natural strummed sound
+      frequencies.forEach((freq, i) => {
+        setTimeout(() => {
+          if (!signal?.aborted) {
+            playTone(freq, chordDuration)
+          }
+        }, i * 30)
+      })
+    } else {
+      // Play all notes simultaneously
+      frequencies.forEach(freq => playTone(freq, chordDuration))
+    }
+
+    // Wait for chord duration plus a small gap before next chord
+    const waitTime = (chordDuration + 0.3) * 1000
+    await new Promise(resolve => setTimeout(resolve, waitTime))
+
+    if (signal?.aborted) break
   }
 }
