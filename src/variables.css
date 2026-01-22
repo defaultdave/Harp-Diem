@@ -25,6 +25,12 @@
   /* Focus Ring */
   --focus-ring-width: 3px;
 
+  /* Interactive States */
+  --opacity-disabled: 0.5;
+
+  /* Audio */
+  --audio-arpeggiate-delay: 30ms;
+
   /* Background colors */
   --color-bg-primary: #f7fafc;
   --color-bg-secondary: #edf2f7;
