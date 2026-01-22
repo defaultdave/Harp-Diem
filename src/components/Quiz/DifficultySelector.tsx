@@ -1,4 +1,5 @@
 import type { Difficulty } from '../../data/progressions'
+import { capitalize } from '../../utils/string'
 import styles from './QuizPage.module.css'
 
 interface DifficultySelectorProps {
@@ -27,7 +28,7 @@ export function DifficultySelector({
             role="radio"
             aria-checked={difficulty === option}
           >
-            {option.charAt(0).toUpperCase() + option.slice(1)}
+            {capitalize(option)}
           </button>
         ))}
       </div>

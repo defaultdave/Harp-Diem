@@ -49,7 +49,7 @@ export function QuizControls({
           <span aria-hidden="true">&#10003;</span> Check Answer
         </button>
         {isAudioPlaying && (
-          <span id="playing-status" className={styles.srOnly}>
+          <span id="playing-status" className="sr-only">
             Audio is currently playing
           </span>
         )}

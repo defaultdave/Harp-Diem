@@ -1,4 +1,5 @@
 import type { QuizQuestion } from '../../data/progressions'
+import { capitalize } from '../../utils/string'
 import styles from './QuizPage.module.css'
 
 interface ResultFeedbackProps {
@@ -7,7 +8,7 @@ interface ResultFeedbackProps {
 }
 
 export function ResultFeedback({ isCorrect, question }: ResultFeedbackProps) {
-  const modeLabel = question.mode.charAt(0).toUpperCase() + question.mode.slice(1)
+  const modeLabel = capitalize(question.mode)
   const progressionText = question.progression
     .map((chord) => `${chord.name} (${chord.romanNumeral})`)
     .join(' \u2192 ')

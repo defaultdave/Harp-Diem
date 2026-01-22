@@ -5,6 +5,12 @@
 import { Note } from 'tonal'
 import type { ChordInProgression } from '../data/progressions'
 
+/** Delay between arpeggiated notes in milliseconds for a natural strummed sound */
+const ARPEGGIATE_DELAY_MS = 30
+
+/** Gap between chords in seconds during progression playback */
+const CHORD_GAP_SECONDS = 0.3
+
 let audioContext: AudioContext | null = null
 
 /**
@@ -124,13 +130,13 @@ export async function playChordProgression(
     if (frequencies.length === 0) continue
 
     if (arpeggiate) {
-      // Stagger note attacks by 30ms for a more natural strummed sound
+      // Stagger note attacks for a more natural strummed sound
       frequencies.forEach((freq, i) => {
         setTimeout(() => {
           if (!signal?.aborted) {
             playTone(freq, chordDuration)
           }
-        }, i * 30)
+        }, i * ARPEGGIATE_DELAY_MS)
       })
     } else {
       // Play all notes simultaneously
@@ -138,7 +144,7 @@ export async function playChordProgression(
     }
 
     // Wait for chord duration plus a small gap before next chord
-    const waitTime = (chordDuration + 0.3) * 1000
+    const waitTime = (chordDuration + CHORD_GAP_SECONDS) * 1000
     await new Promise(resolve => setTimeout(resolve, waitTime))
 
     if (signal?.aborted) break

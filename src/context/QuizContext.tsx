@@ -50,6 +50,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
   const [isAudioPlaying, setIsAudioPlaying] = useState(false)
 
   const abortControllerRef = useRef<AbortController | null>(null)
+  const isAudioPlayingRef = useRef(false)
 
   const setDifficulty = useCallback((newDifficulty: Difficulty) => {
     if (phase === 'idle' || phase === 'revealed') {
@@ -64,12 +65,14 @@ export function QuizProvider({ children }: QuizProviderProps) {
   }, [phase])
 
   const playCurrentProgression = useCallback(async (question: QuizQuestion) => {
-    if (isAudioPlaying) return
+    // Use ref for checking to avoid stale closure issues
+    if (isAudioPlayingRef.current) return
 
     // Cancel any existing playback
     abortControllerRef.current?.abort()
     abortControllerRef.current = new AbortController()
 
+    isAudioPlayingRef.current = true
     setIsAudioPlaying(true)
 
     try {
@@ -81,10 +84,11 @@ export function QuizProvider({ children }: QuizProviderProps) {
     } catch {
       // Playback was aborted or errored
     } finally {
+      isAudioPlayingRef.current = false
       setIsAudioPlaying(false)
       abortControllerRef.current = null
     }
-  }, [isAudioPlaying])
+  }, [])
 
   const startQuiz = useCallback(async () => {
     if (phase !== 'idle' && phase !== 'revealed') return
