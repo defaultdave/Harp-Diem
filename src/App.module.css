@@ -121,3 +121,37 @@
   margin-top: 1rem;
   align-items: start;
 }
+
+/* Rotate harmonica on narrow portrait screens */
+@media only screen and (max-width: 479px) and (orientation: portrait) {
+  .harmonicaDisplay {
+    display: flex;
+    flex-direction: column;
+    /* Room for: rotated harmonica (width becomes height ~100vw) + legend (~150px) */
+    min-height: calc(100vw + 180px);
+    position: relative;
+    overflow: visible;
+  }
+
+  .harmonicaDisplay h2 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .holesContainer {
+    /* Rotate to landscape orientation */
+    transform: rotate(90deg);
+    transform-origin: top left;
+
+    /* Position the rotated harmonica */
+    position: absolute;
+    left: 105%;
+    top: 50px;
+    height: 0;
+
+    /* Width becomes visual height after rotation - scale based on screen width */
+    width: calc(200vw - 100px);
+    max-width: calc(100vh - 150px);
+  }
+}
