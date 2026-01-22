@@ -1,5 +1,6 @@
 import { Note, Interval } from 'tonal'
 import type { HarmonicaKey } from './harmonicas'
+import { getChordKey } from '../utils/chord'
 
 /**
  * Represents a single chord voicing on the harmonica
@@ -123,7 +124,7 @@ export const getCommonChords = (harmonicaKey: HarmonicaKey): ChordVoicing[] => {
   // Remove duplicates by creating a unique key from holes and breath
   const uniqueChords = new Map<string, ChordVoicing>()
   allChords.forEach(chord => {
-    const key = `${chord.holes.join(',')}-${chord.breath}`
+    const key = getChordKey(chord)
     if (!uniqueChords.has(key)) {
       uniqueChords.set(key, chord)
     }
