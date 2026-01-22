@@ -2,6 +2,8 @@ import { useState } from 'react'
 import type { ChordVoicing } from '../../data/chords'
 import { getCommonChords } from '../../data/chords'
 import type { HarmonicaKey } from '../../data/harmonicas'
+import { getChordKey, areChordsSame } from '../../utils/chord'
+import { cn } from '../../utils/classNames'
 import styles from './ChordDisplay.module.css'
 
 interface ChordDisplayProps {
@@ -14,8 +16,7 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
   const chords = getCommonChords(harmonicaKey)
 
   const handleChordClick = (chord: ChordVoicing) => {
-    const newSelection = selectedChord?.holes.join(',') === chord.holes.join(',') && 
-                        selectedChord?.breath === chord.breath ? null : chord
+    const newSelection = areChordsSame(selectedChord, chord) ? null : chord
     setSelectedChord(newSelection)
     onChordSelect?.(newSelection)
   }
@@ -35,10 +36,7 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
     }
   }
 
-  const isChordSelected = (chord: ChordVoicing) => {
-    return selectedChord?.holes.join(',') === chord.holes.join(',') && 
-           selectedChord?.breath === chord.breath
-  }
+  const isChordSelected = (chord: ChordVoicing) => areChordsSame(selectedChord, chord)
 
   return (
     <div className={styles.chordDisplay} role="region" aria-label="Harmonica chord diagrams">
@@ -52,8 +50,8 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
       <div className={styles.chordGrid}>
         {chords.map((chord, index) => (
           <button
-            key={`${chord.holes.join(',')}-${chord.breath}-${index}`}
-            className={`${styles.chordCard} ${isChordSelected(chord) ? styles.chordCardSelected : ''} ${getChordQualityColor(chord.quality)}`}
+            key={`${getChordKey(chord)}-${index}`}
+            className={cn(styles.chordCard, isChordSelected(chord) && styles.chordCardSelected, getChordQualityColor(chord.quality))}
             onClick={() => handleChordClick(chord)}
             aria-label={`${chord.name} chord: holes ${chord.holes.join(', ')} ${chord.breath}${isChordSelected(chord) ? ', currently selected' : ''}`}
           >
@@ -82,19 +80,19 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
         <span className={styles.legendLabel}>Chord Quality:</span>
         <div className={styles.legendItems}>
           <span className={styles.legendItem}>
-            <span className={`${styles.legendColor} ${styles.legendMajor}`} aria-hidden="true" />
+            <span className={cn(styles.legendColor, styles.legendMajor)} aria-hidden="true" />
             Major
           </span>
           <span className={styles.legendItem}>
-            <span className={`${styles.legendColor} ${styles.legendMinor}`} aria-hidden="true" />
+            <span className={cn(styles.legendColor, styles.legendMinor)} aria-hidden="true" />
             Minor
           </span>
           <span className={styles.legendItem}>
-            <span className={`${styles.legendColor} ${styles.legendDominant}`} aria-hidden="true" />
+            <span className={cn(styles.legendColor, styles.legendDominant)} aria-hidden="true" />
             Dominant 7th
           </span>
           <span className={styles.legendItem}>
-            <span className={`${styles.legendColor} ${styles.legendDiminished}`} aria-hidden="true" />
+            <span className={cn(styles.legendColor, styles.legendDiminished)} aria-hidden="true" />
             Diminished
           </span>
         </div>

@@ -11,6 +11,7 @@ import { ChordDisplay } from './components/ChordDisplay'
 import { RotateOverlay } from './components/RotateOverlay'
 import { DisplaySettingsProvider, PlaybackProvider } from './context'
 import type { ChordVoicing } from './data/chords'
+import { capitalizeWords } from './utils/string'
 
 function AppContent() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
@@ -95,7 +96,7 @@ function AppContent() {
             >
               {SCALE_TYPES.map((type) => (
                 <option key={type} value={type}>
-                  {type.replace(/\b\w/g, (c) => c.toUpperCase())}
+                  {capitalizeWords(type, ' ')}
                 </option>
               ))}
             </select>
@@ -110,7 +111,7 @@ function AppContent() {
             >
               {TUNING_TYPES.map((t) => (
                 <option key={t} value={t}>
-                  {t.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                  {capitalizeWords(t)}
                 </option>
               ))}
             </select>
@@ -134,7 +135,7 @@ function AppContent() {
             {harmonicaKey} Diatonic Harmonica
             {tuning !== 'richter' && (
               <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: 'var(--color-text-muted)' }}>
-                ({tuning.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')})
+                ({capitalizeWords(tuning)})
               </span>
             )}
           </h2>
