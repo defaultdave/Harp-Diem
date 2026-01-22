@@ -6,8 +6,10 @@ export type NoteDisplayMode = 'notes' | 'tab'
 interface DisplaySettingsContextValue {
   noteDisplay: NoteDisplayMode
   showDegrees: boolean
+  showIntervals: boolean
   setNoteDisplay: (mode: NoteDisplayMode) => void
   setShowDegrees: (show: boolean) => void
+  setShowIntervals: (show: boolean) => void
 }
 
 const DisplaySettingsContext = createContext<DisplaySettingsContextValue | null>(null)
@@ -19,10 +21,11 @@ interface DisplaySettingsProviderProps {
 export function DisplaySettingsProvider({ children }: DisplaySettingsProviderProps) {
   const [noteDisplay, setNoteDisplay] = useState<NoteDisplayMode>('notes')
   const [showDegrees, setShowDegrees] = useState(false)
+  const [showIntervals, setShowIntervals] = useState(false)
 
   return (
     <DisplaySettingsContext.Provider
-      value={{ noteDisplay, showDegrees, setNoteDisplay, setShowDegrees }}
+      value={{ noteDisplay, showDegrees, showIntervals, setNoteDisplay, setShowDegrees, setShowIntervals }}
     >
       {children}
     </DisplaySettingsContext.Provider>
