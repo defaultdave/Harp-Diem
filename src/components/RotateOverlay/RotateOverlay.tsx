@@ -31,41 +31,21 @@ function RotationArrow({ className }: { className?: string }) {
   return (
     <svg
       className={className}
-      viewBox="0 0 40 40"
+      viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
+      stroke="currentColor"
+      strokeWidth="1"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
     >
-      <path
-        d="M20 8C12.268 8 6 14.268 6 22c0 3.866 1.575 7.37 4.12 9.88"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M2 28l4.12 3.88L10 28"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      <path
-        d="M20 32c7.732 0 14-6.268 14-14 0-3.866-1.575-7.37-4.12-9.88"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M38 12l-4.12-3.88L30 12"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
+      <path d="M22 12l-3 3-3-3" />
+      <path d="M2 12l3-3 3 3" />
+      <path d="M19.016 14v-1.95A7.05 7.05 0 0 0 8 6.22" />
+      <path d="M16.016 17.845A7.05 7.05 0 0 1 5 12.015V10" />
+      <path strokeLinecap="round" d="M5 10V9" />
+      <path strokeLinecap="round" d="M19 15v-1" />
     </svg>
   )
 }
