@@ -102,7 +102,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 2rem;
   margin-bottom: 1.5rem;
   height: 100px;
   width: 120px;
@@ -121,8 +121,8 @@
 
 /* Rotation arrow */
 .rotationArrow {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   color: var(--overlay-arrow);
   animation: arrowPulse 1.5s ease-in-out infinite;
 }

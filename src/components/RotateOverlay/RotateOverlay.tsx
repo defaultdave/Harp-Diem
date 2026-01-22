@@ -21,7 +21,7 @@ function PhoneIcon({ className }: { className?: string }) {
         strokeWidth="4"
         fill="none"
       />
-      <rect x="20" y="12" width="24" height="60" fill="currentColor" opacity="0.2" />
+      <rect x="12" y="12" width="40" height="60" fill="currentColor" opacity="0.2" />
       <circle cx="32" cy="86" r="4" fill="currentColor" />
     </svg>
   )
