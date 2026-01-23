@@ -16,7 +16,7 @@ interface ChordDisplayProps {
 export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps) {
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
   const chords = getCommonChords(harmonicaKey)
-  const { setCurrentlyPlayingNotes } = usePlayback()
+  const { setCurrentlyPlayingChord } = usePlayback()
   const isPlayingRef = useRef(false)
 
   const handleChordClick = (chord: ChordVoicing) => {
@@ -29,9 +29,9 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
     if (!isDeselecting && !isPlayingRef.current) {
       isPlayingRef.current = true
       playChord(chord.notes, {
-        onStart: () => setCurrentlyPlayingNotes(chord.notes),
+        onStart: () => setCurrentlyPlayingChord({ notes: chord.notes, breath: chord.breath }),
         onEnd: () => {
-          setCurrentlyPlayingNotes([])
+          setCurrentlyPlayingChord(null)
           isPlayingRef.current = false
         },
       })

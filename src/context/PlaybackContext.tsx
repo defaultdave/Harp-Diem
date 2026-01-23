@@ -2,14 +2,21 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 import { Note } from 'tonal'
 
+export interface PlayingChordInfo {
+  notes: string[]
+  breath: 'blow' | 'draw'
+}
+
 interface PlaybackContextValue {
   currentlyPlayingNote: string | null
   currentlyPlayingNotes: string[]
+  currentlyPlayingChord: PlayingChordInfo | null
   isPlaying: boolean
   setCurrentlyPlayingNote: (note: string | null) => void
   setCurrentlyPlayingNotes: (notes: string[]) => void
+  setCurrentlyPlayingChord: (chord: PlayingChordInfo | null) => void
   setIsPlaying: (playing: boolean) => void
-  isNoteCurrentlyPlaying: (note: string) => boolean
+  isNoteCurrentlyPlaying: (note: string, isBlow?: boolean) => boolean
 }
 
 const PlaybackContext = createContext<PlaybackContextValue | null>(null)
@@ -21,10 +28,11 @@ interface PlaybackProviderProps {
 export function PlaybackProvider({ children }: PlaybackProviderProps) {
   const [currentlyPlayingNote, setCurrentlyPlayingNote] = useState<string | null>(null)
   const [currentlyPlayingNotes, setCurrentlyPlayingNotes] = useState<string[]>([])
+  const [currentlyPlayingChord, setCurrentlyPlayingChord] = useState<PlayingChordInfo | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
 
   const isNoteCurrentlyPlaying = useCallback(
-    (note: string): boolean => {
+    (note: string, isBlow?: boolean): boolean => {
       const noteMidi = Note.midi(note)
       if (noteMidi === null) return false
 
@@ -34,7 +42,21 @@ export function PlaybackProvider({ children }: PlaybackProviderProps) {
         if (playingMidi !== null && playingMidi === noteMidi) return true
       }
 
-      // Check multiple notes (for chord playback)
+      // Check chord playback with breath direction filtering
+      if (currentlyPlayingChord) {
+        // If breath direction is provided, only match if it matches the chord's breath
+        if (isBlow !== undefined) {
+          const chordIsBlow = currentlyPlayingChord.breath === 'blow'
+          if (isBlow !== chordIsBlow) return false
+        }
+
+        return currentlyPlayingChord.notes.some(playingNote => {
+          const playingMidi = Note.midi(playingNote)
+          return playingMidi !== null && playingMidi === noteMidi
+        })
+      }
+
+      // Check multiple notes without breath info (legacy support)
       if (currentlyPlayingNotes.length > 0) {
         return currentlyPlayingNotes.some(playingNote => {
           const playingMidi = Note.midi(playingNote)
@@ -44,7 +66,7 @@ export function PlaybackProvider({ children }: PlaybackProviderProps) {
 
       return false
     },
-    [currentlyPlayingNote, currentlyPlayingNotes]
+    [currentlyPlayingNote, currentlyPlayingNotes, currentlyPlayingChord]
   )
 
   return (
@@ -52,9 +74,11 @@ export function PlaybackProvider({ children }: PlaybackProviderProps) {
       value={{
         currentlyPlayingNote,
         currentlyPlayingNotes,
+        currentlyPlayingChord,
         isPlaying,
         setCurrentlyPlayingNote,
         setCurrentlyPlayingNotes,
+        setCurrentlyPlayingChord,
         setIsPlaying,
         isNoteCurrentlyPlaying,
       }}

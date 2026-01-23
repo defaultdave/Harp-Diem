@@ -229,6 +229,123 @@ describe('PlaybackContext', () => {
     })
   })
 
+  describe('setCurrentlyPlayingChord (breath-aware chord support)', () => {
+    it('provides null as initial currentlyPlayingChord', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+      expect(result.current.currentlyPlayingChord).toBeNull()
+    })
+
+    it('updates currentlyPlayingChord state', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingChord({ notes: ['C4', 'E4', 'G4'], breath: 'blow' })
+      })
+
+      expect(result.current.currentlyPlayingChord).toEqual({ notes: ['C4', 'E4', 'G4'], breath: 'blow' })
+    })
+
+    it('can be set back to null', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingChord({ notes: ['C4', 'E4', 'G4'], breath: 'blow' })
+      })
+      expect(result.current.currentlyPlayingChord).not.toBeNull()
+
+      act(() => {
+        result.current.setCurrentlyPlayingChord(null)
+      })
+      expect(result.current.currentlyPlayingChord).toBeNull()
+    })
+  })
+
+  describe('isNoteCurrentlyPlaying with breath-aware chord', () => {
+    it('returns true for note in chord with matching breath direction', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingChord({ notes: ['C4', 'E4', 'G4'], breath: 'blow' })
+      })
+
+      // Blow note should match blow chord
+      expect(result.current.isNoteCurrentlyPlaying('C4', true)).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('E4', true)).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('G4', true)).toBe(true)
+    })
+
+    it('returns false for note in chord with mismatched breath direction', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingChord({ notes: ['C4', 'E4', 'G4'], breath: 'blow' })
+      })
+
+      // Draw notes should NOT match blow chord, even if same pitch
+      expect(result.current.isNoteCurrentlyPlaying('C4', false)).toBe(false)
+      expect(result.current.isNoteCurrentlyPlaying('E4', false)).toBe(false)
+      expect(result.current.isNoteCurrentlyPlaying('G4', false)).toBe(false)
+    })
+
+    it('returns false for notes not in chord regardless of breath', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingChord({ notes: ['C4', 'E4', 'G4'], breath: 'blow' })
+      })
+
+      expect(result.current.isNoteCurrentlyPlaying('D4', true)).toBe(false)
+      expect(result.current.isNoteCurrentlyPlaying('D4', false)).toBe(false)
+    })
+
+    it('works with draw chords', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingChord({ notes: ['D4', 'G4', 'B4'], breath: 'draw' })
+      })
+
+      // Draw notes should match draw chord
+      expect(result.current.isNoteCurrentlyPlaying('D4', false)).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('G4', false)).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('B4', false)).toBe(true)
+
+      // Blow notes should NOT match draw chord
+      expect(result.current.isNoteCurrentlyPlaying('D4', true)).toBe(false)
+      expect(result.current.isNoteCurrentlyPlaying('G4', true)).toBe(false)
+      expect(result.current.isNoteCurrentlyPlaying('B4', true)).toBe(false)
+    })
+
+    it('matches any note without breath parameter for backward compatibility', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingChord({ notes: ['C4', 'E4', 'G4'], breath: 'blow' })
+      })
+
+      // Without breath param, should still match (for backward compatibility)
+      expect(result.current.isNoteCurrentlyPlaying('C4')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('E4')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('G4')).toBe(true)
+    })
+
+    it('prioritizes chord over currentlyPlayingNotes when both are set', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingChord({ notes: ['C4', 'E4', 'G4'], breath: 'blow' })
+        result.current.setCurrentlyPlayingNotes(['D4', 'F4', 'A4'])
+      })
+
+      // Chord notes should match with correct breath
+      expect(result.current.isNoteCurrentlyPlaying('C4', true)).toBe(true)
+      // But not with wrong breath
+      expect(result.current.isNoteCurrentlyPlaying('C4', false)).toBe(false)
+      // Notes only in currentlyPlayingNotes array should not match when chord is set
+      expect(result.current.isNoteCurrentlyPlaying('D4', true)).toBe(false)
+    })
+  })
+
   describe('Error Handling', () => {
     it('throws error when usePlayback is used outside of PlaybackProvider', () => {
       expect(() => {
