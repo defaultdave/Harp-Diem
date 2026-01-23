@@ -49,13 +49,13 @@ describe('lazy export utilities', () => {
       vi.mocked(html2canvas).mockResolvedValue(mockCanvas as any)
 
       // Mock URL.createObjectURL and related DOM methods
-      global.URL.createObjectURL = vi.fn(() => 'blob:test')
-      global.URL.revokeObjectURL = vi.fn()
+      globalThis.URL.createObjectURL = vi.fn(() => 'blob:test')
+      globalThis.URL.revokeObjectURL = vi.fn()
       const clickMock = vi.fn()
       const appendChildMock = vi.fn()
       const removeChildMock = vi.fn()
       
-      vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      vi.spyOn(document, 'createElement').mockImplementation((_tag: string) => {
         const element = {
           click: clickMock,
           href: '',
