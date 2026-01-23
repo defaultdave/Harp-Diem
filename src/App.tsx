@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import styles from './App.module.css'
 import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType } from './data/harmonicas'
@@ -9,12 +9,11 @@ import { useHashRouter } from './hooks/useHashRouter'
 import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
-import { ExportButton } from './components/ExportButton'
 import { ChordDisplay } from './components/ChordDisplay'
 import { RotateOverlay } from './components/RotateOverlay'
 import { NavHeader } from './components/NavHeader'
 import { QuizPage } from './components/Quiz'
-import { DisplaySettingsProvider, PlaybackProvider, QuizProvider } from './context'
+import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport } from './context'
 import type { ChordVoicing } from './data/chords'
 import { capitalizeWords } from './utils/string'
 
@@ -25,6 +24,7 @@ function ScalesPage() {
   const [tuning, setTuning] = useState<TuningType>('richter')
   const exportTargetRef = useRef<HTMLDivElement>(null)
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
+  const { setExportConfig } = useExport()
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -34,6 +34,12 @@ function ScalesPage() {
   )
 
   const position = useMemo(() => getHarmonicaPosition(harmonicaKey, songKey), [harmonicaKey, songKey])
+
+  // Register export config when component mounts, update when values change
+  useEffect(() => {
+    setExportConfig({ harmonicaKey, songKey, scaleType, position }, exportTargetRef)
+    return () => setExportConfig(null, null)
+  }, [harmonicaKey, songKey, scaleType, position, setExportConfig])
 
   // Determine which holes are in the selected chord
   const chordBlowHoles = useMemo(() => {
@@ -108,16 +114,6 @@ function ScalesPage() {
             ))}
           </select>
         </div>
-
-        <ExportButton
-          exportOptions={{
-            harmonicaKey,
-            songKey,
-            scaleType,
-            position,
-          }}
-          targetRef={exportTargetRef}
-        />
       </div>
 
       <div ref={exportTargetRef}>
@@ -191,8 +187,10 @@ function App() {
     <DisplaySettingsProvider>
       <PlaybackProvider>
         <QuizProvider>
-          <AppContent />
-          <RotateOverlay />
+          <ExportProvider>
+            <AppContent />
+            <RotateOverlay />
+          </ExportProvider>
         </QuizProvider>
       </PlaybackProvider>
     </DisplaySettingsProvider>
