@@ -1,4 +1,6 @@
 import type { Route } from '../../hooks/useHashRouter'
+import { useExport } from '../../context'
+import { ExportButton } from '../ExportButton'
 import styles from './NavHeader.module.css'
 
 interface NavHeaderProps {
@@ -9,6 +11,9 @@ interface NavHeaderProps {
 }
 
 export function NavHeader({ currentRoute, onNavigate, theme, onToggleTheme }: NavHeaderProps) {
+  const { exportOptions, targetRef } = useExport()
+  const showExport = exportOptions !== null && targetRef !== null
+
   return (
     <header className={styles.header}>
       <h1 className={styles.title}>Harp Diem</h1>
@@ -30,14 +35,19 @@ export function NavHeader({ currentRoute, onNavigate, theme, onToggleTheme }: Na
         </button>
       </nav>
 
-      <button
-        className={styles.themeToggle}
-        onClick={onToggleTheme}
-        aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-        title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-      >
-        {theme === 'light' ? '\u{1F319}' : '\u{2600}\u{FE0F}'}
-      </button>
+      <div className={styles.actions}>
+        {showExport && (
+          <ExportButton exportOptions={exportOptions} targetRef={targetRef} />
+        )}
+        <button
+          className={styles.themeToggle}
+          onClick={onToggleTheme}
+          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+        >
+          {theme === 'light' ? '\u{1F319}' : '\u{2600}\u{FE0F}'}
+        </button>
+      </div>
     </header>
   )
 }

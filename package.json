@@ -19,13 +19,17 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
+    "@types/html2canvas": "^0.5.35",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
@@ -38,7 +42,6 @@
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
     "lint-staged": "^16.2.7",
-    "@playwright/test": "^1.57.0",
     "tonal": "^6.4.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",

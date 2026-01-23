@@ -51,6 +51,12 @@
   }
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
 .themeToggle {
   background: var(--color-bg-card);
   border: 2px solid var(--color-border-medium);
@@ -99,10 +105,14 @@
     order: 3;
   }
 
-  .themeToggle {
+  .actions {
     position: absolute;
     top: var(--spacing-md);
     right: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+
+  .themeToggle {
     width: 40px;
     height: 40px;
     font-size: var(--font-lg);

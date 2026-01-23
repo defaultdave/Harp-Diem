@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import styles from './App.module.css'
+import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType } from './data/harmonicas'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
@@ -12,7 +13,7 @@ import { ChordDisplay } from './components/ChordDisplay'
 import { RotateOverlay } from './components/RotateOverlay'
 import { NavHeader } from './components/NavHeader'
 import { QuizPage } from './components/Quiz'
-import { DisplaySettingsProvider, PlaybackProvider, QuizProvider } from './context'
+import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport } from './context'
 import type { ChordVoicing } from './data/chords'
 import { capitalizeWords } from './utils/string'
 
@@ -21,7 +22,9 @@ function ScalesPage() {
   const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
+  const exportTargetRef = useRef<HTMLDivElement>(null)
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
+  const { setExportConfig } = useExport()
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -31,6 +34,12 @@ function ScalesPage() {
   )
 
   const position = useMemo(() => getHarmonicaPosition(harmonicaKey, songKey), [harmonicaKey, songKey])
+
+  // Register export config when component mounts, update when values change
+  useEffect(() => {
+    setExportConfig({ harmonicaKey, songKey, scaleType, position }, exportTargetRef)
+    return () => setExportConfig(null, null)
+  }, [harmonicaKey, songKey, scaleType, position, setExportConfig])
 
   // Determine which holes are in the selected chord
   const chordBlowHoles = useMemo(() => {
@@ -107,45 +116,47 @@ function ScalesPage() {
         </div>
       </div>
 
-      <ScaleDisplay
-        songKey={songKey}
-        scaleType={scaleType}
-        position={position}
-        scaleNotes={scaleNotes}
-        harmonica={harmonica}
-      />
+      <div ref={exportTargetRef}>
+        <ScaleDisplay
+          songKey={songKey}
+          scaleType={scaleType}
+          position={position}
+          scaleNotes={scaleNotes}
+          harmonica={harmonica}
+        />
 
-      <div
-        className={styles.harmonicaDisplay}
-        role="region"
-        aria-label={`${harmonicaKey} Diatonic Harmonica visualization showing ${songKey} ${scaleType} scale`}
-      >
-        <h2>
-          {harmonicaKey} Diatonic Harmonica
-          {tuning !== 'richter' && (
-            <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: 'var(--color-text-muted)' }}>
-              ({capitalizeWords(tuning)})
-            </span>
-          )}
-        </h2>
-        <div className={styles.holesContainer} role="group" aria-label="Harmonica holes 1 through 10">
-          {harmonica.holes.map((hole) => (
-            <HoleColumn
-              key={hole.hole}
-              hole={hole}
-              scaleNotes={scaleNotes}
-              isBlowPlayable={playableBlowHoles.includes(hole.hole)}
-              isDrawPlayable={playableDrawHoles.includes(hole.hole)}
-              isBlowInChord={chordBlowHoles.includes(hole.hole)}
-              isDrawInChord={chordDrawHoles.includes(hole.hole)}
-            />
-          ))}
+        <div
+          className={styles.harmonicaDisplay}
+          role="region"
+          aria-label={`${harmonicaKey} Diatonic Harmonica visualization showing ${songKey} ${scaleType} scale`}
+        >
+          <h2>
+            {harmonicaKey} Diatonic Harmonica
+            {tuning !== 'richter' && (
+              <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: 'var(--color-text-muted)' }}>
+                ({capitalizeWords(tuning)})
+              </span>
+            )}
+          </h2>
+          <div className={styles.holesContainer} role="group" aria-label="Harmonica holes 1 through 10">
+            {harmonica.holes.map((hole) => (
+              <HoleColumn
+                key={hole.hole}
+                hole={hole}
+                scaleNotes={scaleNotes}
+                isBlowPlayable={playableBlowHoles.includes(hole.hole)}
+                isDrawPlayable={playableDrawHoles.includes(hole.hole)}
+                isBlowInChord={chordBlowHoles.includes(hole.hole)}
+                isDrawInChord={chordDrawHoles.includes(hole.hole)}
+              />
+            ))}
+          </div>
+
+          <Legend />
         </div>
 
-        <Legend />
+        <ChordDisplay harmonicaKey={harmonicaKey} onChordSelect={handleChordSelect} />
       </div>
-
-      <ChordDisplay harmonicaKey={harmonicaKey} onChordSelect={handleChordSelect} />
     </>
   )
 }
@@ -176,8 +187,10 @@ function App() {
     <DisplaySettingsProvider>
       <PlaybackProvider>
         <QuizProvider>
-          <AppContent />
-          <RotateOverlay />
+          <ExportProvider>
+            <AppContent />
+            <RotateOverlay />
+          </ExportProvider>
         </QuizProvider>
       </PlaybackProvider>
     </DisplaySettingsProvider>
