@@ -1,12 +1,9 @@
 import { useState, useMemo, useCallback, useRef } from 'react'
-import type { DiatonicHarmonica } from '../../data/harmonicas'
+import type { DiatonicHarmonica } from '../../data'
 import type { NoteNames } from '../../types'
-import { getIntervalBetweenNotes } from '../../data/scales'
-import { playTone } from '../../utils/audioPlayer'
+import { getIntervalBetweenNotes } from '../../data'
+import { playTone, capitalize, getOrdinalSuffix, collectPlayableNotes, cn } from '../../utils'
 import { usePlayback, useDisplaySettings } from '../../context'
-import { capitalize, getOrdinalSuffix } from '../../utils/string'
-import { collectPlayableNotes } from '../../utils/playableNotes'
-import { cn } from '../../utils/classNames'
 import styles from './ScaleDisplay.module.css'
 
 interface ScaleDisplayProps {

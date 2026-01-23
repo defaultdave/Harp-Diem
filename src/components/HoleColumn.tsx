@@ -1,13 +1,9 @@
 import { memo } from 'react'
-import type { HoleNote } from '../data/harmonicas'
-import { getNoteDegree, degreeToRoman } from '../data/scales'
-import { playTone } from '../utils/audioPlayer'
-import { getTabNotation, labelToNoteType } from '../utils/tabNotation'
+import type { HoleNote } from '../data'
+import { getNoteDegree, degreeToRoman } from '../data'
+import { playTone, getTabNotation, labelToNoteType, cn, handleActivationKey, getBendPlayability } from '../utils'
 import { useDisplaySettings, usePlayback } from '../context'
 import type { NoteNames } from '../types'
-import { cn } from '../utils/classNames'
-import { handleActivationKey } from '../utils/events'
-import { getBendPlayability } from '../utils/playableNotes'
 import styles from './HoleColumn.module.css'
 
 interface NoteSectionProps {

@@ -1,10 +1,7 @@
 import { useState, useRef } from 'react'
-import type { ChordVoicing } from '../../data/chords'
-import { getCommonChords } from '../../data/chords'
-import type { HarmonicaKey } from '../../data/harmonicas'
-import { getChordKey, areChordsSame } from '../../utils/chord'
-import { cn } from '../../utils/classNames'
-import { playChord } from '../../utils/audioPlayer'
+import type { ChordVoicing, HarmonicaKey } from '../../data'
+import { getCommonChords } from '../../data'
+import { getChordKey, areChordsSame, cn, playChord } from '../../utils'
 import { usePlayback } from '../../context'
 import styles from './ChordDisplay.module.css'
 

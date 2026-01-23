@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
-import type { HarmonicaKey, ScaleType, DiatonicHarmonica, TuningType } from '../data/harmonicas'
-import { getScaleNotes, isNoteInScale } from '../data/scales'
-import { getHarmonica } from '../data/harmonicas'
+import type { HarmonicaKey, ScaleType, DiatonicHarmonica, TuningType } from '../data'
+import { getScaleNotes, isNoteInScale, getHarmonica } from '../data'
 import type { NoteNames } from '../types'
 
 export interface UseHarmonicaScaleResult {

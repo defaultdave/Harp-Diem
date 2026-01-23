@@ -1,5 +1,5 @@
-import type { QuizQuestion } from '../../data/progressions'
-import { capitalize } from '../../utils/string'
+import type { QuizQuestion } from '../../data'
+import { capitalize } from '../../utils'
 import styles from './QuizPage.module.css'
 
 interface ResultFeedbackProps {

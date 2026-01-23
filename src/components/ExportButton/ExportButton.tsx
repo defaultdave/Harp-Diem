@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { exportAsPNG, exportAsPDF, printView } from '../../utils/export'
-import type { ExportOptions } from '../../utils/export'
+import { exportAsPNG, exportAsPDF, printView, type ExportOptions } from '../../utils'
 import styles from './ExportButton.module.css'
 
 interface ExportButtonProps {
