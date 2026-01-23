@@ -4,8 +4,10 @@ import { Note } from 'tonal'
 
 interface PlaybackContextValue {
   currentlyPlayingNote: string | null
+  currentlyPlayingNotes: string[]
   isPlaying: boolean
   setCurrentlyPlayingNote: (note: string | null) => void
+  setCurrentlyPlayingNotes: (notes: string[]) => void
   setIsPlaying: (playing: boolean) => void
   isNoteCurrentlyPlaying: (note: string) => boolean
 }
@@ -18,26 +20,41 @@ interface PlaybackProviderProps {
 
 export function PlaybackProvider({ children }: PlaybackProviderProps) {
   const [currentlyPlayingNote, setCurrentlyPlayingNote] = useState<string | null>(null)
+  const [currentlyPlayingNotes, setCurrentlyPlayingNotes] = useState<string[]>([])
   const [isPlaying, setIsPlaying] = useState(false)
 
   const isNoteCurrentlyPlaying = useCallback(
     (note: string): boolean => {
-      if (!currentlyPlayingNote) return false
-      // Use MIDI number for exact pitch matching (includes octave)
-      // This ensures C4 only matches C4, not C5
-      const playingMidi = Note.midi(currentlyPlayingNote)
       const noteMidi = Note.midi(note)
-      return playingMidi !== null && playingMidi === noteMidi
+      if (noteMidi === null) return false
+
+      // Check single note (for scale playback)
+      if (currentlyPlayingNote) {
+        const playingMidi = Note.midi(currentlyPlayingNote)
+        if (playingMidi !== null && playingMidi === noteMidi) return true
+      }
+
+      // Check multiple notes (for chord playback)
+      if (currentlyPlayingNotes.length > 0) {
+        return currentlyPlayingNotes.some(playingNote => {
+          const playingMidi = Note.midi(playingNote)
+          return playingMidi !== null && playingMidi === noteMidi
+        })
+      }
+
+      return false
     },
-    [currentlyPlayingNote]
+    [currentlyPlayingNote, currentlyPlayingNotes]
   )
 
   return (
     <PlaybackContext.Provider
       value={{
         currentlyPlayingNote,
+        currentlyPlayingNotes,
         isPlaying,
         setCurrentlyPlayingNote,
+        setCurrentlyPlayingNotes,
         setIsPlaying,
         isNoteCurrentlyPlaying,
       }}

@@ -147,6 +147,88 @@ describe('PlaybackContext', () => {
     })
   })
 
+  describe('setCurrentlyPlayingNotes (chord support)', () => {
+    it('provides empty array as initial currentlyPlayingNotes', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+      expect(result.current.currentlyPlayingNotes).toEqual([])
+    })
+
+    it('updates currentlyPlayingNotes state', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingNotes(['C4', 'E4', 'G4'])
+      })
+
+      expect(result.current.currentlyPlayingNotes).toEqual(['C4', 'E4', 'G4'])
+    })
+
+    it('can be set back to empty array', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingNotes(['C4', 'E4', 'G4'])
+      })
+      expect(result.current.currentlyPlayingNotes).toEqual(['C4', 'E4', 'G4'])
+
+      act(() => {
+        result.current.setCurrentlyPlayingNotes([])
+      })
+      expect(result.current.currentlyPlayingNotes).toEqual([])
+    })
+  })
+
+  describe('isNoteCurrentlyPlaying with multiple notes', () => {
+    it('returns true when note is in currentlyPlayingNotes array', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingNotes(['C4', 'E4', 'G4'])
+      })
+
+      expect(result.current.isNoteCurrentlyPlaying('C4')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('E4')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('G4')).toBe(true)
+    })
+
+    it('returns false for notes not in the array', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingNotes(['C4', 'E4', 'G4'])
+      })
+
+      expect(result.current.isNoteCurrentlyPlaying('D4')).toBe(false)
+      expect(result.current.isNoteCurrentlyPlaying('C5')).toBe(false)
+    })
+
+    it('handles enharmonic equivalents in chord notes', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingNotes(['C#4', 'F4', 'G#4'])
+      })
+
+      expect(result.current.isNoteCurrentlyPlaying('Db4')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('Ab4')).toBe(true)
+    })
+
+    it('prioritizes single note check when both are set', () => {
+      const { result } = renderHook(() => usePlayback(), { wrapper })
+
+      act(() => {
+        result.current.setCurrentlyPlayingNote('D4')
+        result.current.setCurrentlyPlayingNotes(['C4', 'E4', 'G4'])
+      })
+
+      // Both should work - D4 from single note, C4/E4/G4 from array
+      expect(result.current.isNoteCurrentlyPlaying('D4')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('C4')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('E4')).toBe(true)
+      expect(result.current.isNoteCurrentlyPlaying('G4')).toBe(true)
+    })
+  })
+
   describe('Error Handling', () => {
     it('throws error when usePlayback is used outside of PlaybackProvider', () => {
       expect(() => {

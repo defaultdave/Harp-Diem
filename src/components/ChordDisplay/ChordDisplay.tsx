@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import type { ChordVoicing } from '../../data/chords'
 import { getCommonChords } from '../../data/chords'
 import type { HarmonicaKey } from '../../data/harmonicas'
 import { getChordKey, areChordsSame } from '../../utils/chord'
 import { cn } from '../../utils/classNames'
+import { playChord } from '../../utils/audioPlayer'
+import { usePlayback } from '../../context'
 import styles from './ChordDisplay.module.css'
 
 interface ChordDisplayProps {
@@ -14,11 +16,26 @@ interface ChordDisplayProps {
 export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps) {
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
   const chords = getCommonChords(harmonicaKey)
+  const { setCurrentlyPlayingNotes } = usePlayback()
+  const isPlayingRef = useRef(false)
 
   const handleChordClick = (chord: ChordVoicing) => {
-    const newSelection = areChordsSame(selectedChord, chord) ? null : chord
+    const isDeselecting = areChordsSame(selectedChord, chord)
+    const newSelection = isDeselecting ? null : chord
     setSelectedChord(newSelection)
     onChordSelect?.(newSelection)
+
+    // Play audio only when selecting a chord (not when deselecting)
+    if (!isDeselecting && !isPlayingRef.current) {
+      isPlayingRef.current = true
+      playChord(chord.notes, {
+        onStart: () => setCurrentlyPlayingNotes(chord.notes),
+        onEnd: () => {
+          setCurrentlyPlayingNotes([])
+          isPlayingRef.current = false
+        },
+      })
+    }
   }
 
   const getChordQualityColor = (quality: ChordVoicing['quality']) => {
