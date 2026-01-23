@@ -1,8 +1,8 @@
 .scaleDisplay {
   background: var(--color-bg-card);
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
   box-shadow: var(--shadow-card);
 
   h2 {
@@ -16,26 +16,26 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--spacing-md);
 }
 
 .positionLabel {
   margin-left: 12px;
   font-size: 0.85em;
   font-weight: normal;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .playScaleButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   padding: 0.6rem 1.2rem;
   border: 2px solid var(--color-playable-bg);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: var(--color-bg-card);
   color: var(--color-playable-bg);
-  font-size: 0.95rem;
+  font-size: var(--font-base);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -47,7 +47,7 @@
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
   }
 
   &:disabled {
@@ -78,19 +78,63 @@
   gap: 0.75rem;
 }
 
-.tempoControl {
+.playControlsRow {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
+.directionToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 2px solid var(--color-playable-bg);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-playable-bg);
+  font-size: var(--font-xl);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: var(--color-playable-bg);
+    color: var(--color-playable-text);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.directionToggleDesc {
+  background: var(--color-playable-bg);
+  color: var(--color-playable-text);
+}
+
+.tempoControl {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
 .tempoLabel {
-  font-size: 0.85rem;
+  font-size: var(--font-md);
   color: var(--color-text-secondary);
   font-weight: 500;
 }
 
 .tempoSlider {
+  --slider-thumb-size: 16px;
+
   width: 100px;
   height: 6px;
   -webkit-appearance: none;
@@ -102,8 +146,8 @@
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: var(--slider-thumb-size);
+    height: var(--slider-thumb-size);
     border-radius: 50%;
     background: var(--color-playable-bg);
     cursor: pointer;
@@ -111,8 +155,8 @@
   }
 
   &::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
+    width: var(--slider-thumb-size);
+    height: var(--slider-thumb-size);
     border: none;
     border-radius: 50%;
     background: var(--color-playable-bg);
@@ -133,11 +177,11 @@
   }
 
   &:focus::-webkit-slider-thumb {
-    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
   }
 
   &:focus::-moz-range-thumb {
-    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
   }
 
   &:disabled {
@@ -155,24 +199,51 @@
 }
 
 .tempoValue {
-  font-size: 0.85rem;
+  font-size: var(--font-md);
   font-weight: 600;
   color: var(--color-text-primary);
   min-width: 60px;
   text-align: right;
 }
 
+.intervalToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  
+  input[type="checkbox"] {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+  }
+  
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
 .scaleNotes {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin-top: 1rem;
+  margin-top: var(--spacing-md);
+}
+
+.noteWithInterval {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .scaleNote {
   background: var(--color-playable-bg);
   color: var(--color-playable-text);
-  padding: 0.5rem 1rem;
+  padding: var(--spacing-sm) var(--spacing-md);
   border-radius: 20px;
   font-weight: 600;
   font-size: 1.1rem;
@@ -182,4 +253,16 @@
 .scaleNotePlaying {
   transform: scale(1.15);
   box-shadow: 0 0 0 3px rgba(39, 103, 73, 0.4), 0 4px 12px rgba(39, 103, 73, 0.3);
+}
+
+.interval {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding: 0.25rem 0.5rem;
+  background: var(--color-bg-input, #e0e0e0);
+  border-radius: 8px;
+  min-width: 24px;
+  text-align: center;
+  user-select: none;
 }

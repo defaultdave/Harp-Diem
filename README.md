@@ -19,6 +19,10 @@
 - **Play Scale**: Automatically play all notes in the selected scale in ascending order with visual highlighting
 - **Playback Controls**: Stop button to halt playback mid-scale and tempo slider (40-200 BPM) to adjust playback speed
 - **Visual Feedback**: Harmonica holes highlight during scale playback to guide playing
+- **Chord Diagrams**: View playable chords for the selected scale with color-coded quality indicators (major, minor, dominant 7th, diminished)
+- **Interactive Chord Highlighting**: Click any chord to highlight its constituent holes on the harmonica
+- **Dark Mode**: Toggle between light and dark themes with system preference detection and localStorage persistence
+- **Mobile Support**: Portrait mobile users see a prompt to rotate their device for the best harmonica viewing experience
 - **Audio Playback**: Click any note to hear it played with piano-like synthesis
 - **Keyboard Accessible**: Full keyboard navigation with Enter/Space to play notes
 - **Fully Tested**: Comprehensive test suite with unit tests and E2E tests using Playwright
@@ -39,9 +43,15 @@
 src/
 ├── components/
 │   ├── HoleColumn.tsx      # Individual harmonica hole display
+│   ├── ChordDisplay/       # Chord diagram visualization
+│   │   ├── ChordDisplay.tsx # Chord display component
+│   │   └── index.ts        # ChordDisplay exports
 │   ├── Legend/             # Scale legend with display toggles
 │   │   ├── Legend.tsx      # Legend component
 │   │   └── index.ts        # Legend exports
+│   ├── RotateOverlay/      # Mobile rotation prompt
+│   │   ├── RotateOverlay.tsx # Overlay component
+│   │   └── index.ts        # RotateOverlay exports
 │   ├── ScaleDisplay/       # Scale information and playback controls
 │   │   └── ScaleDisplay.tsx # Scale display component
 │   └── ErrorBoundary.tsx   # Error handling wrapper
@@ -53,10 +63,15 @@ src/
 │   ├── harmonicas.ts       # Diatonic harmonica layouts (all tunings)
 │   ├── harmonicas.test.ts  # Harmonica data tests
 │   ├── scales.ts           # Scale calculations using tonal.js
-│   └── scales.test.ts      # Scale logic tests
+│   ├── scales.test.ts      # Scale logic tests
+│   ├── chords.ts           # Chord data and playable chord calculations
+│   └── chords.test.ts      # Chord logic tests
 ├── hooks/
 │   ├── useHarmonicaScale.ts      # Custom hook for scale logic
-│   └── useHarmonicaScale.test.ts # Hook tests
+│   ├── useHarmonicaScale.test.ts # Hook tests
+│   ├── useTheme.ts               # Dark/light theme management
+│   ├── useTheme.test.ts          # Theme hook tests
+│   └── useMobileDetection.ts     # Mobile viewport detection
 ├── utils/
 │   ├── audioPlayer.ts      # Web Audio API tone generation
 │   ├── tabNotation.ts      # Harmonica tablature notation utilities
@@ -65,6 +80,9 @@ src/
 │   └── setup.ts            # Vitest configuration
 ├── App.tsx                 # Main application component
 ├── App.css                 # Application styling
+├── App.module.css          # App-level CSS modules
+├── variables.css           # CSS custom properties (colors, themes)
+├── index.css               # Global styles
 └── main.tsx                # Application entry point
 ```
 
@@ -73,6 +91,20 @@ src/
 ### Prerequisites
 
 - Node.js 18+ and npm
+
+### Development with Dev Container (Recommended)
+
+This project includes a Dev Container configuration for VS Code that provides a fully configured development environment:
+
+1. Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+2. Open the project in VS Code
+3. Click "Reopen in Container" when prompted (or use Command Palette: "Dev Containers: Reopen in Container")
+
+The container includes:
+- Node.js 20 LTS
+- Playwright with Chromium for E2E testing
+- Pre-configured VS Code extensions (ESLint, Prettier, Vitest, Playwright)
+- Network firewall for secure Claude Code YOLO mode
 
 ### Installation
 
@@ -113,15 +145,19 @@ npm run preview       # Preview production build
 3. **Select Song Key**: Pick the key of the song you want to play
 4. **Choose Scale Type**: Select from 12 available scales
 5. **View Results**: Green highlighted notes are in your selected scale
-6. **Toggle Display Modes**: 
+6. **Toggle Display Modes**:
    - Click "Show Tab" to switch between note names (C, D, E) and harmonica tablature (+1, -1, -4', etc.)
    - Click "Show Degrees" to display Roman numerals (I-VII) for scale positions
+   - Click the theme toggle button to switch between light and dark modes
 7. **Play Notes**: Click or press Enter/Space on any note to hear it
 8. **Play Scale**: Click the "Play Scale" button to hear all notes in the scale automatically
-9. **Control Playback**: 
+9. **Control Playback**:
    - Adjust tempo with the slider (40-200 BPM) before or between playbacks
    - Click "Stop" to halt playback mid-scale
    - Watch notes and harmonica holes highlight as each note plays
+10. **Explore Chords**: Scroll down to view playable chords for your scale
+    - Click any chord to highlight its holes on the harmonica
+    - Color-coded left borders indicate chord quality (green=major, orange=minor, red=dominant 7th, purple=diminished)
 
 ### Harmonica Display
 

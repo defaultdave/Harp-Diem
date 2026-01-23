@@ -1,0 +1,40 @@
+version: "1.0"
+project:
+  name: "Harp Diem"
+  description: "Harmonica scale visualization app"
+repository:
+  owner: "defaultdave"
+  name: "Harp-Diem"
+  default_branch: "main"
+github_project:
+  number: 5
+  owner: "defaultdave"
+  project_id: "PVT_kwHOAHFEDM4BMuE1"
+  fields:
+    status:
+      id: "PVTSSF_lAHOAHFEDM4BMuE1zg77D4s"
+      options:
+        backlog: "f75ad846"
+        ready: "61e4505c"
+        in_progress: "47fc9ee4"
+        ready_for_review: "9e9de5ab"
+        in_review: "df73e18b"
+        ready_for_qa: "9773588d"
+        in_qa: "9e959df5"
+        awaiting_merge: "381bc10d"
+        done: "98236657"
+    priority:
+      id: "PVTSSF_lAHOAHFEDM4BMuE1zg77D6c"
+      options:
+        p0: "86691709"
+        p1: "609f3afd"
+        p2: "244b4661"
+        p3: "ed3aef8b"
+    size:
+      id: "PVTSSF_lAHOAHFEDM4BMuE1zg77D6g"
+      options:
+        xs: "6c6483d2"
+        s: "f784b110"
+        m: "7515a9f1"
+        l: "817d0097"
+        xl: "db339eb2"

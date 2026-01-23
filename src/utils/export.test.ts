@@ -8,9 +8,20 @@ vi.mock('html2canvas', () => ({
 }))
 
 // Mock jspdf - use proper constructor function
+interface MockJsPDFInstance {
+  internal: {
+    pageSize: {
+      getWidth: () => number
+      getHeight: () => number
+    }
+  }
+  addImage: ReturnType<typeof vi.fn>
+  save: ReturnType<typeof vi.fn>
+}
+
 vi.mock('jspdf', () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const MockJsPDF = function (this: any, _options: any) {
+  const MockJsPDF = function (this: MockJsPDFInstance, _options: { orientation: string; unit: string; format: string }) {
     this.internal = {
       pageSize: {
         getWidth: () => 297,
@@ -20,7 +31,7 @@ vi.mock('jspdf', () => {
     this.addImage = vi.fn()
     this.save = vi.fn()
   }
-  
+
   return {
     default: MockJsPDF,
   }
@@ -57,7 +68,7 @@ describe('export utilities', () => {
         }),
       }
 
-      vi.mocked(html2canvas).mockResolvedValue(mockCanvas as any)
+      vi.mocked(html2canvas).mockResolvedValue(mockCanvas as unknown as HTMLCanvasElement)
 
       // Mock URL and DOM operations
       const mockUrl = 'blob:mock-url'
@@ -101,7 +112,7 @@ describe('export utilities', () => {
         height: 500,
       }
 
-      vi.mocked(html2canvas).mockResolvedValue(mockCanvas as any)
+      vi.mocked(html2canvas).mockResolvedValue(mockCanvas as unknown as HTMLCanvasElement)
 
       await exportAsPDF(mockElement, mockOptions)
 

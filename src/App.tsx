@@ -4,18 +4,27 @@ import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType } from './data/harmonicas'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data/harmonicas'
 import { useHarmonicaScale } from './hooks/useHarmonicaScale'
+import { useTheme } from './hooks/useTheme'
+import { useHashRouter } from './hooks/useHashRouter'
 import { HoleColumn } from './components/HoleColumn'
 import { Legend } from './components/Legend'
 import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
 import { ExportButton } from './components/ExportButton'
-import { DisplaySettingsProvider, PlaybackProvider } from './context'
+import { ChordDisplay } from './components/ChordDisplay'
+import { RotateOverlay } from './components/RotateOverlay'
+import { NavHeader } from './components/NavHeader'
+import { QuizPage } from './components/Quiz'
+import { DisplaySettingsProvider, PlaybackProvider, QuizProvider } from './context'
+import type { ChordVoicing } from './data/chords'
+import { capitalizeWords } from './utils/string'
 
-function AppContent() {
+function ScalesPage() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
   const [songKey, setSongKey] = useState<HarmonicaKey>('C')
   const [scaleType, setScaleType] = useState<ScaleType>('major')
   const [tuning, setTuning] = useState<TuningType>('richter')
   const exportTargetRef = useRef<HTMLDivElement>(null)
+  const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -26,10 +35,80 @@ function AppContent() {
 
   const position = useMemo(() => getHarmonicaPosition(harmonicaKey, songKey), [harmonicaKey, songKey])
 
+  // Determine which holes are in the selected chord
+  const chordBlowHoles = useMemo(() => {
+    if (!selectedChord || selectedChord.breath !== 'blow') return []
+    return selectedChord.holes
+  }, [selectedChord])
+
+  const chordDrawHoles = useMemo(() => {
+    if (!selectedChord || selectedChord.breath !== 'draw') return []
+    return selectedChord.holes
+  }, [selectedChord])
+
+  const handleChordSelect = (chord: ChordVoicing | null) => {
+    setSelectedChord(chord)
+  }
+
   return (
-    <div className={styles.app}>
-      <header className={styles.header}>
-        <h1>🎵 Harp Diem</h1>
+    <>
+      <div className={styles.controls}>
+        <div className={styles.controlGroup}>
+          <label htmlFor="harmonica-key">Harmonica Key:</label>
+          <select
+            id="harmonica-key"
+            value={harmonicaKey}
+            onChange={(e) => setHarmonicaKey(e.target.value as HarmonicaKey)}
+          >
+            {AVAILABLE_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {key}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.controlGroup}>
+          <label htmlFor="song-key">Song Key:</label>
+          <select value={songKey} onChange={(e) => setSongKey(e.target.value as HarmonicaKey)} id="song-key">
+            {AVAILABLE_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {key}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.controlGroup}>
+          <label htmlFor="scale-type">Scale Type:</label>
+          <select
+            id="scale-type"
+            value={scaleType}
+            onChange={(e) => setScaleType(e.target.value as ScaleType)}
+          >
+            {SCALE_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {capitalizeWords(type, ' ')}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.controlGroup}>
+          <label htmlFor="tuning">Tuning:</label>
+          <select
+            id="tuning"
+            value={tuning}
+            onChange={(e) => setTuning(e.target.value as TuningType)}
+          >
+            {TUNING_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {capitalizeWords(t)}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <ExportButton
           exportOptions={{
             harmonicaKey,
@@ -39,67 +118,9 @@ function AppContent() {
           }}
           targetRef={exportTargetRef}
         />
-      </header>
+      </div>
 
-      <main className={styles.main} ref={exportTargetRef}>
-        <div className={styles.controls}>
-          <div className={styles.controlGroup}>
-            <label htmlFor="harmonica-key">Harmonica Key:</label>
-            <select
-              id="harmonica-key"
-              value={harmonicaKey}
-              onChange={(e) => setHarmonicaKey(e.target.value as HarmonicaKey)}
-            >
-              {AVAILABLE_KEYS.map((key) => (
-                <option key={key} value={key}>
-                  {key}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.controlGroup}>
-            <label htmlFor="song-key">Song Key:</label>
-            <select value={songKey} onChange={(e) => setSongKey(e.target.value as HarmonicaKey)} id="song-key">
-              {AVAILABLE_KEYS.map((key) => (
-                <option key={key} value={key}>
-                  {key}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.controlGroup}>
-            <label htmlFor="scale-type">Scale Type:</label>
-            <select
-              id="scale-type"
-              value={scaleType}
-              onChange={(e) => setScaleType(e.target.value as ScaleType)}
-            >
-              {SCALE_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type.replace(/\b\w/g, (c) => c.toUpperCase())}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.controlGroup}>
-            <label htmlFor="tuning">Tuning:</label>
-            <select
-              id="tuning"
-              value={tuning}
-              onChange={(e) => setTuning(e.target.value as TuningType)}
-            >
-              {TUNING_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
+      <div ref={exportTargetRef}>
         <ScaleDisplay
           songKey={songKey}
           scaleType={scaleType}
@@ -116,8 +137,8 @@ function AppContent() {
           <h2>
             {harmonicaKey} Diatonic Harmonica
             {tuning !== 'richter' && (
-              <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: '#666' }}>
-                ({tuning.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')})
+              <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: 'var(--color-text-muted)' }}>
+                ({capitalizeWords(tuning)})
               </span>
             )}
           </h2>
@@ -129,12 +150,37 @@ function AppContent() {
                 scaleNotes={scaleNotes}
                 isBlowPlayable={playableBlowHoles.includes(hole.hole)}
                 isDrawPlayable={playableDrawHoles.includes(hole.hole)}
+                isBlowInChord={chordBlowHoles.includes(hole.hole)}
+                isDrawInChord={chordDrawHoles.includes(hole.hole)}
               />
             ))}
           </div>
 
           <Legend />
         </div>
+
+        <ChordDisplay harmonicaKey={harmonicaKey} onChordSelect={handleChordSelect} />
+      </div>
+    </>
+  )
+}
+
+function AppContent() {
+  const { theme, toggleTheme } = useTheme()
+  const { route, navigate } = useHashRouter()
+
+  return (
+    <div className={styles.app}>
+      <NavHeader
+        currentRoute={route}
+        onNavigate={navigate}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
+
+      <main className={styles.main}>
+        {route === '/' && <ScalesPage />}
+        {route === '/quiz' && <QuizPage />}
       </main>
     </div>
   )
@@ -144,7 +190,10 @@ function App() {
   return (
     <DisplaySettingsProvider>
       <PlaybackProvider>
-        <AppContent />
+        <QuizProvider>
+          <AppContent />
+          <RotateOverlay />
+        </QuizProvider>
       </PlaybackProvider>
     </DisplaySettingsProvider>
   )

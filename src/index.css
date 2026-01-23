@@ -15,13 +15,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
 a {
   font-weight: 500;
   color: var(--color-text-secondary);
   text-decoration: inherit;
-}
-a:hover {
-  color: var(--color-text-primary);
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
 }
 
 body {
@@ -43,20 +48,42 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  font-size: 1em;
+  font-size: var(--font-base);
   font-weight: 500;
   font-family: inherit;
   background-color: var(--color-bg-card);
   cursor: pointer;
   transition: border-color 0.25s;
+
+  &:hover {
+    border-color: var(--color-hover-border);
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+  }
 }
-button:hover {
-  border-color: var(--color-hover-border);
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+/* =============================================================================
+   Utility Classes
+   ============================================================================= */
+
+/**
+ * Screen reader only - visually hidden but accessible to assistive technology
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
