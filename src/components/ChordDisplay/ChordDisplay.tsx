@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import type { ChordVoicing } from '../../data/chords'
 import { getCommonChords } from '../../data/chords'
 import type { HarmonicaKey } from '../../data/harmonicas'
 import { getChordKey, areChordsSame } from '../../utils/chord'
 import { cn } from '../../utils/classNames'
+import { playChord } from '../../utils/audioPlayer'
+import { usePlayback } from '../../context'
 import styles from './ChordDisplay.module.css'
 
 interface ChordDisplayProps {
@@ -14,11 +16,38 @@ interface ChordDisplayProps {
 export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps) {
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
   const chords = getCommonChords(harmonicaKey)
+  const { setCurrentlyPlayingChord } = usePlayback()
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const handleChordClick = (chord: ChordVoicing) => {
-    const newSelection = areChordsSame(selectedChord, chord) ? null : chord
+    const isDeselecting = areChordsSame(selectedChord, chord)
+    const newSelection = isDeselecting ? null : chord
     setSelectedChord(newSelection)
     onChordSelect?.(newSelection)
+
+    // Abort any currently playing chord
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+
+    // Play audio only when selecting a chord (not when deselecting)
+    if (!isDeselecting) {
+      const abortController = new AbortController()
+      abortControllerRef.current = abortController
+
+      playChord(chord.notes, {
+        signal: abortController.signal,
+        onStart: () => setCurrentlyPlayingChord({ notes: chord.notes, breath: chord.breath }),
+        onEnd: () => {
+          setCurrentlyPlayingChord(null)
+          // Only clear the ref if this is still the active controller
+          if (abortControllerRef.current === abortController) {
+            abortControllerRef.current = null
+          }
+        },
+      })
+    }
   }
 
   const getChordQualityColor = (quality: ChordVoicing['quality']) => {

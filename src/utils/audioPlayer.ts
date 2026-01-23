@@ -11,6 +11,9 @@ const ARPEGGIATE_DELAY_MS = 30
 /** Gap between chords in seconds during progression playback */
 const CHORD_GAP_SECONDS = 0.3
 
+/** Default duration for chord playback in seconds */
+const DEFAULT_CHORD_DURATION = 1.2
+
 let audioContext: AudioContext | null = null
 
 /**
@@ -149,4 +152,84 @@ export async function playChordProgression(
 
     if (signal?.aborted) break
   }
+}
+
+export interface PlayChordOptions {
+  duration?: number
+  arpeggiate?: boolean
+  onStart?: () => void
+  onEnd?: () => void
+  signal?: AbortSignal
+}
+
+/**
+ * Play a single chord with optional arpeggio effect
+ * @param notes - Array of notes with octaves (e.g., ['C4', 'E4', 'G4'])
+ * @param options - Playback options including optional AbortSignal for cancellation
+ */
+export async function playChord(notes: string[], options?: PlayChordOptions): Promise<void> {
+  const { duration = DEFAULT_CHORD_DURATION, arpeggiate = true, onStart, onEnd, signal } = options ?? {}
+
+  // Get frequencies for all notes in the chord
+  const frequencies = notes
+    .map(note => Note.freq(note))
+    .filter((freq): freq is number => freq !== null && freq > 0)
+
+  if (frequencies.length === 0) return
+
+  // Check if already aborted before starting
+  if (signal?.aborted) return
+
+  onStart?.()
+
+  // Track scheduled timeouts so we can clear them on abort
+  const timeoutIds: ReturnType<typeof setTimeout>[] = []
+
+  if (arpeggiate) {
+    // Stagger note attacks for a more natural strummed sound
+    frequencies.forEach((freq, i) => {
+      const timeoutId = setTimeout(() => {
+        if (!signal?.aborted) {
+          playTone(freq, duration)
+        }
+      }, i * ARPEGGIATE_DELAY_MS)
+      timeoutIds.push(timeoutId)
+    })
+  } else {
+    // Play all notes simultaneously
+    if (!signal?.aborted) {
+      frequencies.forEach(freq => playTone(freq, duration))
+    }
+  }
+
+  // Wait for chord to finish, then call onEnd
+  const totalDuration = arpeggiate
+    ? duration * 1000 + (frequencies.length - 1) * ARPEGGIATE_DELAY_MS
+    : duration * 1000
+
+  await new Promise<void>((resolve) => {
+    const endTimeoutId = setTimeout(() => {
+      if (!signal?.aborted) {
+        onEnd?.()
+      }
+      resolve()
+    }, totalDuration)
+
+    // If signal is provided, set up abort handling
+    if (signal) {
+      const abortHandler = () => {
+        // Clear all pending note timeouts
+        timeoutIds.forEach(id => clearTimeout(id))
+        clearTimeout(endTimeoutId)
+        onEnd?.()
+        resolve()
+      }
+
+      if (signal.aborted) {
+        abortHandler()
+      } else {
+        signal.addEventListener('abort', abortHandler, { once: true })
+      }
+    }
+  })
 }

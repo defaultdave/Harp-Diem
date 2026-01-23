@@ -24,7 +24,7 @@ interface NoteSectionProps {
 const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumber, isBlow, isInChord = false }: NoteSectionProps) => {
   const { showDegrees, noteDisplay } = useDisplaySettings()
   const { isNoteCurrentlyPlaying } = usePlayback()
-  const isCurrentlyPlaying = isNoteCurrentlyPlaying(note)
+  const isCurrentlyPlaying = isNoteCurrentlyPlaying(note, isBlow)
 
   const degree = showDegrees && isPlayable ? getNoteDegree(note, scaleNotes) : undefined
   const romanNumeral = degree ? degreeToRoman(degree) : undefined
