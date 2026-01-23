@@ -139,4 +139,72 @@ describe('playChord', () => {
 
     expect(onEnd).toHaveBeenCalledTimes(1)
   })
+
+  describe('abort signal support', () => {
+    it('should not start if signal is already aborted', async () => {
+      const onStart = vi.fn()
+      const onEnd = vi.fn()
+      const abortController = new AbortController()
+      abortController.abort()
+
+      await playChord(['C4', 'E4', 'G4'], { onStart, onEnd, signal: abortController.signal })
+
+      expect(onStart).not.toHaveBeenCalled()
+      expect(onEnd).not.toHaveBeenCalled()
+    })
+
+    it('should call onEnd immediately when aborted during playback', async () => {
+      const onStart = vi.fn()
+      const onEnd = vi.fn()
+      const abortController = new AbortController()
+      const notes = ['C4', 'E4', 'G4']
+
+      const promise = playChord(notes, { onStart, onEnd, signal: abortController.signal })
+
+      expect(onStart).toHaveBeenCalledTimes(1)
+      expect(onEnd).not.toHaveBeenCalled()
+
+      // Abort after a short delay (before chord finishes)
+      await vi.advanceTimersByTimeAsync(100)
+      abortController.abort()
+
+      // Allow abort handler to run
+      await vi.advanceTimersByTimeAsync(0)
+      await promise
+
+      expect(onEnd).toHaveBeenCalledTimes(1)
+    })
+
+    it('should allow a new chord to interrupt the previous one', async () => {
+      const onEnd1 = vi.fn()
+      const onEnd2 = vi.fn()
+
+      const abort1 = new AbortController()
+      const abort2 = new AbortController()
+
+      // Start first chord
+      const promise1 = playChord(['C4', 'E4', 'G4'], { onEnd: onEnd1, signal: abort1.signal })
+
+      await vi.advanceTimersByTimeAsync(100)
+      expect(onEnd1).not.toHaveBeenCalled()
+
+      // Interrupt with second chord
+      abort1.abort()
+      const promise2 = playChord(['D4', 'F4', 'A4'], { onEnd: onEnd2, signal: abort2.signal })
+
+      // Allow abort handler to run
+      await vi.advanceTimersByTimeAsync(0)
+      await promise1
+
+      // First chord should have ended immediately
+      expect(onEnd1).toHaveBeenCalledTimes(1)
+      expect(onEnd2).not.toHaveBeenCalled()
+
+      // Let second chord finish
+      await vi.advanceTimersByTimeAsync(1500)
+      await promise2
+
+      expect(onEnd2).toHaveBeenCalledTimes(1)
+    })
+  })
 })

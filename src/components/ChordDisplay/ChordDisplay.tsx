@@ -17,7 +17,7 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
   const chords = getCommonChords(harmonicaKey)
   const { setCurrentlyPlayingChord } = usePlayback()
-  const isPlayingRef = useRef(false)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const handleChordClick = (chord: ChordVoicing) => {
     const isDeselecting = areChordsSame(selectedChord, chord)
@@ -25,14 +25,26 @@ export function ChordDisplay({ harmonicaKey, onChordSelect }: ChordDisplayProps)
     setSelectedChord(newSelection)
     onChordSelect?.(newSelection)
 
+    // Abort any currently playing chord
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+
     // Play audio only when selecting a chord (not when deselecting)
-    if (!isDeselecting && !isPlayingRef.current) {
-      isPlayingRef.current = true
+    if (!isDeselecting) {
+      const abortController = new AbortController()
+      abortControllerRef.current = abortController
+
       playChord(chord.notes, {
+        signal: abortController.signal,
         onStart: () => setCurrentlyPlayingChord({ notes: chord.notes, breath: chord.breath }),
         onEnd: () => {
           setCurrentlyPlayingChord(null)
-          isPlayingRef.current = false
+          // Only clear the ref if this is still the active controller
+          if (abortControllerRef.current === abortController) {
+            abortControllerRef.current = null
+          }
         },
       })
     }

@@ -159,15 +159,16 @@ export interface PlayChordOptions {
   arpeggiate?: boolean
   onStart?: () => void
   onEnd?: () => void
+  signal?: AbortSignal
 }
 
 /**
  * Play a single chord with optional arpeggio effect
  * @param notes - Array of notes with octaves (e.g., ['C4', 'E4', 'G4'])
- * @param options - Playback options
+ * @param options - Playback options including optional AbortSignal for cancellation
  */
 export async function playChord(notes: string[], options?: PlayChordOptions): Promise<void> {
-  const { duration = DEFAULT_CHORD_DURATION, arpeggiate = true, onStart, onEnd } = options ?? {}
+  const { duration = DEFAULT_CHORD_DURATION, arpeggiate = true, onStart, onEnd, signal } = options ?? {}
 
   // Get frequencies for all notes in the chord
   const frequencies = notes
@@ -176,18 +177,29 @@ export async function playChord(notes: string[], options?: PlayChordOptions): Pr
 
   if (frequencies.length === 0) return
 
+  // Check if already aborted before starting
+  if (signal?.aborted) return
+
   onStart?.()
+
+  // Track scheduled timeouts so we can clear them on abort
+  const timeoutIds: ReturnType<typeof setTimeout>[] = []
 
   if (arpeggiate) {
     // Stagger note attacks for a more natural strummed sound
     frequencies.forEach((freq, i) => {
-      setTimeout(() => {
-        playTone(freq, duration)
+      const timeoutId = setTimeout(() => {
+        if (!signal?.aborted) {
+          playTone(freq, duration)
+        }
       }, i * ARPEGGIATE_DELAY_MS)
+      timeoutIds.push(timeoutId)
     })
   } else {
     // Play all notes simultaneously
-    frequencies.forEach(freq => playTone(freq, duration))
+    if (!signal?.aborted) {
+      frequencies.forEach(freq => playTone(freq, duration))
+    }
   }
 
   // Wait for chord to finish, then call onEnd
@@ -195,6 +207,29 @@ export async function playChord(notes: string[], options?: PlayChordOptions): Pr
     ? duration * 1000 + (frequencies.length - 1) * ARPEGGIATE_DELAY_MS
     : duration * 1000
 
-  await new Promise(resolve => setTimeout(resolve, totalDuration))
-  onEnd?.()
+  await new Promise<void>((resolve) => {
+    const endTimeoutId = setTimeout(() => {
+      if (!signal?.aborted) {
+        onEnd?.()
+      }
+      resolve()
+    }, totalDuration)
+
+    // If signal is provided, set up abort handling
+    if (signal) {
+      const abortHandler = () => {
+        // Clear all pending note timeouts
+        timeoutIds.forEach(id => clearTimeout(id))
+        clearTimeout(endTimeoutId)
+        onEnd?.()
+        resolve()
+      }
+
+      if (signal.aborted) {
+        abortHandler()
+      } else {
+        signal.addEventListener('abort', abortHandler, { once: true })
+      }
+    }
+  })
 }
