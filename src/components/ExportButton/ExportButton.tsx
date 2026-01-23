@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { exportAsPNG, exportAsPDF, printView } from '../../utils/export'
 import type { ExportOptions } from '../../utils/export'
 import styles from './ExportButton.module.css'
@@ -12,6 +12,35 @@ export function ExportButton({ exportOptions, targetRef }: ExportButtonProps) {
   const [isExporting, setIsExporting] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!showMenu) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showMenu])
+
+  // Close menu on Escape key
+  useEffect(() => {
+    if (!showMenu) return
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowMenu(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [showMenu])
 
   const handleExport = async (type: 'png' | 'pdf' | 'print') => {
     if (!targetRef.current || isExporting) return
@@ -41,7 +70,7 @@ export function ExportButton({ exportOptions, targetRef }: ExportButtonProps) {
   }
 
   return (
-    <div className={styles.exportContainer}>
+    <div ref={containerRef} className={styles.exportContainer}>
       <button
         className={styles.exportButton}
         onClick={() => setShowMenu(!showMenu)}

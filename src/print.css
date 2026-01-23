@@ -1,4 +1,10 @@
-/* Print-specific styles for clean, printer-friendly output */
+/*
+ * Print-specific styles for clean, printer-friendly output
+ *
+ * Note: Colors are intentionally hardcoded rather than using CSS variables
+ * to ensure consistent, high-contrast output regardless of theme settings.
+ * Print stylesheets need predictable colors for readability on paper.
+ */
 
 @media print {
   * {
@@ -37,11 +43,11 @@
     box-shadow: none !important;
     border: 1px solid #ccc;
     padding: 20px !important;
-  }
 
-  .harmonicaDisplay h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
   }
 
   /* Scale display optimization */
@@ -52,14 +58,14 @@
     border: 1px solid #ccc;
     padding: 15px !important;
     margin-bottom: 20px;
-  }
 
-  .scaleHeader {
-    margin-bottom: 10px;
-  }
+    .scaleHeader {
+      margin-bottom: 10px;
 
-  .scaleHeader h2 {
-    font-size: 1.3rem;
+      h2 {
+        font-size: 1.3rem;
+      }
+    }
   }
 
   /* Hide playback controls in print */

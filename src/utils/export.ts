@@ -21,6 +21,7 @@ export async function exportAsPNG(element: HTMLElement | null, options: ExportOp
   
   try {
     const canvas = await html2canvas(element, {
+      // White background ensures print-friendly output regardless of theme
       backgroundColor: '#ffffff',
       scale: 2, // Higher resolution for better quality
       logging: false,
@@ -67,6 +68,7 @@ export async function exportAsPDF(element: HTMLElement | null, options: ExportOp
   
   try {
     const canvas = await html2canvas(element, {
+      // White background ensures print-friendly output regardless of theme
       backgroundColor: '#ffffff',
       scale: 2,
       logging: false,
