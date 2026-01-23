@@ -73,3 +73,12 @@
   margin-top: var(--spacing-md);
   align-items: start;
 }
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: var(--font-lg);
+  color: var(--color-text-muted);
+}
