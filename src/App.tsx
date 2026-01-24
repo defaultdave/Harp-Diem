@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { useState, useMemo, useRef, useEffect, lazy, Suspense } from 'react'
 import styles from './App.module.css'
 import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType } from './data/harmonicas'
@@ -12,10 +12,12 @@ import { ScaleDisplay } from './components/ScaleDisplay/ScaleDisplay'
 import { ChordDisplay } from './components/ChordDisplay'
 import { RotateOverlay } from './components/RotateOverlay'
 import { NavHeader } from './components/NavHeader'
-import { QuizPage } from './components/Quiz'
 import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport } from './context'
 import type { ChordVoicing } from './data/chords'
 import { capitalizeWords } from './utils/string'
+
+// Lazy load Quiz page - only loaded when navigating to /quiz route
+const QuizPage = lazy(() => import('./components/Quiz').then(module => ({ default: module.QuizPage })))
 
 function ScalesPage() {
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
@@ -176,7 +178,11 @@ function AppContent() {
 
       <main className={styles.main}>
         {route === '/' && <ScalesPage />}
-        {route === '/quiz' && <QuizPage />}
+        {route === '/quiz' && (
+          <Suspense fallback={<div className={styles.loading}>Loading quiz...</div>}>
+            <QuizPage />
+          </Suspense>
+        )}
       </main>
     </div>
   )

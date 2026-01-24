@@ -42,6 +42,7 @@
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
     "lint-staged": "^16.2.7",
+    "rollup-plugin-visualizer": "^6.0.5",
     "tonal": "^6.4.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
