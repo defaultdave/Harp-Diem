@@ -47,7 +47,7 @@
     "rollup-plugin-visualizer": "^6.0.5",
     "tonal": "^6.4.2",
     "typedoc": "^0.28.16",
-    "typedoc-plugin-markdown": "^4.9.0",
+    "typedoc-rhineai-theme": "^1.2.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",

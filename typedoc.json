@@ -8,7 +8,7 @@
     "src/types/index.ts"
   ],
   "out": "docs",
-  "plugin": ["typedoc-plugin-markdown"],
+  "plugin": ["typedoc-rhineai-theme"],
   "excludePrivate": true,
   "excludeInternal": true,
   "includeVersion": true,
