@@ -1,43 +1,11 @@
 /**
- * @packageDocumentation
  * Lazy-loaded export utilities for PNG, PDF, and print functionality.
- *
- * @remarks
- * This module provides the same export functionality as `export.ts` but
- * lazy-loads html2canvas and jspdf only when needed. This reduces the
- * initial bundle size by ~200KB.
- *
- * @category Utils
+ * Dynamically imports html2canvas and jspdf to reduce initial bundle size.
+ * @packageDocumentation
  */
 import type { ExportOptions } from './export'
 
-/**
- * Exports an element as a PNG image with lazy-loaded dependencies.
- *
- * @remarks
- * Dynamically imports html2canvas only when the export is triggered,
- * keeping it out of the initial bundle. The image is generated with:
- * - White background (print-friendly regardless of theme)
- * - 2x scale for higher resolution
- *
- * @param element - The HTML element to export
- * @param options - Export metadata for generating filename
- * @throws Error if element is null or export fails
- *
- * @example
- * ```typescript
- * const diagramRef = useRef<HTMLDivElement>(null)
- *
- * const handleExport = async () => {
- *   await exportAsPNG(diagramRef.current, {
- *     harmonicaKey: 'G',
- *     songKey: 'D',
- *     scaleType: 'blues',
- *     position: 2
- *   })
- * }
- * ```
- */
+/** Exports an element as a PNG image with lazy-loaded dependencies. */
 export async function exportAsPNG(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
     throw new Error('No element provided for export')
@@ -82,28 +50,7 @@ export async function exportAsPNG(element: HTMLElement | null, options: ExportOp
   }
 }
 
-/**
- * Exports an element as a PDF document with lazy-loaded dependencies.
- *
- * @remarks
- * Dynamically imports both html2canvas and jspdf only when the export
- * is triggered. The PDF is generated in landscape A4 format with the
- * image centered on the page.
- *
- * @param element - The HTML element to export
- * @param options - Export metadata for generating filename
- * @throws Error if element is null or export fails
- *
- * @example
- * ```typescript
- * await exportAsPDF(diagramRef.current, {
- *   harmonicaKey: 'C',
- *   songKey: 'G',
- *   scaleType: 'major',
- *   position: 2
- * })
- * ```
- */
+/** Exports an element as a PDF document with lazy-loaded dependencies. */
 export async function exportAsPDF(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
     throw new Error('No element provided for export')
@@ -156,25 +103,12 @@ export async function exportAsPDF(element: HTMLElement | null, options: ExportOp
   }
 }
 
-/**
- * Opens the browser's print dialog for the current page.
- *
- * @remarks
- * Simply calls `window.print()`. The print stylesheet in `index.css`
- * handles print-specific styling.
- */
+/** Opens the browser's print dialog. */
 export function printView(): void {
   window.print()
 }
 
-/**
- * Generates a descriptive file name for exports.
- *
- * @param options - Export metadata (harmonica key, song key, scale, position)
- * @param extension - File extension (png or pdf)
- * @returns Generated filename in format: harp-diem_{harpKey}-harp_{songKey}-{Scale}_{position}-pos_{date}.{ext}
- * @internal
- */
+/** @internal */
 function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): string {
   const { harmonicaKey, songKey, scaleType, position } = options
   const timestamp = new Date().toISOString().split('T')[0] // YYYY-MM-DD
@@ -184,13 +118,7 @@ function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): str
   return `harp-diem_${harmonicaKey}-harp_${songKey}-${scaleName}_${position}${positionSuffix}-pos_${timestamp}.${extension}`
 }
 
-/**
- * Gets the ordinal suffix for a position number.
- *
- * @param position - Position number (1-12)
- * @returns Ordinal suffix (st, nd, rd, th)
- * @internal
- */
+/** @internal */
 function getOrdinalSuffix(position: number): string {
   if (position === 1) return 'st'
   if (position === 2) return 'nd'

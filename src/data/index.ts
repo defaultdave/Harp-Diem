@@ -1,14 +1,6 @@
 /**
+ * Data layer exports: harmonicas, scales, chords, and progressions.
  * @packageDocumentation
- * Data layer barrel file - exports all data modules.
- *
- * This module provides the core data structures and functions for:
- * - **Harmonicas**: Harmonica layouts, tunings, and position calculation
- * - **Scales**: Scale generation and note membership checking
- * - **Chords**: Chord voicing generation for harmonica
- * - **Progressions**: Quiz question generation with chord progressions
- *
- * @category Data
  */
 
 // Re-export everything from harmonicas
