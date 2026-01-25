@@ -22,8 +22,10 @@ const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumbe
   const { isNoteCurrentlyPlaying } = usePlayback()
   const isCurrentlyPlaying = isNoteCurrentlyPlaying(note, isBlow)
 
-  const degree = showDegrees && isPlayable ? getNoteDegree(note, scaleNotes) : undefined
-  const romanNumeral = degree ? degreeToRoman(degree) : undefined
+  // Compute degree for both Roman numeral display and root note detection
+  const degree = isPlayable ? getNoteDegree(note, scaleNotes) : undefined
+  const isRootNote = degree === 1
+  const romanNumeral = showDegrees && degree ? degreeToRoman(degree) : undefined
 
   const noteType = labelToNoteType(label)
   const tabNotation = getTabNotation(holeNumber, noteType)
@@ -33,7 +35,7 @@ const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumbe
 
   return (
     <div
-      className={cn(styles.noteSection, isPlayable && styles.playable, isCurrentlyPlaying && styles.currentlyPlaying, isInChord && styles.inChord, breathDirection)}
+      className={cn(styles.noteSection, isPlayable && styles.playable, isRootNote && styles.rootNote, isCurrentlyPlaying && styles.currentlyPlaying, isInChord && styles.inChord, breathDirection)}
       role="button"
       tabIndex={0}
       onClick={() => playTone(frequency)}

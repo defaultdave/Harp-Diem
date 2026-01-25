@@ -149,7 +149,11 @@ export function ScaleDisplay({
         {scaleNotes.map((note, index) => (
           <span key={note} className={styles.noteWithInterval}>
             <span
-              className={cn(styles.scaleNote, isNoteCurrentlyPlaying(note) && styles.scaleNotePlaying)}
+              className={cn(
+                styles.scaleNote, 
+                index === 0 && styles.scaleNoteRoot,
+                isNoteCurrentlyPlaying(note) && styles.scaleNotePlaying
+              )}
             >
               {note}
             </span>
