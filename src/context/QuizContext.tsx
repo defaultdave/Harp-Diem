@@ -137,7 +137,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
   }, [phase, difficulty, playCurrentProgression])
 
   const replayProgression = useCallback(async () => {
-    if (!currentQuestion || phase !== 'answering') return
+    if (!currentQuestion || (phase !== 'answering' && phase !== 'revealed')) return
     await playCurrentProgression(currentQuestion)
   }, [currentQuestion, phase, playCurrentProgression])
 

@@ -133,6 +133,28 @@
   gap: var(--spacing-lg);
 }
 
+/* Instructions Section */
+.instructionsSection {
+  background: var(--color-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  width: 100%;
+}
+
+.instructionsTitle {
+  font-size: var(--font-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.instructionsText {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
 /* Answer Section */
 .answerSection {
   display: flex;
