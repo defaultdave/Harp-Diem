@@ -55,6 +55,11 @@
   --color-playable-text: #ffffff;
   --color-playable-label: rgba(255, 255, 255, 0.85);
 
+  /* Root note colors - slightly darker than playable */
+  --color-root-bg: #1e5038;
+  --color-root-border: #1a4230;
+  --color-root-shadow: rgba(26, 66, 48, 0.35);
+
   /* Not playable colors - neutral */
   --color-note-bg: #e2e8f0;
   --color-note-border: #a0aec0;
@@ -123,6 +128,11 @@
   --color-playable-shadow: rgba(72, 187, 120, 0.4);
   --color-playable-text: #ffffff;
   --color-playable-label: rgba(255, 255, 255, 0.9);
+
+  /* Root note colors - slightly darker than playable (adjusted for better contrast) */
+  --color-root-bg: #2a7d50;
+  --color-root-border: #3a9a62;
+  --color-root-shadow: rgba(58, 154, 98, 0.45);
 
   /* Not playable colors - darker neutral for dark mode */
   --color-note-bg: #4a5568;

@@ -15,9 +15,10 @@ interface NoteSectionProps {
   holeNumber: number
   isBlow: boolean
   isInChord?: boolean
+  isRootNote?: boolean
 }
 
-const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumber, isBlow, isInChord = false }: NoteSectionProps) => {
+const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumber, isBlow, isInChord = false, isRootNote = false }: NoteSectionProps) => {
   const { showDegrees, noteDisplay } = useDisplaySettings()
   const { isNoteCurrentlyPlaying } = usePlayback()
   const isCurrentlyPlaying = isNoteCurrentlyPlaying(note, isBlow)
@@ -33,7 +34,7 @@ const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumbe
 
   return (
     <div
-      className={cn(styles.noteSection, isPlayable && styles.playable, isCurrentlyPlaying && styles.currentlyPlaying, isInChord && styles.inChord, breathDirection)}
+      className={cn(styles.noteSection, isPlayable && styles.playable, isRootNote && styles.rootNote, isCurrentlyPlaying && styles.currentlyPlaying, isInChord && styles.inChord, breathDirection)}
       role="button"
       tabIndex={0}
       onClick={() => playTone(frequency)}
@@ -68,6 +69,17 @@ export const HoleColumn = memo(function HoleColumn({
 }: HoleColumnProps) {
   const bendPlayability = getBendPlayability(hole, scaleNotes)
 
+  // Check if notes are root notes (degree I)
+  const isBlowRoot = isBlowPlayable && getNoteDegree(hole.blow.note, scaleNotes) === 1
+  const isDrawRoot = isDrawPlayable && getNoteDegree(hole.draw.note, scaleNotes) === 1
+  const isOverblowRoot = bendPlayability.isOverblowPlayable && hole.overblow && getNoteDegree(hole.overblow.note, scaleNotes) === 1
+  const isBlowHalfStepRoot = bendPlayability.isBlowHalfStepPlayable && hole.blowBends?.halfStepBend && getNoteDegree(hole.blowBends.halfStepBend.note, scaleNotes) === 1
+  const isBlowWholeStepRoot = bendPlayability.isBlowWholeStepPlayable && hole.blowBends?.wholeStepBend && getNoteDegree(hole.blowBends.wholeStepBend.note, scaleNotes) === 1
+  const isDrawHalfStepRoot = bendPlayability.isDrawHalfStepPlayable && hole.drawBends?.halfStepBend && getNoteDegree(hole.drawBends.halfStepBend.note, scaleNotes) === 1
+  const isDrawWholeStepRoot = bendPlayability.isDrawWholeStepPlayable && hole.drawBends?.wholeStepBend && getNoteDegree(hole.drawBends.wholeStepBend.note, scaleNotes) === 1
+  const isDrawMinorThirdRoot = bendPlayability.isDrawMinorThirdPlayable && hole.drawBends?.minorThirdBend && getNoteDegree(hole.drawBends.minorThirdBend.note, scaleNotes) === 1
+  const isOverdrawRoot = bendPlayability.isOverdrawPlayable && hole.overdraw && getNoteDegree(hole.overdraw.note, scaleNotes) === 1
+
   return (
     <div className={styles.holeColumn}>
       {/* Overblow and Blow Bends - Top */}
@@ -81,6 +93,7 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={true}
+            isRootNote={isOverblowRoot}
           />
         )}
         {hole.blowBends?.wholeStepBend && (
@@ -92,6 +105,7 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={true}
+            isRootNote={isBlowWholeStepRoot}
           />
         )}
         {hole.blowBends?.halfStepBend && (
@@ -103,6 +117,7 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={true}
+            isRootNote={isBlowHalfStepRoot}
           />
         )}
         {/* Blow Note - Middle */}
@@ -115,6 +130,7 @@ export const HoleColumn = memo(function HoleColumn({
           holeNumber={hole.hole}
           isBlow={true}
           isInChord={isBlowInChord}
+          isRootNote={isBlowRoot}
         />
       </div>
 
@@ -133,6 +149,7 @@ export const HoleColumn = memo(function HoleColumn({
           holeNumber={hole.hole}
           isBlow={false}
           isInChord={isDrawInChord}
+          isRootNote={isDrawRoot}
         />
         {hole.drawBends?.halfStepBend && (
           <NoteSection
@@ -143,6 +160,7 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={false}
+            isRootNote={isDrawHalfStepRoot}
           />
         )}
         {hole.drawBends?.wholeStepBend && (
@@ -154,6 +172,7 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={false}
+            isRootNote={isDrawWholeStepRoot}
           />
         )}
         {hole.drawBends?.minorThirdBend && (
@@ -165,6 +184,7 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={false}
+            isRootNote={isDrawMinorThirdRoot}
           />
         )}
         {hole.overdraw && (
@@ -176,6 +196,7 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={false}
+            isRootNote={isOverdrawRoot}
           />
         )}
       </div>

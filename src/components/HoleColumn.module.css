@@ -107,6 +107,19 @@
   }
 }
 
+/* Root note styling - slightly darker than regular playable */
+.rootNote {
+  background: var(--color-root-bg);
+  border-color: var(--color-root-border);
+  box-shadow: 0 2px 4px var(--color-root-shadow);
+}
+
+/* Ensure specificity for playable root notes */
+.playable.rootNote {
+  background: var(--color-root-bg);
+  border-color: var(--color-root-border);
+}
+
 /* Currently playing note highlight with animation */
 /* Use .noteSection.currentlyPlaying for specificity to override .playable border */
 .noteSection.currentlyPlaying {
@@ -148,6 +161,17 @@
       pulse 0.4s ease-in-out infinite alternate,
       shimmerDown 0.8s ease-in-out infinite;
   }
+
+  /* Root note playing animation */
+  &.playable.rootNote.currentlyPlaying {
+    background: linear-gradient(
+      to top,
+      var(--color-root-bg) 0%,
+      var(--color-playing-bg) 50%,
+      var(--color-root-bg) 100%
+    );
+    background-size: 100% 200%;
+  }
 }
 
 /* Draw notes: shimmer from top to bottom */
@@ -163,6 +187,17 @@
     animation:
       pulse 0.4s ease-in-out infinite alternate,
       shimmerUp 0.8s ease-in-out infinite;
+  }
+
+  /* Root note playing animation */
+  &.playable.rootNote.currentlyPlaying {
+    background: linear-gradient(
+      to bottom,
+      var(--color-root-bg) 0%,
+      var(--color-playing-bg) 50%,
+      var(--color-root-bg) 100%
+    );
+    background-size: 100% 200%;
   }
 }
 
@@ -220,6 +255,11 @@
 /* When a note is both playable (in scale) and in chord */
 .playable.inChord {
   background: linear-gradient(135deg, var(--color-playable-bg) 0%, var(--color-chord-gradient-playable) 100%);
+}
+
+/* Root note in chord - use root background as gradient base */
+.playable.rootNote.inChord {
+  background: linear-gradient(135deg, var(--color-root-bg) 0%, var(--color-chord-gradient-playable) 100%);
 }
 
 /* Reduced motion preference - disable animations for accessibility */

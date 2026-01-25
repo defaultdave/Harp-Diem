@@ -250,6 +250,10 @@
   transition: transform 0.15s, box-shadow 0.15s;
 }
 
+.scaleNoteRoot {
+  background: var(--color-root-bg);
+}
+
 .scaleNotePlaying {
   transform: scale(1.15);
   box-shadow: 0 0 0 3px rgba(39, 103, 73, 0.4), 0 4px 12px rgba(39, 103, 73, 0.3);
