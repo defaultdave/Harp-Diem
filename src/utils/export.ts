@@ -1,9 +1,9 @@
 /**
  * Export utilities for PNG, PDF, and print functionality.
+ * Uses dynamic imports to reduce initial bundle size.
  * @packageDocumentation
  */
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
+import { getOrdinalSuffix } from './string'
 
 /** Metadata for generating export filenames. */
 export interface ExportOptions {
@@ -13,13 +13,16 @@ export interface ExportOptions {
   position: number
 }
 
-/** Exports an element as a PNG image. */
+/** Exports an element as a PNG image with lazy-loaded dependencies. */
 export async function exportAsPNG(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
     throw new Error('No element provided for export')
   }
-  
+
   try {
+    // Dynamically import html2canvas only when export is triggered
+    const { default: html2canvas } = await import('html2canvas')
+
     const canvas = await html2canvas(element, {
       // White background ensures print-friendly output regardless of theme
       backgroundColor: '#ffffff',
@@ -55,13 +58,19 @@ export async function exportAsPNG(element: HTMLElement | null, options: ExportOp
   }
 }
 
-/** Exports an element as a PDF document in landscape A4 format. */
+/** Exports an element as a PDF document with lazy-loaded dependencies. */
 export async function exportAsPDF(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
     throw new Error('No element provided for export')
   }
-  
+
   try {
+    // Dynamically import both html2canvas and jspdf only when export is triggered
+    const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+      import('html2canvas'),
+      import('jspdf')
+    ])
+
     const canvas = await html2canvas(element, {
       // White background ensures print-friendly output regardless of theme
       backgroundColor: '#ffffff',
@@ -71,7 +80,7 @@ export async function exportAsPDF(element: HTMLElement | null, options: ExportOp
     })
 
     const imgData = canvas.toDataURL('image/png')
-    
+
     // Create PDF in landscape orientation for better harmonica layout
     const pdf = new jsPDF({
       orientation: 'landscape',
@@ -93,7 +102,7 @@ export async function exportAsPDF(element: HTMLElement | null, options: ExportOp
     const y = (pdfHeight - scaledHeight) / 2
 
     pdf.addImage(imgData, 'PNG', x, y, scaledWidth, scaledHeight)
-    
+
     const fileName = generateFileName(options, 'pdf')
     pdf.save(fileName)
   } catch (error) {
@@ -113,14 +122,6 @@ function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): str
   const timestamp = new Date().toISOString().split('T')[0] // YYYY-MM-DD
   const scaleName = scaleType.charAt(0).toUpperCase() + scaleType.slice(1)
   const positionSuffix = getOrdinalSuffix(position)
-  
-  return `harp-diem_${harmonicaKey}-harp_${songKey}-${scaleName}_${position}${positionSuffix}-pos_${timestamp}.${extension}`
-}
 
-/** @internal */
-function getOrdinalSuffix(position: number): string {
-  if (position === 1) return 'st'
-  if (position === 2) return 'nd'
-  if (position === 3) return 'rd'
-  return 'th'
+  return `harp-diem_${harmonicaKey}-harp_${songKey}-${scaleName}_${position}${positionSuffix}-pos_${timestamp}.${extension}`
 }

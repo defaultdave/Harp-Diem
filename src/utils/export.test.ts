@@ -7,35 +7,19 @@ vi.mock('html2canvas', () => ({
   default: vi.fn(),
 }))
 
-// Mock jspdf - use proper constructor function
-interface MockJsPDFInstance {
-  internal: {
-    pageSize: {
-      getWidth: () => number
-      getHeight: () => number
-    }
-  }
-  addImage: ReturnType<typeof vi.fn>
-  save: ReturnType<typeof vi.fn>
-}
-
-vi.mock('jspdf', () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const MockJsPDF = function (this: MockJsPDFInstance, _options: { orientation: string; unit: string; format: string }) {
-    this.internal = {
+// Mock jspdf
+vi.mock('jspdf', () => ({
+  default: class {
+    internal = {
       pageSize: {
         getWidth: () => 297,
         getHeight: () => 210,
       },
     }
-    this.addImage = vi.fn()
-    this.save = vi.fn()
-  }
-
-  return {
-    default: MockJsPDF,
-  }
-})
+    addImage = vi.fn()
+    save = vi.fn()
+  },
+}))
 
 describe('export utilities', () => {
   let mockElement: HTMLElement
@@ -49,8 +33,6 @@ describe('export utilities', () => {
       scaleType: 'major',
       position: 2,
     }
-
-    // Reset mocks
     vi.clearAllMocks()
   })
 
@@ -59,6 +41,10 @@ describe('export utilities', () => {
   })
 
   describe('exportAsPNG', () => {
+    it('should throw error if no element provided', async () => {
+      await expect(exportAsPNG(null, mockOptions)).rejects.toThrow('No element provided for export')
+    })
+
     it('should create a PNG export with correct file name format', async () => {
       const html2canvas = (await import('html2canvas')).default
       const mockCanvas = {
@@ -103,6 +89,10 @@ describe('export utilities', () => {
   })
 
   describe('exportAsPDF', () => {
+    it('should throw error if no element provided', async () => {
+      await expect(exportAsPDF(null, mockOptions)).rejects.toThrow('No element provided for export')
+    })
+
     it('should create a PDF export with correct configuration', async () => {
       const html2canvas = (await import('html2canvas')).default
 
@@ -116,7 +106,6 @@ describe('export utilities', () => {
 
       await exportAsPDF(mockElement, mockOptions)
 
-      // Just verify the functions were called - the mock is being invoked
       expect(html2canvas).toHaveBeenCalledWith(mockElement, expect.objectContaining({
         backgroundColor: '#ffffff',
         scale: 2,
