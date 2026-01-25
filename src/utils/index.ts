@@ -1,3 +1,20 @@
+/**
+ * @packageDocumentation
+ * Utility functions barrel file - exports all utility modules.
+ *
+ * Available utilities:
+ * - **audioPlayer**: Web Audio API playback for notes and chords
+ * - **chord**: Chord comparison and key generation
+ * - **classNames**: CSS class name composition
+ * - **events**: Keyboard event handlers
+ * - **export/exportLazy**: PNG/PDF export and print functionality
+ * - **playableNotes**: Collect playable notes from harmonica holes
+ * - **string**: String formatting utilities
+ * - **tabNotation**: Harmonica tablature conversion
+ *
+ * @category Utils
+ */
+
 // Re-export from audioPlayer
 export {
   playTone,

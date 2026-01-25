@@ -1,18 +1,42 @@
+/**
+ * @packageDocumentation
+ * Export utilities for PNG, PDF, and print functionality.
+ *
+ * @remarks
+ * This module provides the eagerly-loaded export functions.
+ * For lazy-loaded versions that reduce initial bundle size,
+ * see {@link ./exportLazy}.
+ *
+ * @category Utils
+ */
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
+/**
+ * Metadata for generating export filenames.
+ */
 export interface ExportOptions {
+  /** Key of the harmonica (e.g., "G") */
   harmonicaKey: string
+  /** Key of the song/scale (e.g., "D") */
   songKey: string
+  /** Type of scale (e.g., "blues", "major") */
   scaleType: string
+  /** Harmonica position (1-12) */
   position: number
 }
 
 /**
- * Exports the current harmonica view as a PNG image
- * @param element - The DOM element to capture
- * @param options - Export metadata (harmonica key, song key, scale type)
- * @returns Promise that resolves when download is complete
+ * Exports an element as a PNG image.
+ *
+ * @remarks
+ * Uses html2canvas to render the element to a canvas, then converts
+ * to PNG and triggers a download. For lazy-loaded version, see
+ * {@link ./exportLazy.exportAsPNG}.
+ *
+ * @param element - The HTML element to export
+ * @param options - Export metadata for generating filename
+ * @throws Error if element is null or export fails
  */
 export async function exportAsPNG(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
@@ -56,10 +80,15 @@ export async function exportAsPNG(element: HTMLElement | null, options: ExportOp
 }
 
 /**
- * Exports the current harmonica view as a PDF document
- * @param element - The DOM element to capture
- * @param options - Export metadata (harmonica key, song key, scale type)
- * @returns Promise that resolves when download is complete
+ * Exports an element as a PDF document.
+ *
+ * @remarks
+ * Uses html2canvas and jspdf to render the element to a landscape A4 PDF.
+ * For lazy-loaded version, see {@link ./exportLazy.exportAsPDF}.
+ *
+ * @param element - The HTML element to export
+ * @param options - Export metadata for generating filename
+ * @throws Error if element is null or export fails
  */
 export async function exportAsPDF(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
@@ -108,17 +137,15 @@ export async function exportAsPDF(element: HTMLElement | null, options: ExportOp
 }
 
 /**
- * Opens the browser print dialog for the current view
+ * Opens the browser's print dialog for the current page.
  */
 export function printView(): void {
   window.print()
 }
 
 /**
- * Generates a descriptive file name for exports
- * @param options - Export metadata
- * @param extension - File extension (png or pdf)
- * @returns Generated file name
+ * Generates a descriptive file name for exports.
+ * @internal
  */
 function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): string {
   const { harmonicaKey, songKey, scaleType, position } = options
@@ -130,9 +157,8 @@ function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): str
 }
 
 /**
- * Gets the ordinal suffix for a position number (1st, 2nd, 3rd, etc.)
- * @param position - Position number
- * @returns Ordinal suffix (st, nd, rd, th)
+ * Gets the ordinal suffix for a position number.
+ * @internal
  */
 function getOrdinalSuffix(position: number): string {
   if (position === 1) return 'st'

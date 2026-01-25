@@ -31,3 +31,6 @@ dist-ssr
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Generated documentation
+/docs/

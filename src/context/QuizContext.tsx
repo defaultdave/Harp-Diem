@@ -1,20 +1,50 @@
+/**
+ * @packageDocumentation
+ * Context for managing key identification quiz state.
+ *
+ * @remarks
+ * This context handles the complete quiz flow: starting, playing audio,
+ * collecting answers, checking correctness, and tracking scores.
+ *
+ * @category Context
+ */
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react'
 import { generateQuestion, type QuizQuestion, type Difficulty, type Mode } from '../data'
 import { playChordProgression } from '../utils'
 
+/**
+ * Current phase of the quiz flow.
+ *
+ * - `'idle'` - Quiz not started, ready to begin
+ * - `'playing'` - Audio progression is playing
+ * - `'answering'` - User is selecting their answer
+ * - `'revealed'` - Answer has been checked, result shown
+ */
 export type QuizPhase = 'idle' | 'playing' | 'answering' | 'revealed'
 
+/**
+ * User's answer selection.
+ * @internal
+ */
 interface UserAnswer {
   key: string
   mode: Mode
 }
 
+/**
+ * Quiz score tracking.
+ * @internal
+ */
 interface Score {
   correct: number
   total: number
 }
 
+/**
+ * Complete quiz state.
+ * @internal
+ */
 interface QuizState {
   phase: QuizPhase
   difficulty: Difficulty
@@ -25,12 +55,21 @@ interface QuizState {
   isAudioPlaying: boolean
 }
 
+/**
+ * Quiz context value with state and actions.
+ */
 interface QuizContextValue extends QuizState {
+  /** Set quiz difficulty (only when idle or revealed) */
   setDifficulty: (difficulty: Difficulty) => void
+  /** Update user's answer selection */
   setUserAnswer: (answer: UserAnswer) => void
+  /** Start the quiz with a new question */
   startQuiz: () => Promise<void>
+  /** Check the user's answer against the correct answer */
   checkAnswer: () => void
+  /** Move to the next question */
   nextQuestion: () => Promise<void>
+  /** Replay the current progression audio */
   replayProgression: () => Promise<void>
 }
 
@@ -40,6 +79,27 @@ interface QuizProviderProps {
   children: ReactNode
 }
 
+/**
+ * Provider component for quiz state context.
+ *
+ * @remarks
+ * Manages the complete quiz flow including:
+ * - Question generation based on difficulty
+ * - Audio playback of chord progressions
+ * - Answer validation and scoring
+ * - Phase transitions (idle → playing → answering → revealed)
+ *
+ * @example
+ * ```tsx
+ * function App() {
+ *   return (
+ *     <QuizProvider>
+ *       <QuizView />
+ *     </QuizProvider>
+ *   )
+ * }
+ * ```
+ */
 export function QuizProvider({ children }: QuizProviderProps) {
   const [phase, setPhase] = useState<QuizPhase>('idle')
   const [difficulty, setDifficultyState] = useState<Difficulty>('easy')
@@ -161,6 +221,34 @@ export function QuizProvider({ children }: QuizProviderProps) {
   )
 }
 
+/**
+ * Hook to access quiz state context.
+ *
+ * @remarks
+ * Must be used within a {@link QuizProvider}.
+ *
+ * @returns The quiz context value with state and actions
+ * @throws Error if used outside of QuizProvider
+ *
+ * @example
+ * ```tsx
+ * function QuizControls() {
+ *   const { phase, startQuiz, checkAnswer, score } = useQuiz()
+ *
+ *   return (
+ *     <div>
+ *       <p>Score: {score.correct}/{score.total}</p>
+ *       {phase === 'idle' && (
+ *         <button onClick={startQuiz}>Start Quiz</button>
+ *       )}
+ *       {phase === 'answering' && (
+ *         <button onClick={checkAnswer}>Submit Answer</button>
+ *       )}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
 export function useQuiz(): QuizContextValue {
   const context = useContext(QuizContext)
   if (!context) {

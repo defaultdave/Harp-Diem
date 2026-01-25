@@ -1,35 +1,95 @@
+/**
+ * @packageDocumentation
+ * Chord progression generation for the key identification quiz.
+ *
+ * This module generates random chord progressions at various difficulty levels
+ * for ear training purposes. Players listen to progressions and identify the key.
+ *
+ * @remarks
+ * Progressions are built using scale degrees and common patterns from
+ * Western music theory (I-IV-V, ii-V-I, etc.). The difficulty affects
+ * both the available keys and the complexity of the progressions.
+ *
+ * @category Data
+ */
 import { Note, Scale } from 'tonal'
 
+/**
+ * Quiz difficulty levels affecting key selection and progression complexity.
+ *
+ * - **easy**: Simple keys (C, G, D, A, E, F) with basic I-IV-V patterns
+ * - **medium**: All 12 keys with more varied progressions (vi, ii chords)
+ * - **hard**: All 12 keys with jazz-influenced progressions (ii-V-I, V7)
+ */
 export type Difficulty = 'easy' | 'medium' | 'hard'
+
+/**
+ * Musical mode for the progression (major or minor).
+ */
 export type Mode = 'major' | 'minor'
 
 /**
- * Represents a single chord in a progression with its notes and context
+ * A chord within a progression, including its notes and harmonic function.
+ *
+ * @example
+ * ```typescript
+ * // The IV chord in C major
+ * {
+ *   name: "F",
+ *   romanNumeral: "IV",
+ *   notes: ["F4", "A4", "C5"]
+ * }
+ * ```
  */
 export interface ChordInProgression {
-  name: string // e.g., "C", "Am", "G7"
-  romanNumeral: string // e.g., "I", "IV", "V"
-  notes: string[] // Actual notes with octaves, e.g., ["C4", "E4", "G4"]
+  /** Chord symbol (e.g., "C", "Am", "G7", "Dm") */
+  name: string
+  /** Roman numeral showing harmonic function (e.g., "I", "IV", "V7", "ii") */
+  romanNumeral: string
+  /** Notes in the chord with octaves for audio playback */
+  notes: string[]
 }
 
 /**
- * Represents a quiz question with a chord progression
+ * A complete quiz question with key, mode, and chord progression.
+ *
+ * @example
+ * ```typescript
+ * {
+ *   key: "G",
+ *   mode: "major",
+ *   progression: [
+ *     { name: "G", romanNumeral: "I", notes: ["G4", "B4", "D5"] },
+ *     { name: "C", romanNumeral: "IV", notes: ["C4", "E4", "G4"] },
+ *     { name: "D", romanNumeral: "V", notes: ["D4", "F#4", "A4"] }
+ *   ]
+ * }
+ * ```
  */
 export interface QuizQuestion {
-  key: string // e.g., "C"
-  mode: Mode // 'major' or 'minor'
+  /** The key of the progression (e.g., "C", "G", "Bb") */
+  key: string
+  /** Whether the progression is in major or minor mode */
+  mode: Mode
+  /** The chord progression to play */
   progression: ChordInProgression[]
 }
 
-// Keys available at each difficulty level
+/**
+ * Keys available at each difficulty level.
+ * Easy uses common keys; medium and hard use all 12 keys.
+ * @internal
+ */
 const DIFFICULTY_KEYS: Record<Difficulty, string[]> = {
   easy: ['C', 'G', 'D', 'A', 'E', 'F'],
   medium: ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'],
   hard: ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'],
 }
 
-// Progression patterns by difficulty and mode
-// Each pattern is an array of [degree, quality, romanNumeral]
+/**
+ * Progression pattern definition: [scaleDegree, chordQuality, romanNumeral]
+ * @internal
+ */
 type ProgressionPattern = [number, string, string][]
 
 const MAJOR_PROGRESSIONS: Record<Difficulty, ProgressionPattern[]> = {
@@ -99,7 +159,12 @@ const MINOR_PROGRESSIONS: Record<Difficulty, ProgressionPattern[]> = {
 }
 
 /**
- * Get the scale degrees for a given mode
+ * Gets the scale notes for a given key and mode.
+ *
+ * @param key - The root key (e.g., "C", "G")
+ * @param mode - Major or minor mode
+ * @returns Array of note names in the scale
+ * @internal
  */
 function getScaleDegrees(key: string, mode: Mode): string[] {
   const scaleName = mode === 'major' ? 'major' : 'minor'
@@ -108,9 +173,18 @@ function getScaleDegrees(key: string, mode: Mode): string[] {
 }
 
 /**
- * Build a chord from a scale degree
- * Uses interval-based construction to preserve octave information
- * (Chord.getChord strips octaves, causing Note.freq() to return null)
+ * Builds a chord from a root note and quality using intervals.
+ *
+ * @remarks
+ * Uses interval-based construction rather than Chord.getChord() to preserve
+ * octave information. This is necessary because Note.freq() requires octaves
+ * to return valid frequencies for audio playback.
+ *
+ * @param root - The chord root note (without octave, e.g., "C", "G")
+ * @param quality - Chord quality ("major", "minor", "7", "diminished")
+ * @param octave - Base octave for the chord (default: 4)
+ * @returns Array of notes with octaves (e.g., ["C4", "E4", "G4"])
+ * @internal
  */
 function buildChord(root: string, quality: string, octave: number = 4): string[] {
   // Define intervals for each chord quality
@@ -128,7 +202,13 @@ function buildChord(root: string, quality: string, octave: number = 4): string[]
 }
 
 /**
- * Get the root note for a scale degree
+ * Gets the root note for a given scale degree.
+ *
+ * @param key - The key (e.g., "C")
+ * @param mode - Major or minor mode
+ * @param degree - Scale degree (1-7)
+ * @returns The note name at that degree (e.g., degree 5 in C major = "G")
+ * @internal
  */
 function getDegreeRoot(key: string, mode: Mode, degree: number): string {
   const degrees = getScaleDegrees(key, mode)
@@ -137,7 +217,12 @@ function getDegreeRoot(key: string, mode: Mode, degree: number): string {
 }
 
 /**
- * Get the symbol for a chord quality
+ * Creates a chord symbol from root and quality.
+ *
+ * @param root - The chord root (e.g., "C", "F#")
+ * @param quality - Chord quality (e.g., "major", "minor", "7")
+ * @returns Chord symbol (e.g., "C", "Am", "G7", "Bdim")
+ * @internal
  */
 function getChordSymbol(root: string, quality: string): string {
   const symbolMap: Record<string, string> = {
@@ -150,7 +235,26 @@ function getChordSymbol(root: string, quality: string): string {
 }
 
 /**
- * Generate a random quiz question based on difficulty
+ * Generates a random quiz question based on difficulty level.
+ *
+ * @remarks
+ * The function randomly selects:
+ * 1. A key from the difficulty-appropriate key pool
+ * 2. A mode (major or minor, 50/50 chance)
+ * 3. A progression pattern from the difficulty/mode pool
+ *
+ * The progression is then built with actual notes for audio playback.
+ *
+ * @param difficulty - The difficulty level (easy, medium, hard)
+ * @returns A complete QuizQuestion ready for playback and display
+ *
+ * @example
+ * ```typescript
+ * const question = generateQuestion('medium')
+ * // question.key might be "Bb"
+ * // question.mode might be "minor"
+ * // question.progression would be 3-4 chords with notes
+ * ```
  */
 export function generateQuestion(difficulty: Difficulty): QuizQuestion {
   // Pick random key from difficulty-appropriate keys
@@ -189,6 +293,10 @@ export function generateQuestion(difficulty: Difficulty): QuizQuestion {
 }
 
 /**
- * All keys available for answer selection
+ * All 12 musical keys available for answer selection in the quiz.
+ *
+ * @remarks
+ * Uses flat/sharp naming to avoid duplicates (Db not C#, F# not Gb).
+ * This matches the keys used throughout the application.
  */
 export const ALL_KEYS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B']
