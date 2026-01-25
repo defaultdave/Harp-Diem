@@ -244,30 +244,30 @@ export const SCALE_TYPES = [
 
 export type ScaleType = (typeof SCALE_TYPES)[number]
 
-// Circle of fourths: counter-clockwise on circle of fifths
-// Each step is a perfect fourth (5 semitones)
-// C -> F -> Bb -> Eb -> Ab -> Db -> Gb -> B -> E -> A -> D -> G -> C
-const CIRCLE_OF_FOURTHS: Record<string, number> = {
+// Circle of fifths: clockwise progression
+// Each step is a perfect fifth (7 semitones)
+// C -> G -> D -> A -> E -> B -> F#/Gb -> Db/C# -> Ab/G# -> Eb/D# -> Bb/A# -> F -> C
+const CIRCLE_OF_FIFTHS: Record<string, number> = {
   'C': 0,
-  'F': 1,
-  'Bb': 2, 'A#': 2,
-  'Eb': 3, 'D#': 3,
-  'Ab': 4, 'G#': 4,
-  'Db': 5, 'C#': 5,
+  'G': 1,
+  'D': 2,
+  'A': 3,
+  'E': 4,
+  'B': 5,
   'Gb': 6, 'F#': 6,
-  'B': 7,
-  'E': 8,
-  'A': 9,
-  'D': 10,
-  'G': 11,
+  'Db': 7, 'C#': 7,
+  'Ab': 8, 'G#': 8,
+  'Eb': 9, 'D#': 9,
+  'Bb': 10, 'A#': 10,
+  'F': 11,
 }
 
 // Calculate harmonica position based on harmonica key and song key
-// Positions are based on the circle of fourths (Pythagorean tuning math)
+// Positions are based on the circle of fifths
 export const getHarmonicaPosition = (harmonicaKey: HarmonicaKey, songKey: HarmonicaKey): number => {
-  const harmonicaIndex = CIRCLE_OF_FOURTHS[harmonicaKey]
-  const songIndex = CIRCLE_OF_FOURTHS[songKey]
+  const harmonicaIndex = CIRCLE_OF_FIFTHS[harmonicaKey]
+  const songIndex = CIRCLE_OF_FIFTHS[songKey]
 
-  // Count fourths from harmonica key to song key (positions are 1-indexed)
+  // Count fifths from harmonica key to song key (positions are 1-indexed)
   return ((songIndex - harmonicaIndex + 12) % 12) + 1
 }
