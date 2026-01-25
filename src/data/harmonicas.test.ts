@@ -376,41 +376,42 @@ describe('Harmonicas', () => {
       expect(getHarmonicaPosition('D', 'D')).toBe(1)
     })
 
-    it('should return 2nd position when song key is a perfect 4th above harmonica key', () => {
-      expect(getHarmonicaPosition('C', 'F')).toBe(2)
-      expect(getHarmonicaPosition('G', 'C')).toBe(2)
-      expect(getHarmonicaPosition('D', 'G')).toBe(2)
+    it('should return 2nd position when song key is a perfect 5th above harmonica key', () => {
+      expect(getHarmonicaPosition('C', 'G')).toBe(2)
+      expect(getHarmonicaPosition('G', 'D')).toBe(2)
+      expect(getHarmonicaPosition('D', 'A')).toBe(2)
     })
 
-    it('should return 3rd position when song key is a minor 7th above harmonica key', () => {
-      expect(getHarmonicaPosition('C', 'Bb')).toBe(3)
-      expect(getHarmonicaPosition('G', 'F')).toBe(3)
+    it('should return 3rd position when song key is a major 2nd above harmonica key', () => {
+      expect(getHarmonicaPosition('C', 'D')).toBe(3)
+      expect(getHarmonicaPosition('G', 'A')).toBe(3)
     })
 
     it('should handle enharmonic equivalents correctly', () => {
-      // Db/F# gives same position as C/F (2nd position, cross harp)
-      expect(getHarmonicaPosition('Db', 'F#')).toBe(2)
+      // Db/Ab gives 2nd position (Ab is a fifth above Db)
+      expect(getHarmonicaPosition('Db', 'Ab')).toBe(2)
 
-      // Standard 2nd position examples
-      expect(getHarmonicaPosition('C', 'F')).toBe(2)
-      expect(getHarmonicaPosition('G', 'C')).toBe(2)
+      // Standard 2nd position examples (song key is a fifth above harmonica key)
+      expect(getHarmonicaPosition('C', 'G')).toBe(2)
+      expect(getHarmonicaPosition('G', 'D')).toBe(2)
     })
 
-    it('should map all 12 semitone differences to positions', () => {
-      // Test all positions with C harmonica using valid HarmonicaKey values
+    it('should map all 12 positions based on circle of fifths', () => {
+      // Test all positions with C harmonica using circle of fifths
+      // Each position is one step further around the circle of fifths
       const expectedPositions: Record<HarmonicaKey, number> = {
-        'C': 1,   // 0 semitones (1st position)
-        'F': 2,   // 5 semitones (2nd position)
-        'Bb': 3,  // 10 semitones (3rd position)
-        'Eb': 4,  // 3 semitones (4th position)
-        'Ab': 5,  // 8 semitones (5th position)
-        'Db': 6,  // 1 semitone (6th position)
-        'F#': 7,  // 6 semitones (7th position)
-        'B': 8,   // 11 semitones (8th position)
-        'E': 9,   // 4 semitones (9th position)
-        'A': 10,  // 9 semitones (10th position)
-        'D': 11,  // 2 semitones (11th position)
-        'G': 12,  // 7 semitones (12th position)
+        'C': 1,   // 1st position (straight harp)
+        'G': 2,   // 2nd position (cross harp)
+        'D': 3,   // 3rd position
+        'A': 4,   // 4th position
+        'E': 5,   // 5th position
+        'B': 6,   // 6th position
+        'F#': 7,  // 7th position
+        'Db': 8,  // 8th position
+        'Ab': 9,  // 9th position
+        'Eb': 10, // 10th position
+        'Bb': 11, // 11th position
+        'F': 12,  // 12th position
       }
 
       Object.entries(expectedPositions).forEach(([songKey, expectedPosition]) => {
