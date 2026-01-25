@@ -57,11 +57,23 @@ export function QuizControls({
     )
   }
 
-  // Revealed phase - show Next Question button
+  // Revealed phase - show Replay and Next Question buttons
   if (phase === 'revealed') {
     return (
       <div className={styles.controlsSection}>
-        <button className={styles.primaryButton} onClick={onNextQuestion}>
+        <button
+          className={styles.secondaryButton}
+          onClick={onReplay}
+          disabled={isAudioPlaying}
+          aria-label="Replay chord progression"
+        >
+          <span aria-hidden="true">&#128260;</span> Replay
+        </button>
+        <button
+          className={styles.primaryButton}
+          onClick={onNextQuestion}
+          disabled={isAudioPlaying}
+        >
           <span aria-hidden="true">&#8594;</span> Next Question
         </button>
       </div>

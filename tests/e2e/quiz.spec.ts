@@ -245,14 +245,16 @@ test.describe('Quiz Page - Answer Submission', () => {
     await expect(page.getByRole('button', { name: /check answer/i })).toBeEnabled({ timeout: 10000 });
     await page.getByRole('button', { name: /check answer/i }).click();
 
-    // Next Question button should appear
+    // Next Question and Replay buttons should appear
     const nextButton = page.getByRole('button', { name: /next question/i });
     await expect(nextButton).toBeVisible();
     await expect(nextButton).toBeEnabled();
 
-    // Check Answer and Replay buttons should be gone
+    // Replay button should still be visible in revealed phase for ear training
+    await expect(page.getByRole('button', { name: /replay/i })).toBeVisible();
+
+    // Check Answer button should be gone
     await expect(page.getByRole('button', { name: /check answer/i })).not.toBeVisible();
-    await expect(page.getByRole('button', { name: /replay/i })).not.toBeVisible();
   });
 
   test('can continue to next question', async ({ page }) => {
@@ -319,6 +321,75 @@ test.describe('Quiz Page - Replay Functionality', () => {
 
     // Wait for replay to finish
     await expect(replayButton).toBeEnabled({ timeout: 10000 });
+  });
+
+  test('Replay button works in revealed phase for ear training', async ({ page }) => {
+    await page.getByRole('button', { name: /start quiz/i }).click();
+
+    // Wait for playback to finish and submit answer
+    await expect(page.getByRole('button', { name: /check answer/i })).toBeEnabled({ timeout: 10000 });
+    await page.getByRole('button', { name: /check answer/i }).click();
+
+    // Should be in revealed phase - Replay button should be visible with proper accessibility
+    const replayButton = page.getByRole('button', { name: /replay/i });
+    const nextButton = page.getByRole('button', { name: /next question/i });
+    await expect(replayButton).toBeVisible();
+    await expect(replayButton).toHaveAttribute('aria-label', 'Replay chord progression');
+    await expect(nextButton).toBeVisible();
+
+    // Click Replay in revealed phase - it should work and not break anything
+    await replayButton.click();
+
+    // Wait for replay to complete - buttons should be enabled after playback finishes
+    await expect(replayButton).toBeEnabled({ timeout: 10000 });
+    await expect(nextButton).toBeEnabled();
+
+    // Can still proceed to next question after replay
+    await nextButton.click();
+    await expect(page.getByRole('button', { name: /check answer/i })).toBeVisible();
+  });
+});
+
+test.describe('Quiz Page - Instructions Display', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/#/quiz');
+  });
+
+  test('instructions are NOT shown in idle phase', async ({ page }) => {
+    // Should not see instructions before starting
+    await expect(page.getByRole('region', { name: 'Quiz instructions' })).not.toBeVisible();
+  });
+
+  test('instructions are shown during playing phase', async ({ page }) => {
+    await page.getByRole('button', { name: /start quiz/i }).click();
+
+    // Instructions should be visible
+    const instructions = page.getByRole('region', { name: 'Quiz instructions' });
+    await expect(instructions).toBeVisible();
+    await expect(instructions).toContainText('Play along on your harmonica to find the matching key!');
+    await expect(instructions).toContainText('Select your answer using the Key dropdown and Mode buttons below.');
+  });
+
+  test('instructions are shown during answering phase', async ({ page }) => {
+    await page.getByRole('button', { name: /start quiz/i }).click();
+
+    // Wait for answering phase
+    await expect(page.getByRole('button', { name: /check answer/i })).toBeEnabled({ timeout: 10000 });
+
+    // Instructions should still be visible
+    const instructions = page.getByRole('region', { name: 'Quiz instructions' });
+    await expect(instructions).toBeVisible();
+  });
+
+  test('instructions are NOT shown in revealed phase', async ({ page }) => {
+    await page.getByRole('button', { name: /start quiz/i }).click();
+
+    // Wait for playback and submit answer
+    await expect(page.getByRole('button', { name: /check answer/i })).toBeEnabled({ timeout: 10000 });
+    await page.getByRole('button', { name: /check answer/i }).click();
+
+    // Instructions should be hidden after revealing answer
+    await expect(page.getByRole('region', { name: 'Quiz instructions' })).not.toBeVisible();
   });
 });
 

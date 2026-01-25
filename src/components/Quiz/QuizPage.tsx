@@ -60,6 +60,18 @@ export function QuizPage() {
 
       {/* Main Quiz Card */}
       <div className={styles.mainCard}>
+        {/* Instructions (shown during playing and answering phases) */}
+        {(phase === 'playing' || phase === 'answering') && (
+          <section className={styles.instructionsSection} aria-label="Quiz instructions">
+            <p className={styles.instructionsTitle}>
+              Play along on your harmonica to find the matching key!
+            </p>
+            <p className={styles.instructionsText}>
+              Select your answer using the Key dropdown and Mode buttons below.
+            </p>
+          </section>
+        )}
+
         {/* Answer Selection (shown during playing, answering, and revealed phases) */}
         {(phase === 'playing' || phase === 'answering' || phase === 'revealed') && userAnswer && (
           <AnswerSelector
