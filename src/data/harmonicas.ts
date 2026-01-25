@@ -256,20 +256,20 @@ export const SCALE_TYPES = [
 
 export type ScaleType = (typeof SCALE_TYPES)[number]
 
-// Circle of fourths for position calculation
-const CIRCLE_OF_FOURTHS: Record<string, number> = {
+// Circle of fifths for position calculation
+const CIRCLE_OF_FIFTHS: Record<string, number> = {
   'C': 0,
-  'F': 1,
-  'Bb': 2, 'A#': 2,
-  'Eb': 3, 'D#': 3,
-  'Ab': 4, 'G#': 4,
-  'Db': 5, 'C#': 5,
+  'G': 1,
+  'D': 2,
+  'A': 3,
+  'E': 4,
+  'B': 5,
   'Gb': 6, 'F#': 6,
-  'B': 7,
-  'E': 8,
-  'A': 9,
-  'D': 10,
-  'G': 11,
+  'Db': 7, 'C#': 7,
+  'Ab': 8, 'G#': 8,
+  'Eb': 9, 'D#': 9,
+  'Bb': 10, 'A#': 10,
+  'F': 11,
 }
 
 /**
@@ -277,7 +277,7 @@ const CIRCLE_OF_FOURTHS: Record<string, number> = {
  * Position 1 = straight harp (same key), Position 2 = cross harp (most common for blues).
  */
 export const getHarmonicaPosition = (harmonicaKey: HarmonicaKey, songKey: HarmonicaKey): number => {
-  const harmonicaIndex = CIRCLE_OF_FOURTHS[harmonicaKey]
-  const songIndex = CIRCLE_OF_FOURTHS[songKey]
+  const harmonicaIndex = CIRCLE_OF_FIFTHS[harmonicaKey]
+  const songIndex = CIRCLE_OF_FIFTHS[songKey]
   return ((songIndex - harmonicaIndex + 12) % 12) + 1
 }
