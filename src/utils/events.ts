@@ -1,11 +1,10 @@
 /**
- * Event handler utilities
+ * Event handler utilities for accessibility and keyboard navigation.
+ * @packageDocumentation
  */
 import type { KeyboardEvent } from 'react'
 
-/**
- * Creates a keyboard handler that calls the callback when Enter or Space is pressed
- */
+/** Creates a keyboard event handler that triggers callback on Enter or Space. */
 export const handleActivationKey =
   (callback: () => void, keys = ['Enter', ' ']) =>
   (e: KeyboardEvent): void => {

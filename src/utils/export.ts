@@ -1,6 +1,11 @@
+/**
+ * Export utilities for PNG, PDF, and print functionality.
+ * @packageDocumentation
+ */
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
+/** Metadata for generating export filenames. */
 export interface ExportOptions {
   harmonicaKey: string
   songKey: string
@@ -8,12 +13,7 @@ export interface ExportOptions {
   position: number
 }
 
-/**
- * Exports the current harmonica view as a PNG image
- * @param element - The DOM element to capture
- * @param options - Export metadata (harmonica key, song key, scale type)
- * @returns Promise that resolves when download is complete
- */
+/** Exports an element as a PNG image. */
 export async function exportAsPNG(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
     throw new Error('No element provided for export')
@@ -55,12 +55,7 @@ export async function exportAsPNG(element: HTMLElement | null, options: ExportOp
   }
 }
 
-/**
- * Exports the current harmonica view as a PDF document
- * @param element - The DOM element to capture
- * @param options - Export metadata (harmonica key, song key, scale type)
- * @returns Promise that resolves when download is complete
- */
+/** Exports an element as a PDF document in landscape A4 format. */
 export async function exportAsPDF(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
     throw new Error('No element provided for export')
@@ -107,19 +102,12 @@ export async function exportAsPDF(element: HTMLElement | null, options: ExportOp
   }
 }
 
-/**
- * Opens the browser print dialog for the current view
- */
+/** Opens the browser's print dialog. */
 export function printView(): void {
   window.print()
 }
 
-/**
- * Generates a descriptive file name for exports
- * @param options - Export metadata
- * @param extension - File extension (png or pdf)
- * @returns Generated file name
- */
+/** @internal */
 function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): string {
   const { harmonicaKey, songKey, scaleType, position } = options
   const timestamp = new Date().toISOString().split('T')[0] // YYYY-MM-DD
@@ -129,11 +117,7 @@ function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): str
   return `harp-diem_${harmonicaKey}-harp_${songKey}-${scaleName}_${position}${positionSuffix}-pos_${timestamp}.${extension}`
 }
 
-/**
- * Gets the ordinal suffix for a position number (1st, 2nd, 3rd, etc.)
- * @param position - Position number
- * @returns Ordinal suffix (st, nd, rd, th)
- */
+/** @internal */
 function getOrdinalSuffix(position: number): string {
   if (position === 1) return 'st'
   if (position === 2) return 'nd'

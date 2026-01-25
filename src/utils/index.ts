@@ -1,3 +1,8 @@
+/**
+ * Utility functions for audio, export, events, and string formatting.
+ * @packageDocumentation
+ */
+
 // Re-export from audioPlayer
 export {
   playTone,

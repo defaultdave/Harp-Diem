@@ -16,7 +16,9 @@
     "test:e2e:headed": "playwright test --headed",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docs": "typedoc",
+    "docs:serve": "typedoc && npx serve docs"
   },
   "dependencies": {
     "html2canvas": "^1.4.1",
@@ -44,6 +46,8 @@
     "lint-staged": "^16.2.7",
     "rollup-plugin-visualizer": "^6.0.5",
     "tonal": "^6.4.2",
+    "typedoc": "^0.28.16",
+    "typedoc-rhineai-theme": "^1.2.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",

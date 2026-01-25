@@ -23,8 +23,12 @@
 - **Interactive Chord Highlighting**: Click any chord to highlight its constituent holes on the harmonica
 - **Dark Mode**: Toggle between light and dark themes with system preference detection and localStorage persistence
 - **Mobile Support**: Portrait mobile users see a prompt to rotate their device for the best harmonica viewing experience
-- **Audio Playback**: Click any note to hear it played with piano-like synthesis
+- **Audio Playback**: Click any note or chord to hear it played with piano-like synthesis
 - **Keyboard Accessible**: Full keyboard navigation with Enter/Space to play notes
+- **Key Identification Quiz**: Test your ear training skills by identifying keys from chord progressions
+- **Export Options**: Save harmonica diagrams as PNG or PDF, or print directly
+- **Interval Display**: Toggle to show intervals between consecutive scale notes
+- **API Documentation**: TypeDoc-generated API documentation with the rhineai theme
 - **Fully Tested**: Comprehensive test suite with unit tests and E2E tests using Playwright
 
 ## Tech Stack
@@ -32,58 +36,51 @@
 - **Frontend**: React 19 with TypeScript
 - **Build Tool**: Vite 7
 - **Testing**: Vitest with React Testing Library, Playwright for E2E testing
-- **State Management**: React Context API (DisplaySettingsContext, PlaybackContext)
+- **State Management**: React Context API (DisplaySettingsContext, PlaybackContext, QuizContext, ExportContext)
 - **Music Theory**: [tonal.js](https://github.com/tonaljs/tonal)
 - **Audio**: Web Audio API with additive synthesis
-- **Styling**: CSS Grid with responsive design
+- **Export**: html2canvas + jsPDF for PNG/PDF export (lazy-loaded)
+- **Documentation**: TypeDoc with rhineai theme
+- **Styling**: CSS Grid with responsive design and CSS custom properties
 
 ## Project Structure
 
 ```
 src/
-├── components/
-│   ├── HoleColumn.tsx      # Individual harmonica hole display
-│   ├── ChordDisplay/       # Chord diagram visualization
-│   │   ├── ChordDisplay.tsx # Chord display component
-│   │   └── index.ts        # ChordDisplay exports
-│   ├── Legend/             # Scale legend with display toggles
-│   │   ├── Legend.tsx      # Legend component
-│   │   └── index.ts        # Legend exports
-│   ├── RotateOverlay/      # Mobile rotation prompt
-│   │   ├── RotateOverlay.tsx # Overlay component
-│   │   └── index.ts        # RotateOverlay exports
-│   ├── ScaleDisplay/       # Scale information and playback controls
-│   │   └── ScaleDisplay.tsx # Scale display component
-│   └── ErrorBoundary.tsx   # Error handling wrapper
-├── context/
-│   ├── DisplaySettingsContext.tsx # Global display state (tab/notes, degrees)
-│   ├── PlaybackContext.tsx        # Playback state management
-│   └── index.ts                   # Context exports
-├── data/
-│   ├── harmonicas.ts       # Diatonic harmonica layouts (all tunings)
-│   ├── harmonicas.test.ts  # Harmonica data tests
-│   ├── scales.ts           # Scale calculations using tonal.js
-│   ├── scales.test.ts      # Scale logic tests
-│   ├── chords.ts           # Chord data and playable chord calculations
-│   └── chords.test.ts      # Chord logic tests
-├── hooks/
-│   ├── useHarmonicaScale.ts      # Custom hook for scale logic
-│   ├── useHarmonicaScale.test.ts # Hook tests
-│   ├── useTheme.ts               # Dark/light theme management
-│   ├── useTheme.test.ts          # Theme hook tests
-│   └── useMobileDetection.ts     # Mobile viewport detection
-├── utils/
-│   ├── audioPlayer.ts      # Web Audio API tone generation
-│   ├── tabNotation.ts      # Harmonica tablature notation utilities
-│   └── tabNotation.test.ts # Tab notation tests
-├── test/
-│   └── setup.ts            # Vitest configuration
-├── App.tsx                 # Main application component
-├── App.css                 # Application styling
-├── App.module.css          # App-level CSS modules
-├── variables.css           # CSS custom properties (colors, themes)
-├── index.css               # Global styles
-└── main.tsx                # Application entry point
+├── components/           # UI components
+│   ├── ChordDisplay/     # Chord diagram visualization
+│   ├── ExportMenu/       # PNG/PDF export and print menu
+│   ├── HoleColumn/       # Individual harmonica hole display
+│   ├── Legend/           # Scale legend with display toggles
+│   ├── Quiz/             # Key identification quiz
+│   ├── RotateOverlay/    # Mobile rotation prompt
+│   ├── ScaleDisplay/     # Scale information and playback
+│   └── ErrorBoundary.tsx # Error handling wrapper
+├── context/              # React contexts (barrel exports via index.ts)
+│   ├── DisplaySettingsContext.tsx  # Display mode state
+│   ├── ExportContext.tsx           # Export functionality state
+│   ├── PlaybackContext.tsx         # Audio playback state
+│   └── QuizContext.tsx             # Quiz state management
+├── data/                 # Core data layer (barrel exports via index.ts)
+│   ├── harmonicas.ts     # Harmonica layouts and tunings
+│   ├── scales.ts         # Scale calculations using tonal.js
+│   ├── chords.ts         # Chord voicing generation
+│   └── progressions.ts   # Quiz chord progressions
+├── hooks/                # Custom hooks (barrel exports via index.ts)
+│   ├── useHarmonicaScale.ts  # Harmonica + scale logic
+│   ├── useHashRouter.ts      # Hash-based routing
+│   ├── useMobileDetection.ts # Mobile viewport detection
+│   └── useTheme.ts           # Dark/light theme management
+├── types/                # TypeScript type definitions
+├── utils/                # Utilities (barrel exports via index.ts)
+│   ├── audioPlayer.ts    # Web Audio API synthesis
+│   ├── export.ts         # PNG/PDF export functions
+│   ├── exportLazy.ts     # Lazy-loaded export (reduces bundle)
+│   ├── tabNotation.ts    # Harmonica tablature notation
+│   └── ...               # Other utilities
+├── App.tsx               # Main application component
+├── variables.css         # CSS custom properties (design tokens)
+└── main.tsx              # Application entry point
 ```
 
 ## Getting Started
@@ -207,6 +204,8 @@ The application uses [tonal.js](https://tonaljs.github.io/tonal/docs) for note t
 | `npm run test:e2e:ui` | Run E2E tests in interactive UI mode |
 | `npm run test:e2e:headed` | Run E2E tests in headed browser mode |
 | `npm run lint` | Run ESLint |
+| `npm run docs` | Generate API documentation |
+| `npm run docs:serve` | Generate and serve API docs locally |
 
 ## Contributing
 

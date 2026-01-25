@@ -1,10 +1,11 @@
+/**
+ * Simple hash-based router for client-side navigation.
+ * @packageDocumentation
+ */
 import { useState, useEffect, useCallback } from 'react'
 
 export type Route = '/' | '/quiz'
 
-/**
- * Parse the current hash to determine the route
- */
 function parseHash(): Route {
   const hash = window.location.hash
   if (hash === '#/quiz') return '/quiz'
@@ -12,7 +13,7 @@ function parseHash(): Route {
 }
 
 /**
- * Simple hash-based router hook for navigation between pages.
+ * Hash-based router hook for navigation between pages.
  * Uses hash routing to work with GitHub Pages without server-side rewrites.
  */
 export function useHashRouter() {

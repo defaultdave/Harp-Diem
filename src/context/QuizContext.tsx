@@ -1,3 +1,7 @@
+/**
+ * Context for managing key identification quiz state.
+ * @packageDocumentation
+ */
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react'
 import { generateQuestion, type QuizQuestion, type Difficulty, type Mode } from '../data'
@@ -40,6 +44,7 @@ interface QuizProviderProps {
   children: ReactNode
 }
 
+/** Provider for quiz state management (question generation, scoring, audio playback). */
 export function QuizProvider({ children }: QuizProviderProps) {
   const [phase, setPhase] = useState<QuizPhase>('idle')
   const [difficulty, setDifficultyState] = useState<Difficulty>('easy')
@@ -65,10 +70,8 @@ export function QuizProvider({ children }: QuizProviderProps) {
   }, [phase])
 
   const playCurrentProgression = useCallback(async (question: QuizQuestion) => {
-    // Use ref for checking to avoid stale closure issues
     if (isAudioPlayingRef.current) return
 
-    // Cancel any existing playback
     abortControllerRef.current?.abort()
     abortControllerRef.current = new AbortController()
 
@@ -95,7 +98,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
 
     const question = generateQuestion(difficulty)
     setCurrentQuestion(question)
-    setUserAnswerState({ key: 'C', mode: 'major' }) // Default answer
+    setUserAnswerState({ key: 'C', mode: 'major' })
     setIsCorrect(null)
     setPhase('playing')
 
@@ -161,6 +164,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
   )
 }
 
+/** Hook to access quiz state. Must be used within QuizProvider. */
 export function useQuiz(): QuizContextValue {
   const context = useContext(QuizContext)
   if (!context) {

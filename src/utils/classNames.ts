@@ -1,9 +1,8 @@
 /**
- * CSS class name composition utility
+ * CSS class name composition utility.
+ * @packageDocumentation
  */
 
-/**
- * Combines class names, filtering out falsy values
- */
+/** Combines CSS class names, filtering out falsy values. */
 export const cn = (...classes: (string | false | null | undefined)[]): string =>
   classes.filter(Boolean).join(' ')

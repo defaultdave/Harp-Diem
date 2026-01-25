@@ -1,23 +1,24 @@
 /**
- * Utilities for collecting and checking playable notes from harmonica data
+ * Utilities for collecting playable notes from harmonica hole data.
+ * @packageDocumentation
  */
 import type { HoleNote } from '../data'
 import type { NoteNames } from '../types'
 import { isNoteInScale } from '../data'
 
+/** A note that can be played, with its name and frequency. */
 export interface PlayableNote {
   note: string
   frequency: number
 }
 
+/** @internal */
 interface NoteSource {
   note: string
   frequency: number
 }
 
-/**
- * Adds a note to the collection if it's in the scale and hasn't been seen
- */
+/** @internal */
 const collectIfPlayable = (
   source: NoteSource | undefined,
   scaleNotes: NoteNames,
@@ -31,7 +32,8 @@ const collectIfPlayable = (
 }
 
 /**
- * Collects all playable notes from harmonica holes, sorted by frequency
+ * Collects all playable notes from harmonica holes for a given scale.
+ * Includes bends and extended techniques, deduplicates by frequency.
  */
 export const collectPlayableNotes = (
   holes: HoleNote[],
@@ -55,6 +57,7 @@ export const collectPlayableNotes = (
   return notes.sort((a, b) => a.frequency - b.frequency)
 }
 
+/** Playability status for all bend and extended techniques on a hole. */
 export interface BendPlayability {
   isOverblowPlayable: boolean
   isBlowHalfStepPlayable: boolean
@@ -65,9 +68,7 @@ export interface BendPlayability {
   isOverdrawPlayable: boolean
 }
 
-/**
- * Calculates playability status for all bend types on a hole
- */
+/** Calculates playability status for all bend types on a harmonica hole. */
 export const getBendPlayability = (hole: HoleNote, scaleNotes: NoteNames): BendPlayability => ({
   isOverblowPlayable: !!hole.overblow && isNoteInScale(hole.overblow.note, scaleNotes),
   isBlowHalfStepPlayable: !!hole.blowBends?.halfStepBend && isNoteInScale(hole.blowBends.halfStepBend.note, scaleNotes),

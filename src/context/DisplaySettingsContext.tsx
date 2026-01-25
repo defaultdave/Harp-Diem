@@ -1,3 +1,7 @@
+/**
+ * Context for managing display settings across the harmonica visualization.
+ * @packageDocumentation
+ */
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, type ReactNode } from 'react'
 
@@ -18,6 +22,7 @@ interface DisplaySettingsProviderProps {
   children: ReactNode
 }
 
+/** Provider for display settings (note display mode, scale degrees, intervals). */
 export function DisplaySettingsProvider({ children }: DisplaySettingsProviderProps) {
   const [noteDisplay, setNoteDisplay] = useState<NoteDisplayMode>('notes')
   const [showDegrees, setShowDegrees] = useState(false)
@@ -32,6 +37,7 @@ export function DisplaySettingsProvider({ children }: DisplaySettingsProviderPro
   )
 }
 
+/** Hook to access display settings. Must be used within DisplaySettingsProvider. */
 export function useDisplaySettings(): DisplaySettingsContextValue {
   const context = useContext(DisplaySettingsContext)
   if (!context) {

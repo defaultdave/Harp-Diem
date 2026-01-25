@@ -1,3 +1,8 @@
+/**
+ * Data layer exports: harmonicas, scales, chords, and progressions.
+ * @packageDocumentation
+ */
+
 // Re-export everything from harmonicas
 export {
   type HarmonicaKey,

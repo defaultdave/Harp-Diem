@@ -1,17 +1,26 @@
+/**
+ * Hook for combining harmonica data with scale selection.
+ * @packageDocumentation
+ */
 import { useMemo } from 'react'
 import type { HarmonicaKey, ScaleType, DiatonicHarmonica, TuningType } from '../data'
 import { getScaleNotes, isNoteInScale, getHarmonica } from '../data'
 import type { NoteNames } from '../types'
 
+/** Result from useHarmonicaScale hook. */
 export interface UseHarmonicaScaleResult {
   harmonica: DiatonicHarmonica
   scaleNotes: NoteNames
-  playableHoles: number[] // Holes with blow or draw in scale
+  playableHoles: number[]
   playableBlowHoles: number[]
   playableDrawHoles: number[]
   allHoles: number[]
 }
 
+/**
+ * Combines harmonica data with scale selection to determine playable notes.
+ * Returns memoized harmonica data and filtered lists of playable holes.
+ */
 export const useHarmonicaScale = (
   harmonicaKey: HarmonicaKey,
   songKey: HarmonicaKey,

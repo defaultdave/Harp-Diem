@@ -1,8 +1,11 @@
+/**
+ * Lazy-loaded export utilities for PNG, PDF, and print functionality.
+ * Dynamically imports html2canvas and jspdf to reduce initial bundle size.
+ * @packageDocumentation
+ */
 import type { ExportOptions } from './export'
 
-/**
- * Lazy-loaded version of exportAsPNG that only loads html2canvas when needed
- */
+/** Exports an element as a PNG image with lazy-loaded dependencies. */
 export async function exportAsPNG(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
     throw new Error('No element provided for export')
@@ -47,9 +50,7 @@ export async function exportAsPNG(element: HTMLElement | null, options: ExportOp
   }
 }
 
-/**
- * Lazy-loaded version of exportAsPDF that only loads dependencies when needed
- */
+/** Exports an element as a PDF document with lazy-loaded dependencies. */
 export async function exportAsPDF(element: HTMLElement | null, options: ExportOptions): Promise<void> {
   if (!element) {
     throw new Error('No element provided for export')
@@ -102,19 +103,12 @@ export async function exportAsPDF(element: HTMLElement | null, options: ExportOp
   }
 }
 
-/**
- * Opens the browser print dialog for the current view
- */
+/** Opens the browser's print dialog. */
 export function printView(): void {
   window.print()
 }
 
-/**
- * Generates a descriptive file name for exports
- * @param options - Export metadata
- * @param extension - File extension (png or pdf)
- * @returns Generated file name
- */
+/** @internal */
 function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): string {
   const { harmonicaKey, songKey, scaleType, position } = options
   const timestamp = new Date().toISOString().split('T')[0] // YYYY-MM-DD
@@ -124,11 +118,7 @@ function generateFileName(options: ExportOptions, extension: 'png' | 'pdf'): str
   return `harp-diem_${harmonicaKey}-harp_${songKey}-${scaleName}_${position}${positionSuffix}-pos_${timestamp}.${extension}`
 }
 
-/**
- * Gets the ordinal suffix for a position number (1st, 2nd, 3rd, etc.)
- * @param position - Position number
- * @returns Ordinal suffix (st, nd, rd, th)
- */
+/** @internal */
 function getOrdinalSuffix(position: number): string {
   if (position === 1) return 'st'
   if (position === 2) return 'nd'

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/data/index.ts",
+    "src/hooks/index.ts",
+    "src/context/index.ts",
+    "src/utils/index.ts",
+    "src/types/index.ts"
+  ],
+  "out": "docs",
+  "plugin": ["typedoc-rhineai-theme"],
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "includeVersion": true,
+  "readme": "README.md",
+  "name": "Harp Diem API Documentation",
+  "tsconfig": "tsconfig.json",
+  "excludeExternals": true,
+  "categoryOrder": ["Data", "Hooks", "Context", "Components", "Utils", "Types", "*"],
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  }
+}

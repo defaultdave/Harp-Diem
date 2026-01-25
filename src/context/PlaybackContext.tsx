@@ -1,3 +1,7 @@
+/**
+ * Context for managing audio playback state and note highlighting.
+ * @packageDocumentation
+ */
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 import { Note } from 'tonal'
@@ -25,6 +29,7 @@ interface PlaybackProviderProps {
   children: ReactNode
 }
 
+/** Provider for audio playback state and note highlighting. */
 export function PlaybackProvider({ children }: PlaybackProviderProps) {
   const [currentlyPlayingNote, setCurrentlyPlayingNote] = useState<string | null>(null)
   const [currentlyPlayingNotes, setCurrentlyPlayingNotes] = useState<string[]>([])
@@ -36,15 +41,12 @@ export function PlaybackProvider({ children }: PlaybackProviderProps) {
       const noteMidi = Note.midi(note)
       if (noteMidi === null) return false
 
-      // Check single note (for scale playback)
       if (currentlyPlayingNote) {
         const playingMidi = Note.midi(currentlyPlayingNote)
         if (playingMidi !== null && playingMidi === noteMidi) return true
       }
 
-      // Check chord playback with breath direction filtering
       if (currentlyPlayingChord) {
-        // If breath direction is provided, only match if it matches the chord's breath
         if (isBlow !== undefined) {
           const chordIsBlow = currentlyPlayingChord.breath === 'blow'
           if (isBlow !== chordIsBlow) return false
@@ -56,7 +58,6 @@ export function PlaybackProvider({ children }: PlaybackProviderProps) {
         })
       }
 
-      // Check multiple notes without breath info (legacy support)
       if (currentlyPlayingNotes.length > 0) {
         return currentlyPlayingNotes.some(playingNote => {
           const playingMidi = Note.midi(playingNote)
@@ -88,6 +89,7 @@ export function PlaybackProvider({ children }: PlaybackProviderProps) {
   )
 }
 
+/** Hook to access playback state. Must be used within PlaybackProvider. */
 export function usePlayback(): PlaybackContextValue {
   const context = useContext(PlaybackContext)
   if (!context) {
