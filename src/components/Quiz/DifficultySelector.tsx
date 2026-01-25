@@ -1,5 +1,5 @@
-import type { Difficulty } from '../../data/progressions'
-import { capitalize } from '../../utils/string'
+import type { Difficulty } from '../../data'
+import { capitalize } from '../../utils'
 import styles from './QuizPage.module.css'
 
 interface DifficultySelectorProps {

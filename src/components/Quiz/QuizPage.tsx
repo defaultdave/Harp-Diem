@@ -4,7 +4,7 @@ import { ScoreDisplay } from './ScoreDisplay'
 import { AnswerSelector } from './AnswerSelector'
 import { QuizControls } from './QuizControls'
 import { ResultFeedback } from './ResultFeedback'
-import type { Mode } from '../../data/progressions'
+import type { Mode } from '../../data'
 import styles from './QuizPage.module.css'
 
 export function QuizPage() {

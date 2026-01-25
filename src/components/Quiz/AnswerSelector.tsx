@@ -1,4 +1,4 @@
-import { ALL_KEYS, type Mode } from '../../data/progressions'
+import { ALL_KEYS, type Mode } from '../../data'
 import styles from './QuizPage.module.css'
 
 interface AnswerSelectorProps {

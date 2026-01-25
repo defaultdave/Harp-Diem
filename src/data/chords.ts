@@ -1,6 +1,6 @@
 import { Note, Interval } from 'tonal'
 import type { HarmonicaKey } from './harmonicas'
-import { getChordKey } from '../utils/chord'
+import { getChordKey } from '../utils'
 
 /**
  * Represents a single chord voicing on the harmonica

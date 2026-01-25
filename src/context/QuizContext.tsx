@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react'
-import { generateQuestion, type QuizQuestion, type Difficulty, type Mode } from '../data/progressions'
-import { playChordProgression } from '../utils/audioPlayer'
+import { generateQuestion, type QuizQuestion, type Difficulty, type Mode } from '../data'
+import { playChordProgression } from '../utils'
 
 export type QuizPhase = 'idle' | 'playing' | 'answering' | 'revealed'
 

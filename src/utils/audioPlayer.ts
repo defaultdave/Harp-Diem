@@ -3,7 +3,7 @@
  */
 
 import { Note } from 'tonal'
-import type { ChordInProgression } from '../data/progressions'
+import type { ChordInProgression } from '../data'
 
 /** Delay between arpeggiated notes in milliseconds for a natural strummed sound */
 const ARPEGGIATE_DELAY_MS = 30

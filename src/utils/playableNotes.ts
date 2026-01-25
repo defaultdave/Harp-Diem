@@ -1,9 +1,9 @@
 /**
  * Utilities for collecting and checking playable notes from harmonica data
  */
-import type { HoleNote } from '../data/harmonicas'
+import type { HoleNote } from '../data'
 import type { NoteNames } from '../types'
-import { isNoteInScale } from '../data/scales'
+import { isNoteInScale } from '../data'
 
 export interface PlayableNote {
   note: string

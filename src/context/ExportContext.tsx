@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, type ReactNode, type RefObject } from 'react'
-import type { ExportOptions } from '../utils/export'
+import type { ExportOptions } from '../utils'
 
 interface ExportContextValue {
   exportOptions: ExportOptions | null
