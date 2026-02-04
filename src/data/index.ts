@@ -37,6 +37,9 @@ export {
   getHarmonicaChords,
   getChordsByPosition,
   getCommonChords,
+  findChordVoicings,
+  getChordByName,
+  getAllChords,
 } from './chords'
 
 // Re-export everything from progressions
