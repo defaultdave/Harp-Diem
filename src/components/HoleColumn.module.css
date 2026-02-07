@@ -240,9 +240,11 @@
   }
 }
 
-/* Chord highlighting - notes that are part of the selected chord */
+/* Chord highlighting - notes that are part of the selected chord.
+   Use outline instead of border to avoid layout shift. */
 .inChord {
-  border: 2.5px solid var(--color-chord-selected);
+  outline: 2.5px solid var(--color-chord-selected);
+  outline-offset: -1px;
   box-shadow: 0 0 8px var(--color-chord-selected-glow);
   background: linear-gradient(135deg, var(--color-note-bg) 0%, var(--color-chord-gradient-light) 100%);
 
@@ -262,43 +264,19 @@
   background: linear-gradient(135deg, var(--color-root-bg) 0%, var(--color-chord-gradient-playable) 100%);
 }
 
-/* Detected note from pitch detector - distinctive glow effect */
+/* Detected note from pitch detector - use outline to avoid layout shift */
 .detectedNote {
-  border: 3px solid #ff6b6b;
-  box-shadow: 0 0 16px rgba(255, 107, 107, 0.7);
-  animation: detectPulse 1s ease-in-out infinite alternate;
+  outline: 2.5px solid #ff6b6b;
+  outline-offset: -1px;
+  box-shadow: 0 0 12px rgba(255, 107, 107, 0.6);
   z-index: 5;
   position: relative;
 }
 
 /* When detected note is also playable */
 .playable.detectedNote {
-  border-color: #4ecdc4;
-  box-shadow: 0 0 20px rgba(78, 205, 196, 0.8);
-}
-
-/* Detection pulse animation */
-@keyframes detectPulse {
-  0% {
-    box-shadow: 0 0 12px rgba(255, 107, 107, 0.5);
-  }
-  100% {
-    box-shadow: 0 0 24px rgba(255, 107, 107, 0.9);
-  }
-}
-
-/* Playable detected note uses teal color */
-@keyframes detectPulsePlayable {
-  0% {
-    box-shadow: 0 0 12px rgba(78, 205, 196, 0.6);
-  }
-  100% {
-    box-shadow: 0 0 24px rgba(78, 205, 196, 1);
-  }
-}
-
-.playable.detectedNote {
-  animation: detectPulsePlayable 1s ease-in-out infinite alternate;
+  outline-color: #4ecdc4;
+  box-shadow: 0 0 12px rgba(78, 205, 196, 0.7);
 }
 
 /* Reduced motion preference - disable animations for accessibility */
@@ -310,9 +288,7 @@
   .noteSection.currentlyPlaying,
   .playable.currentlyPlaying,
   .blowNote.playable.currentlyPlaying,
-  .drawNote.playable.currentlyPlaying,
-  .detectedNote,
-  .playable.detectedNote {
+  .drawNote.playable.currentlyPlaying {
     animation: none;
   }
 }

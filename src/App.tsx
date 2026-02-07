@@ -57,25 +57,25 @@ function ScalesPage() {
     setIsChordPanelOpen(!isChordPanelOpen)
   }
 
-  // Map detected pitch to harmonica holes
+  // Map detected pitch to harmonica holes (octave-aware)
   const detectedBlowHoles = useMemo(() => {
     if (!pitchResult) return []
-    const noteWithoutOctave = Note.get(pitchResult.note).pc
+    const detected = Note.get(pitchResult.note)
     return harmonica.holes
       .filter((hole) => {
-        const holeNote = Note.get(hole.blow.note).pc
-        return holeNote === noteWithoutOctave
+        const holeNote = Note.get(hole.blow.note)
+        return holeNote.pc === detected.pc && holeNote.oct === detected.oct
       })
       .map((hole) => hole.hole)
   }, [pitchResult, harmonica.holes])
 
   const detectedDrawHoles = useMemo(() => {
     if (!pitchResult) return []
-    const noteWithoutOctave = Note.get(pitchResult.note).pc
+    const detected = Note.get(pitchResult.note)
     return harmonica.holes
       .filter((hole) => {
-        const holeNote = Note.get(hole.draw.note).pc
-        return holeNote === noteWithoutOctave
+        const holeNote = Note.get(hole.draw.note)
+        return holeNote.pc === detected.pc && holeNote.oct === detected.oct
       })
       .map((hole) => hole.hole)
   }, [pitchResult, harmonica.holes])
