@@ -4,9 +4,23 @@
  * @packageDocumentation
  */
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useState, useRef, type ReactNode } from 'react'
 import { useMicrophone } from '../hooks/useMicrophone'
 import type { PitchResult } from '../utils/pitchDetection'
+
+const REFERENCE_HZ_KEY = 'harp-diem-tuning-reference'
+const DEFAULT_REFERENCE_HZ = 442
+
+function loadReferenceHz(): number {
+  try {
+    const stored = localStorage.getItem(REFERENCE_HZ_KEY)
+    if (stored !== null) {
+      const parsed = Number(stored)
+      if (!isNaN(parsed) && parsed >= 410 && parsed <= 460) return parsed
+    }
+  } catch { /* localStorage unavailable */ }
+  return DEFAULT_REFERENCE_HZ
+}
 
 /** Context value for pitch detection */
 interface PitchDetectionContextValue {
@@ -17,6 +31,8 @@ interface PitchDetectionContextValue {
   error: string | null
   isSupported: boolean
   setDebugMode: (enabled: boolean, expectedNote?: string) => void
+  referenceHz: number
+  setReferenceHz: (hz: number) => void
 }
 
 const PitchDetectionContext = createContext<PitchDetectionContextValue | null>(null)
@@ -27,7 +43,17 @@ interface PitchDetectionProviderProps {
 
 /** Provider for pitch detection context. */
 export function PitchDetectionProvider({ children }: PitchDetectionProviderProps) {
-  const microphoneState = useMicrophone()
+  const [referenceHz, setReferenceHzState] = useState(loadReferenceHz)
+  const referenceHzRef = useRef(referenceHz)
+
+  const setReferenceHz = (hz: number) => {
+    const clamped = Math.max(410, Math.min(460, Math.round(hz)))
+    referenceHzRef.current = clamped
+    setReferenceHzState(clamped)
+    try { localStorage.setItem(REFERENCE_HZ_KEY, String(clamped)) } catch { /* ignore */ }
+  }
+
+  const microphoneState = useMicrophone(referenceHzRef)
 
   return (
     <PitchDetectionContext.Provider
@@ -39,6 +65,8 @@ export function PitchDetectionProvider({ children }: PitchDetectionProviderProps
         error: microphoneState.error,
         isSupported: microphoneState.isSupported,
         setDebugMode: microphoneState.setDebugMode,
+        referenceHz,
+        setReferenceHz,
       }}
     >
       {children}

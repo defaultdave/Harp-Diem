@@ -47,9 +47,10 @@ export interface PitchDebugInfo {
  * @param dataArray - Float32Array of time-domain audio samples from AnalyserNode
  * @param sampleRate - Sample rate of the audio context (e.g., 44100 Hz)
  * @param debug - If provided, debug info is written into this object
+ * @param referenceHz - Reference frequency for A4 (default 440 Hz)
  * @returns PitchResult with detected frequency and note, or null if no clear pitch detected
  */
-export function detectPitch(dataArray: Float32Array, sampleRate: number, debug?: PitchDebugInfo): PitchResult | null {
+export function detectPitch(dataArray: Float32Array, sampleRate: number, debug?: PitchDebugInfo, referenceHz = 440): PitchResult | null {
   // Calculate autocorrelation for different lags
   const bufferSize = dataArray.length
   const correlations = new Float32Array(bufferSize)
@@ -139,7 +140,7 @@ export function detectPitch(dataArray: Float32Array, sampleRate: number, debug?:
   }
 
   // Convert frequency to note
-  const { note, cents } = frequencyToNote(frequency)
+  const { note, cents } = frequencyToNote(frequency, referenceHz)
 
   return {
     frequency,
@@ -151,25 +152,25 @@ export function detectPitch(dataArray: Float32Array, sampleRate: number, debug?:
 
 /**
  * Convert a frequency to the nearest musical note with cents offset.
+ * Uses a configurable reference frequency for A4 instead of the
+ * hardcoded 440 Hz in tonal.js.
  *
  * @param frequency - Frequency in Hz
+ * @param referenceHz - Reference frequency for A4 (default 440 Hz)
  * @returns Object with note name and cents offset from that note
  */
-export function frequencyToNote(frequency: number): { note: string; cents: number } {
-  // Use tonal.js to get the nearest note (using sharps)
-  const note = Note.fromFreqSharps(frequency)
+export function frequencyToNote(frequency: number, referenceHz = 440): { note: string; cents: number } {
+  // Calculate semitones from A4 using the configurable reference
+  const semitones = 12 * Math.log2(frequency / referenceHz) + 69
+  const midi = Math.round(semitones)
+  const note = Note.fromMidiSharps(midi)
 
-  // Get the frequency of the detected note
-  const noteFreq = Note.freq(note)
-
-  if (!noteFreq) {
-    // Fallback for invalid frequencies
+  if (!note) {
     return { note: 'N/A', cents: 0 }
   }
 
-  // Calculate cents offset
-  // Formula: cents = 1200 * log2(f1/f2)
-  const cents = Math.round(1200 * Math.log2(frequency / noteFreq))
+  // Cents = difference between actual semitones and rounded MIDI
+  const cents = Math.round((semitones - midi) * 100)
 
   return { note, cents }
 }

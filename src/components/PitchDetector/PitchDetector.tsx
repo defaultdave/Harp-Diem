@@ -14,7 +14,7 @@ interface PitchDetectorProps {
 }
 
 export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
-  const { isListening, startListening, stopListening, pitchResult, error, isSupported, setDebugMode } = usePitchDetection()
+  const { isListening, startListening, stopListening, pitchResult, error, isSupported, setDebugMode, referenceHz, setReferenceHz } = usePitchDetection()
   const [lastNote, setLastNote] = useState<string | null>(null)
   const [lastCents, setLastCents] = useState(0)
   const lastNoteRef = useRef<string | null>(null)
@@ -147,6 +147,21 @@ export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
         {!displayNote && isListening && (
           <div className={styles.centsReadout}>···</div>
         )}
+
+        <label className={styles.referenceHz} title="Reference pitch for A4 (most harmonicas use 442-443 Hz)">
+          <span className={styles.referenceHzLabel}>A4</span>
+          <input
+            className={styles.referenceHzInput}
+            type="number"
+            min={410}
+            max={460}
+            step={1}
+            value={referenceHz}
+            onChange={(e) => setReferenceHz(Number(e.target.value))}
+            aria-label="Reference pitch in Hz"
+          />
+          <span className={styles.referenceHzUnit}>Hz</span>
+        </label>
 
         <button
           className={`${styles.debugToggle} ${debugEnabled ? styles.debugActive : ''}`}

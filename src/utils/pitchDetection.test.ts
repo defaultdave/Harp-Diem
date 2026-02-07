@@ -47,6 +47,34 @@ describe('frequencyToNote', () => {
     expect(result.note).toContain('#')
     expect(result.note).not.toContain('b')
   })
+
+  it('returns 0 cents for A4 at 442Hz with referenceHz=442', () => {
+    const result = frequencyToNote(442, 442)
+    expect(result.note).toBe('A4')
+    expect(result.cents).toBe(0)
+  })
+
+  it('returns ~+8 cents for A4 at 442Hz with referenceHz=440', () => {
+    const result = frequencyToNote(442, 440)
+    expect(result.note).toBe('A4')
+    // 1200 * log2(442/440) ≈ 7.85 cents, rounds to 8
+    expect(result.cents).toBeGreaterThanOrEqual(7)
+    expect(result.cents).toBeLessThanOrEqual(8)
+  })
+
+  it('returns ~-8 cents for A4 at 440Hz with referenceHz=442', () => {
+    const result = frequencyToNote(440, 442)
+    expect(result.note).toBe('A4')
+    expect(result.cents).toBeGreaterThanOrEqual(-8)
+    expect(result.cents).toBeLessThanOrEqual(-7)
+  })
+
+  it('defaults to 440Hz when referenceHz not provided', () => {
+    const withDefault = frequencyToNote(440)
+    const withExplicit = frequencyToNote(440, 440)
+    expect(withDefault.note).toBe(withExplicit.note)
+    expect(withDefault.cents).toBe(withExplicit.cents)
+  })
 })
 
 describe('detectPitch', () => {

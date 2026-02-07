@@ -3,7 +3,7 @@
  * @packageDocumentation
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { detectPitch, type PitchResult, type PitchDebugInfo } from '../utils/pitchDetection'
 
 /** Size of the FFT buffer for frequency analysis */
@@ -72,7 +72,7 @@ function checkBrowserSupport(): boolean {
   return hasMediaDevices && Boolean(hasAudioContext)
 }
 
-export function useMicrophone(): UseMicrophoneResult {
+export function useMicrophone(referenceHzRef?: React.RefObject<number>): UseMicrophoneResult {
   const [isListening, setIsListening] = useState(false)
   const [pitchResult, setPitchResult] = useState<PitchResult | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -142,7 +142,8 @@ export function useMicrophone(): UseMicrophoneResult {
 
         // Detect pitch (pass debug info object when debug mode is on)
         const isDebug = debugModeRef.current
-        const result = detectPitch(dataArray, context.sampleRate, isDebug ? debugInfo : undefined)
+        const refHz = referenceHzRef?.current ?? 440
+        const result = detectPitch(dataArray, context.sampleRate, isDebug ? debugInfo : undefined, refHz)
         setPitchResult(result)
 
         // Log debug info (throttled to every 15th frame ~4/sec)
@@ -174,7 +175,7 @@ export function useMicrophone(): UseMicrophoneResult {
       setError(errorMessage)
       setIsListening(false)
     }
-  }, [isSupported])
+  }, [isSupported, referenceHzRef])
 
   const stopListening = useCallback(() => {
     // Cancel animation frame
