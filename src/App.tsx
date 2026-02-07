@@ -80,6 +80,8 @@ function ScalesPage() {
       .map((hole) => hole.hole)
   }, [pitchResult, harmonica.holes])
 
+  const detectedCents = pitchResult?.cents ?? 0
+
   return (
     <>
       <div className={styles.controls}>
@@ -177,6 +179,7 @@ function ScalesPage() {
                   isDrawInChord={chordDrawHoles.includes(hole.hole)}
                   isBlowDetected={detectedBlowHoles.includes(hole.hole)}
                   isDrawDetected={detectedDrawHoles.includes(hole.hole)}
+                  detectedCents={detectedCents}
                 />
               ))}
             </div>

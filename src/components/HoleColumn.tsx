@@ -16,9 +16,10 @@ interface NoteSectionProps {
   isBlow: boolean
   isInChord?: boolean
   isDetectedNote?: boolean
+  detectedCents?: number
 }
 
-const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumber, isBlow, isInChord = false, isDetectedNote = false }: NoteSectionProps) => {
+const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumber, isBlow, isInChord = false, isDetectedNote = false, detectedCents = 0 }: NoteSectionProps) => {
   const { showDegrees, noteDisplay } = useDisplaySettings()
   const { isNoteCurrentlyPlaying } = usePlayback()
   const isCurrentlyPlaying = isNoteCurrentlyPlaying(note, isBlow)
@@ -34,6 +35,12 @@ const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumbe
 
   const breathDirection = isBlow ? styles.blowNote : styles.drawNote
 
+  // Tuning indicator: map cents to a clamped offset and category
+  const tuningOffset = isDetectedNote ? Math.max(-1, Math.min(1, detectedCents / 50)) : undefined
+  const tuningCategory = isDetectedNote
+    ? Math.abs(detectedCents) <= 5 ? 'inTune' : Math.abs(detectedCents) <= 15 ? 'slightlyOff' : 'outOfTune'
+    : undefined
+
   return (
     <div
       className={cn(styles.noteSection, isPlayable && styles.playable, isRootNote && styles.rootNote, isCurrentlyPlaying && styles.currentlyPlaying, isInChord && styles.inChord, isDetectedNote && styles.detectedNote, breathDirection)}
@@ -42,6 +49,10 @@ const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumbe
       onClick={() => playTone(frequency)}
       onKeyDown={handleActivationKey(() => playTone(frequency))}
       aria-label={`${label} ${note}${romanNumeral ? ` (degree ${romanNumeral})` : ''}${isPlayable ? ', in scale' : ', not in scale'}${isInChord ? ', in selected chord' : ''}${isDetectedNote ? ', detected by tuner' : ''}${isCurrentlyPlaying ? ', currently playing' : ''}. Press to play.`}
+      {...(isDetectedNote ? {
+        style: { '--tuning-offset': tuningOffset } as React.CSSProperties,
+        'data-tuning-category': tuningCategory,
+      } : {})}
     >
       <div className={styles.label}>{label}</div>
       <div className={styles.noteDisplay}>
@@ -61,6 +72,7 @@ interface HoleColumnProps {
   isDrawInChord?: boolean
   isBlowDetected?: boolean
   isDrawDetected?: boolean
+  detectedCents?: number
 }
 
 export const HoleColumn = memo(function HoleColumn({
@@ -72,6 +84,7 @@ export const HoleColumn = memo(function HoleColumn({
   isDrawInChord = false,
   isBlowDetected = false,
   isDrawDetected = false,
+  detectedCents = 0,
 }: HoleColumnProps) {
   const bendPlayability = getBendPlayability(hole, scaleNotes)
 
@@ -123,6 +136,7 @@ export const HoleColumn = memo(function HoleColumn({
           isBlow={true}
           isInChord={isBlowInChord}
           isDetectedNote={isBlowDetected}
+          detectedCents={detectedCents}
         />
       </div>
 
@@ -142,6 +156,7 @@ export const HoleColumn = memo(function HoleColumn({
           isBlow={false}
           isInChord={isDrawInChord}
           isDetectedNote={isDrawDetected}
+          detectedCents={detectedCents}
         />
         {hole.drawBends?.halfStepBend && (
           <NoteSection
