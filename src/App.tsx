@@ -4,8 +4,8 @@ import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType, ChordVoicing } from './data'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data'
 import { useHarmonicaScale, useTheme, useHashRouter } from './hooks'
-import { HoleColumn, Legend, ScaleDisplay, ChordExplorer, RotateOverlay, NavHeader } from './components'
-import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport } from './context'
+import { HoleColumn, Legend, ScaleDisplay, ChordExplorer, RotateOverlay, NavHeader, PitchDetector } from './components'
+import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport, PitchDetectionProvider, usePitchDetection } from './context'
 import { capitalizeWords } from './utils'
 
 // Lazy load Quiz page - only loaded when navigating to /quiz route
@@ -20,6 +20,7 @@ function ScalesPage() {
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
   const [isChordPanelOpen, setIsChordPanelOpen] = useState(false) // collapsed by default
   const { setExportConfig } = useExport()
+  const { pitchResult } = usePitchDetection()
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -54,6 +55,9 @@ function ScalesPage() {
   const handleToggleChordPanel = () => {
     setIsChordPanelOpen(!isChordPanelOpen)
   }
+
+  const detectedNote = pitchResult?.note ?? null
+  const detectedCents = pitchResult?.cents ?? 0
 
   return (
     <>
@@ -138,6 +142,7 @@ function ScalesPage() {
                 </span>
               )}
             </h2>
+            <PitchDetector scaleNotes={scaleNotes} />
             <div className={styles.holesContainer} role="group" aria-label="Harmonica holes 1 through 10">
               {harmonica.holes.map((hole) => (
                 <HoleColumn
@@ -148,6 +153,8 @@ function ScalesPage() {
                   isDrawPlayable={playableDrawHoles.includes(hole.hole)}
                   isBlowInChord={chordBlowHoles.includes(hole.hole)}
                   isDrawInChord={chordDrawHoles.includes(hole.hole)}
+                  detectedNote={detectedNote}
+                  detectedCents={detectedCents}
                 />
               ))}
             </div>
@@ -215,12 +222,14 @@ function App() {
   return (
     <DisplaySettingsProvider>
       <PlaybackProvider>
-        <QuizProvider>
-          <ExportProvider>
-            <AppContent />
-            <RotateOverlay />
-          </ExportProvider>
-        </QuizProvider>
+        <PitchDetectionProvider>
+          <QuizProvider>
+            <ExportProvider>
+              <AppContent />
+              <RotateOverlay />
+            </ExportProvider>
+          </QuizProvider>
+        </PitchDetectionProvider>
       </PlaybackProvider>
     </DisplaySettingsProvider>
   )

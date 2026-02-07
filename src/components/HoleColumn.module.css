@@ -52,6 +52,8 @@
   background: var(--color-note-bg);
   border: 1.5px solid var(--color-note-border);
   font-weight: 600;
+  position: relative;
+  overflow: hidden;
 
   &:hover {
     transform: scale(1.05);
@@ -69,6 +71,8 @@
   color: var(--color-note-label);
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  position: relative;
+  z-index: 1;
 }
 
 .noteDisplay {
@@ -76,6 +80,8 @@
   flex-direction: column;
   align-items: center;
   gap: 0.1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .degree {
@@ -240,11 +246,17 @@
   }
 }
 
-/* Chord highlighting - notes that are part of the selected chord */
+/* Chord highlighting - notes that are part of the selected chord.
+   Use outline instead of border to avoid layout shift. */
 .inChord {
-  border: 2.5px solid var(--color-chord-selected);
+  outline: 2.5px solid var(--color-chord-selected);
+  outline-offset: -1px;
   box-shadow: 0 0 8px var(--color-chord-selected-glow);
-  background: linear-gradient(135deg, var(--color-note-bg) 0%, var(--color-chord-gradient-light) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-note-bg) 0%,
+    var(--color-chord-gradient-light) 100%
+  );
 
   &:hover {
     box-shadow: 0 0 12px var(--color-chord-selected-glow-strong);
@@ -254,12 +266,70 @@
 
 /* When a note is both playable (in scale) and in chord */
 .playable.inChord {
-  background: linear-gradient(135deg, var(--color-playable-bg) 0%, var(--color-chord-gradient-playable) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-playable-bg) 0%,
+    var(--color-chord-gradient-playable) 100%
+  );
 }
 
 /* Root note in chord - use root background as gradient base */
 .playable.rootNote.inChord {
-  background: linear-gradient(135deg, var(--color-root-bg) 0%, var(--color-chord-gradient-playable) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-root-bg) 0%,
+    var(--color-chord-gradient-playable) 100%
+  );
+}
+
+/* Detected note from pitch detector - use outline to avoid layout shift */
+.detectedNote {
+  outline: 2.5px solid #ff6b6b;
+  outline-offset: -1px;
+  box-shadow: 0 0 12px rgba(255, 107, 107, 0.6);
+  z-index: 5;
+  position: relative;
+}
+
+/* When detected note is also playable */
+.playable.detectedNote {
+  outline-color: #4ecdc4;
+  box-shadow: 0 0 12px rgba(78, 205, 196, 0.7);
+}
+
+/* Vertical tuning indicator bar behind note content */
+.detectedNote::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  border-radius: var(--radius-xs);
+  transition:
+    top 0.08s ease-out,
+    bottom 0.08s ease-out;
+  pointer-events: none;
+  /* Center-based positioning: bar extends from 50% toward top (sharp) or bottom (flat) */
+  /* --tuning-offset ranges from -1 (flat) to +1 (sharp) */
+  /* When sharp (positive): top edge moves up from center, bottom stays at center */
+  top: calc(50% - max(var(--tuning-offset), 0) * 50%);
+  /* When flat (negative): bottom edge moves down from center, top stays at center */
+  bottom: calc(50% + min(var(--tuning-offset), 0) * 50%);
+  /* Minimum height so bar is visible even when nearly perfectly in tune */
+  min-height: 6px;
+}
+
+/* Tuning bar color categories */
+.detectedNote[data-tuning-category="inTune"]::after {
+  background: rgba(76, 175, 80, 1);
+}
+
+.detectedNote[data-tuning-category="slightlyOff"]::after {
+  background: rgba(255, 193, 7, 0.6);
+}
+
+.detectedNote[data-tuning-category="outOfTune"]::after {
+  background: rgba(255, 87, 34, 0.6);
 }
 
 /* Reduced motion preference - disable animations for accessibility */

@@ -32,22 +32,36 @@ npm run test:e2e:ui    # Run E2E tests in interactive UI mode
 
 5. **UI** (`src/App.tsx`): Main component with dropdowns (harmonica key, tuning, song key, scale type). Renders the harmonica grid, chord display, and theme toggle.
 
+6. **Pitch Detection** (`src/utils/pitchDetection.ts` + `src/hooks/useMicrophone.ts`): Real-time pitch detection using autocorrelation on microphone input via Web Audio API. Detects frequency, identifies nearest note with enharmonic-safe MIDI matching, calculates cents offset, and provides confidence scoring. `PitchDetectionContext` manages global state with configurable reference pitch (A4 Hz).
+
 ### Key Types
 
 - `HarmonicaKey`: All 17 keys including enharmonic equivalents (C, C#, Db, D, etc.)
 - `HoleNote`: Contains hole number, blow/draw notes, optional bends (blowBends/drawBends as HoleBends), overblow, overdraw
 - `HoleBends`: Optional halfStepBend, wholeStepBend, minorThirdBend
 - `Chord`: Contains chord name, quality, holes array, breath direction, and roman numeral
+- `PitchResult`: Detected frequency (Hz), note name, cents offset, confidence score (0-1)
 
 ### Key Hooks
 
 - `useHarmonicaScale`: Combines harmonica data with scale selection
 - `useTheme`: Manages light/dark theme with localStorage persistence and system preference detection
 - `useMobileDetection`: Detects mobile devices in portrait orientation for rotate overlay
+- `useMicrophone`: Manages microphone access via MediaStream, real-time pitch detection using AnalyserNode with FFT analysis, and cleanup lifecycle
+
+### Contexts
+
+- `DisplaySettingsContext`: Tab notation and scale degrees display toggles
+- `PlaybackContext`: Audio playback state management
+- `QuizContext`: Quiz state and scoring
+- `ExportContext`: PNG/PDF export configuration
+- `PitchDetectionContext`: Microphone access, pitch detection state, reference Hz configuration with localStorage persistence
 
 ### Audio
 
-`src/utils/audioPlayer.ts` uses Web Audio API with additive synthesis (5 harmonics) to create piano-like tones when clicking notes.
+**Playback:** `src/utils/audioPlayer.ts` uses Web Audio API with additive synthesis (5 harmonics) to create piano-like tones when clicking notes.
+
+**Pitch Detection:** `src/utils/pitchDetection.ts` implements autocorrelation for real-time frequency detection from microphone input. Uses separate AudioContext from playback. Detects all note types (blow, draw, bends, overblows, overdraws) with enharmonic-safe MIDI matching and configurable reference pitch (A4 = 410-460 Hz).
 
 ### Theming
 
@@ -69,6 +83,7 @@ All note transposition, interval calculation, and scale generation uses [tonal.j
 - `ScaleDisplay`: Scale info and playback controls (play/stop, tempo slider)
 - `Legend`: Display toggles for tab notation and scale degrees
 - `RotateOverlay`: Mobile prompt to rotate device for optimal viewing
+- `PitchDetector`: Tuner strip with microphone toggle, real-time pitch visualization (note + cents offset), in-scale highlighting, and configurable A4 reference pitch
 
 ### Dev Container
 

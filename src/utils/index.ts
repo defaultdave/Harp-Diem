@@ -49,3 +49,11 @@ export {
   getTabNotation,
   labelToNoteType,
 } from './tabNotation'
+
+// Re-export from pitchDetection
+export {
+  type PitchResult,
+  type PitchDebugInfo,
+  detectPitch,
+  frequencyToNote,
+} from './pitchDetection'

@@ -13,3 +13,4 @@ export interface MusicalNote {
 export type NoteNames = string[]
 
 export type { ChordVoicing, ChordQuality } from '../data/chords'
+export type { PitchResult } from '../utils/pitchDetection'

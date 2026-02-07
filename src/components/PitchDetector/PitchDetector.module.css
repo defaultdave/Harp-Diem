@@ -1,0 +1,254 @@
+.pitchDetector {
+  margin: var(--spacing-md) 0;
+}
+
+/* Single horizontal row: [mic] [♭ |---*--C-----|  ♯] [+5¢] */
+.tunerRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Mic toggle button - compact circle */
+.micButton {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border-medium);
+  background: var(--color-bg-secondary);
+  font-size: var(--font-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.micButton:hover {
+  border-color: var(--color-hover-border);
+}
+
+.micButton.listening {
+  background: var(--color-stop-bg);
+  border-color: var(--color-stop-bg);
+}
+
+.micButton.listening:hover {
+  background: var(--color-stop-bg-hover);
+  border-color: var(--color-stop-bg-hover);
+}
+
+/* The strip: ♭ [========track========] ♯ */
+.tunerStrip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.flatLabel,
+.sharpLabel {
+  flex-shrink: 0;
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  width: 1em;
+  text-align: center;
+}
+
+/* The main track bar */
+.meterTrack {
+  position: relative;
+  flex: 1;
+  height: 36px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Center tick (the "in tune" line) */
+.tickCenter {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--color-border-dark);
+}
+
+/* Quarter ticks */
+.tick {
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  width: 1px;
+  background: var(--color-border-light);
+}
+
+.tickLeft {
+  left: 25%;
+}
+
+.tickRight {
+  left: 75%;
+}
+
+/* Note name centered in the track */
+.noteLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  z-index: 1;
+  pointer-events: none;
+  text-shadow:
+    -1px -1px 0 var(--color-bg-secondary),
+     1px -1px 0 var(--color-bg-secondary),
+    -1px  1px 0 var(--color-bg-secondary),
+     1px  1px 0 var(--color-bg-secondary);
+}
+
+.noteLabel.inScale {
+  color: var(--color-playable-bg);
+}
+
+.noteLabel.noNote {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+/* Moving marker (the * indicator) */
+.marker {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 6px;
+  border-radius: 3px;
+  transform: translateX(-50%);
+  transition: left 0.08s ease-out;
+  z-index: 2;
+}
+
+.marker.inTune {
+  background: var(--color-playable-bg);
+  box-shadow: 0 0 6px var(--color-playable-shadow);
+}
+
+.marker.slightlyOff {
+  background: var(--color-chord-minor);
+}
+
+.marker.outOfTune {
+  background: var(--color-chord-dominant);
+}
+
+.marker.faded {
+  opacity: 0.35;
+}
+
+/* Cents readout to the right */
+.centsReadout {
+  flex-shrink: 0;
+  width: 3.5em;
+  text-align: right;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.centsReadout.inTune {
+  color: var(--color-playable-bg);
+}
+
+.centsReadout.slightlyOff {
+  color: var(--color-chord-minor);
+}
+
+.centsReadout.outOfTune {
+  color: var(--color-chord-dominant);
+}
+
+.centsReadout.faded {
+  opacity: 0.5;
+}
+
+/* Reference pitch control */
+.referenceHz {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.referenceHzLabel {
+  font-weight: 600;
+}
+
+.referenceHzInput {
+  width: 3.5em;
+  padding: 2px 4px;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: var(--font-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.referenceHzInput::-webkit-inner-spin-button,
+.referenceHzInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.referenceHzInput:focus {
+  outline: none;
+  border-color: var(--color-hover-border);
+}
+
+.referenceHzUnit {
+  opacity: 0.6;
+}
+
+/* Status / error messages below the strip */
+.statusMessage {
+  text-align: center;
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  padding: var(--spacing-sm);
+}
+
+.errorMessage {
+  text-align: center;
+  font-size: var(--font-sm);
+  color: var(--color-chord-dominant);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .centsReadout {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker {
+    transition: none;
+  }
+}
