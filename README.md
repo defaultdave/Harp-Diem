@@ -19,8 +19,11 @@
 - **Play Scale**: Automatically play all notes in the selected scale in ascending order with visual highlighting
 - **Playback Controls**: Stop button to halt playback mid-scale and tempo slider (40-200 BPM) to adjust playback speed
 - **Visual Feedback**: Harmonica holes highlight during scale playback to guide playing
-- **Chord Diagrams**: View playable chords for the selected scale with color-coded quality indicators (major, minor, dominant 7th, diminished)
+- **Chord Explorer**: Collapsible side panel showing scale-filtered chords with voicing navigation (arrows to browse different voicings) and MiniHarmonica previews on each chord card
 - **Interactive Chord Highlighting**: Click any chord to highlight its constituent holes on the harmonica
+- **Position Display**: Shows the harmonica position (1st position = straight harp, 2nd position = cross harp, etc.) calculated via Circle of Fifths
+- **Page Navigation**: Tab-based navigation between Scales and Quiz pages via NavHeader
+- **Code Splitting**: Quiz page is lazy-loaded for faster initial load
 - **Dark Mode**: Toggle between light and dark themes with system preference detection and localStorage persistence
 - **Mobile Support**: Portrait mobile users see a prompt to rotate their device for the best harmonica viewing experience
 - **Audio Playback**: Click any note or chord to hear it played with piano-like synthesis
@@ -42,17 +45,21 @@
 - **Export**: html2canvas + jsPDF for PNG/PDF export (lazy-loaded)
 - **Documentation**: TypeDoc with rhineai theme
 - **Styling**: CSS Grid with responsive design and CSS custom properties
+- **Deployment**: GitHub Pages via gh-pages
+- **Code Quality**: Husky + lint-staged for pre-commit hooks (runs tests on staged .ts/.tsx files)
+- **Bundle Analysis**: rollup-plugin-visualizer
 
 ## Project Structure
 
 ```
 src/
-├── components/           # UI components
-│   ├── ChordDisplay/     # Chord diagram visualization
-│   ├── ExportMenu/       # PNG/PDF export and print menu
-│   ├── HoleColumn/       # Individual harmonica hole display
+├── components/           # UI components (barrel exports via index.ts)
+│   ├── ChordExplorer/    # Chord explorer with voicing navigation
+│   ├── ExportButton/     # PNG/PDF export button
+│   ├── HoleColumn.tsx    # Individual harmonica hole (memo-optimized)
 │   ├── Legend/           # Scale legend with display toggles
-│   ├── Quiz/             # Key identification quiz
+│   ├── NavHeader/        # Navigation header with page tabs and theme toggle
+│   ├── Quiz/             # Key identification quiz (lazy-loaded)
 │   ├── RotateOverlay/    # Mobile rotation prompt
 │   ├── ScaleDisplay/     # Scale information and playback
 │   └── ErrorBoundary.tsx # Error handling wrapper
@@ -62,23 +69,26 @@ src/
 │   ├── PlaybackContext.tsx         # Audio playback state
 │   └── QuizContext.tsx             # Quiz state management
 ├── data/                 # Core data layer (barrel exports via index.ts)
-│   ├── harmonicas.ts     # Harmonica layouts and tunings
+│   ├── harmonicas.ts     # Harmonica layouts, tunings, and position calculation
 │   ├── scales.ts         # Scale calculations using tonal.js
-│   ├── chords.ts         # Chord voicing generation
+│   ├── chords.ts         # Chord voicing generation and filtering
 │   └── progressions.ts   # Quiz chord progressions
 ├── hooks/                # Custom hooks (barrel exports via index.ts)
 │   ├── useHarmonicaScale.ts  # Harmonica + scale logic
-│   ├── useHashRouter.ts      # Hash-based routing
+│   ├── useHashRouter.ts      # Hash-based routing for GitHub Pages
 │   ├── useMobileDetection.ts # Mobile viewport detection
 │   └── useTheme.ts           # Dark/light theme management
 ├── types/                # TypeScript type definitions
 ├── utils/                # Utilities (barrel exports via index.ts)
 │   ├── audioPlayer.ts    # Web Audio API synthesis
+│   ├── chord.ts          # Chord comparison utilities
+│   ├── classNames.ts     # CSS class name composition
+│   ├── events.ts         # Keyboard event handlers for accessibility
 │   ├── export.ts         # PNG/PDF export functions
-│   ├── exportLazy.ts     # Lazy-loaded export (reduces bundle)
-│   ├── tabNotation.ts    # Harmonica tablature notation
-│   └── ...               # Other utilities
-├── App.tsx               # Main application component
+│   ├── playableNotes.ts  # Scale-playable note utilities
+│   ├── string.ts         # String formatting utilities
+│   └── tabNotation.ts    # Harmonica tablature notation
+├── App.tsx               # Main application component with routing
 ├── variables.css         # CSS custom properties (design tokens)
 └── main.tsx              # Application entry point
 ```
@@ -142,17 +152,19 @@ npm run preview       # Preview production build
 3. **Select Song Key**: Pick the key of the song you want to play
 4. **Choose Scale Type**: Select from 12 available scales
 5. **View Results**: Green highlighted notes are in your selected scale
-6. **Toggle Display Modes**:
+6. **Check Position**: The position display shows which position you're playing (1st = straight harp, 2nd = cross harp, etc.)
+7. **Toggle Display Modes**:
    - Click "Show Tab" to switch between note names (C, D, E) and harmonica tablature (+1, -1, -4', etc.)
    - Click "Show Degrees" to display Roman numerals (I-VII) for scale positions
    - Click the theme toggle button to switch between light and dark modes
-7. **Play Notes**: Click or press Enter/Space on any note to hear it
-8. **Play Scale**: Click the "Play Scale" button to hear all notes in the scale automatically
-9. **Control Playback**:
+8. **Play Notes**: Click or press Enter/Space on any note to hear it
+9. **Play Scale**: Click the "Play Scale" button to hear all notes in the scale automatically
+10. **Control Playback**:
    - Adjust tempo with the slider (40-200 BPM) before or between playbacks
    - Click "Stop" to halt playback mid-scale
    - Watch notes and harmonica holes highlight as each note plays
-10. **Explore Chords**: Scroll down to view playable chords for your scale
+11. **Explore Chords**: Click the "Chords" tab on the right to open the chord explorer panel
+    - Use arrow buttons to browse different voicings of each chord
     - Click any chord to highlight its holes on the harmonica
     - Color-coded left borders indicate chord quality (green=major, orange=minor, red=dominant 7th, purple=diminished)
 
@@ -189,6 +201,10 @@ Bends are calculated dynamically based on each tuning's note layout, so all tuni
 ### Music Theory
 The application uses [tonal.js](https://tonaljs.github.io/tonal/docs) for note transposition, scale generation, frequency calculations, and interval operations.
 
+## Architecture
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system architecture, and [architecture/decisions/](architecture/decisions/) for Architecture Decision Records (ADRs).
+
 ## Scripts
 
 | Command | Description |
@@ -204,8 +220,17 @@ The application uses [tonal.js](https://tonaljs.github.io/tonal/docs) for note t
 | `npm run test:e2e:ui` | Run E2E tests in interactive UI mode |
 | `npm run test:e2e:headed` | Run E2E tests in headed browser mode |
 | `npm run lint` | Run ESLint |
+| `npm run deploy` | Deploy to GitHub Pages |
 | `npm run docs` | Generate API documentation |
 | `npm run docs:serve` | Generate and serve API docs locally |
+
+## Deployment
+
+The app is deployed to GitHub Pages:
+
+```bash
+npm run deploy          # Build and deploy to GitHub Pages
+```
 
 ## Contributing
 
@@ -214,6 +239,8 @@ The application uses [tonal.js](https://tonaljs.github.io/tonal/docs) for note t
 3. Ensure all tests pass: `npm test -- --run`
 4. Build successfully: `npm run build`
 5. Submit a pull request
+
+Pre-commit hooks (via Husky) automatically run tests on staged files. If tests fail, the commit will be blocked.
 
 ## License
 
