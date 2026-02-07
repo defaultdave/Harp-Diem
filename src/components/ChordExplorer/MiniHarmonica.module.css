@@ -1,0 +1,37 @@
+.miniHarmonica {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  padding: var(--spacing-sm) 0;
+}
+
+.hole {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-note-bg);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xs);
+  transition: all 0.2s;
+}
+
+.holeNumber {
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+}
+
+.holeActive .holeNumber {
+  font-weight: bold;
+  color: var(--color-text-inverse);
+}
+
+.holeBlow.holeActive {
+  background: var(--color-breath-blow);
+  border-color: var(--color-breath-blow-border);
+}
+
+.holeDraw.holeActive {
+  background: var(--color-breath-draw);
+  border-color: var(--color-breath-draw-border);
+}

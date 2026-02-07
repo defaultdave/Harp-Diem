@@ -1,4 +1,4 @@
-export { ChordDisplay } from './ChordDisplay'
+export { ChordExplorer } from './ChordExplorer'
 export { ErrorBoundary } from './ErrorBoundary'
 export { ExportButton } from './ExportButton'
 export { HoleColumn } from './HoleColumn'

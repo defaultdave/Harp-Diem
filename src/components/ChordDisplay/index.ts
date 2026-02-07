@@ -1,1 +1,0 @@
-export { ChordDisplay } from './ChordDisplay'
