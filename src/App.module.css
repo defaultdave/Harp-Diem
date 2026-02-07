@@ -53,16 +53,35 @@
   }
 }
 
+.scaleContent {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+}
+
+@media (min-width: 768px) {
+  .scaleContent {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
 .harmonicaDisplay {
   background: var(--color-bg-card);
   padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
+  min-width: 0;
 
   h2 {
     margin-top: 0;
     color: var(--color-text-secondary);
   }
+}
+
+.chordExplorerWrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .holesContainer {

@@ -23,6 +23,37 @@ export interface ChordVoicing {
 export type ChordQuality = 'major' | 'minor' | 'dominant7' | 'minor7' | 'diminished' | 'augmented'
 
 /**
+ * Configuration for tongue blocking chord generation (Phase 2).
+ * Defines how many consecutive holes can be blocked/played.
+ */
+export interface TongueBlockingParams {
+  /** Total holes that can be covered (default: 4) */
+  totalHoles: number
+  /** Holes on each side of split (default: 2) */
+  splitHoles: number
+}
+
+export const DEFAULT_TONGUE_BLOCKING: TongueBlockingParams = {
+  totalHoles: 4,
+  splitHoles: 2,
+}
+
+/**
+ * A chord name with all its voicings grouped together.
+ * Each group tracks which voicing is currently displayed.
+ */
+export interface ChordGroup {
+  /** Chord name (e.g., "C", "Dm", "G7") */
+  name: string
+  /** Chord quality for coloring */
+  quality: ChordQuality
+  /** All voicings of this chord */
+  voicings: ChordVoicing[]
+  /** Index of currently selected voicing (managed by ChordCard component) */
+  currentIndex: number
+}
+
+/**
  * Curated chord voicings for C Richter harmonica.
  * All notes are explicitly defined and pre-validated against music theory.
  */
@@ -409,4 +440,71 @@ export const getChordByName = (
   // Prefer consecutive holes if available
   const consecutive = voicings.find((v) => v.isConsecutive)
   return consecutive || voicings[0]
+}
+
+/**
+ * Filters chords to only include those where ALL notes are in the scale.
+ * Uses Note.chroma() for enharmonic comparison (C# matches Db).
+ * @param harmonicaKey - The harmonica key
+ * @param tuning - The harmonica tuning
+ * @param scaleNotes - The notes in the selected scale (pitch classes)
+ * @returns Chords where all notes are in scale
+ */
+export const getScaleFilteredChords = (
+  harmonicaKey: HarmonicaKey,
+  tuning: TuningType,
+  scaleNotes: string[]
+): ChordVoicing[] => {
+  const allChords = getHarmonicaChords(harmonicaKey, tuning)
+
+  return allChords.filter((chord) => {
+    // Check if every note in the chord is in the scale
+    return chord.notes.every((note) => {
+      const noteChroma = Note.chroma(note)
+      if (noteChroma === undefined) return false
+
+      // Check if any scale note has matching chroma
+      return scaleNotes.some((scaleNote) => {
+        const scaleChroma = Note.chroma(scaleNote)
+        return scaleChroma === noteChroma
+      })
+    })
+  })
+}
+
+/**
+ * Groups chord voicings by chord name.
+ * Each group contains all voicings of that chord.
+ * @param chords - Array of chord voicings to group
+ * @returns Array of ChordGroup objects
+ */
+export const groupChordsByName = (chords: ChordVoicing[]): ChordGroup[] => {
+  // Group by shortName (e.g., "C", "Dm", "G7")
+  const groups = new Map<string, ChordVoicing[]>()
+
+  chords.forEach((chord) => {
+    const existing = groups.get(chord.shortName) || []
+    existing.push(chord)
+    groups.set(chord.shortName, existing)
+  })
+
+  // Convert to ChordGroup array, sorted by breath then hole position
+  return Array.from(groups.entries())
+    .map(([name, voicings]) => ({
+      name,
+      quality: voicings[0].quality,
+      voicings: voicings.sort((a, b) => {
+        // Sort by breath direction (blow first), then hole position
+        if (a.breath !== b.breath) return a.breath === 'blow' ? -1 : 1
+        return a.holes[0] - b.holes[0]
+      }),
+      currentIndex: 0,
+    }))
+    .sort((a, b) => {
+      // Sort groups by breath direction and lowest hole
+      const aFirst = a.voicings[0]
+      const bFirst = b.voicings[0]
+      if (aFirst.breath !== bFirst.breath) return aFirst.breath === 'blow' ? -1 : 1
+      return aFirst.holes[0] - bFirst.holes[0]
+    })
 }

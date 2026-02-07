@@ -1,0 +1,130 @@
+.chordCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--color-hover-border);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-hover-border);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+  }
+}
+
+.chordCardSelected {
+  border-color: var(--color-chord-selected);
+  border-width: 3px;
+  box-shadow: 0 0 8px var(--color-chord-selected-glow);
+}
+
+/* Quality color bars */
+.qualityMajor {
+  border-left: 4px solid var(--color-chord-major);
+}
+
+.qualityMinor {
+  border-left: 4px solid var(--color-chord-minor);
+}
+
+.qualityDominant {
+  border-left: 4px solid var(--color-chord-dominant);
+}
+
+.qualityDiminished {
+  border-left: 4px solid var(--color-chord-diminished);
+}
+
+.chordName {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: var(--spacing-sm);
+}
+
+.chordShortName {
+  font-size: var(--font-xl);
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+.chordFullName {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.breathIndicator {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-xs);
+}
+
+.breathDirection {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) 0.75rem;
+  border-radius: var(--radius-xs);
+  font-size: var(--font-sm);
+  font-weight: 600;
+}
+
+.breathDirection[data-breath='blow'] {
+  background: var(--color-breath-blow-bg);
+  color: var(--color-breath-blow);
+  border: 1px solid var(--color-breath-blow-border);
+}
+
+.breathDirection[data-breath='draw'] {
+  background: var(--color-breath-draw-bg);
+  color: var(--color-breath-draw);
+  border: 1px solid var(--color-breath-draw-border);
+}
+
+/* Voicing navigation */
+.voicingNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border-light);
+  margin-top: var(--spacing-xs);
+}
+
+.navButton {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  cursor: pointer;
+  font-size: var(--font-lg);
+  line-height: 1;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: var(--color-hover-border);
+    color: var(--color-text-inverse);
+  }
+
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+  }
+}
+
+.voicingCounter {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}

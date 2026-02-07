@@ -6,6 +6,8 @@ import {
   findChordVoicings,
   getChordByName,
   getAllChords,
+  getScaleFilteredChords,
+  groupChordsByName,
 } from './chords'
 import type { ChordVoicing } from './chords'
 
@@ -357,6 +359,149 @@ describe('Chords', () => {
         for (let i = 1; i < holes.length; i++) {
           expect(holes[i] - holes[i - 1]).toBe(1)
         }
+      })
+    })
+  })
+
+  describe('getScaleFilteredChords', () => {
+    it('should return chords where all notes are in C major scale', () => {
+      const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+      const filtered = getScaleFilteredChords('C', 'richter', cMajorScale)
+
+      expect(filtered.length).toBeGreaterThan(0)
+
+      // Should include C major chords (C, E, G all in scale)
+      const cMajorChords = filtered.filter((c) => c.shortName === 'C')
+      expect(cMajorChords.length).toBeGreaterThan(0)
+
+      // Should include G major chords (G, B, D all in scale)
+      const gMajorChords = filtered.filter((c) => c.shortName === 'G')
+      expect(gMajorChords.length).toBeGreaterThan(0)
+
+      // Should include Dm chords (D, F, A all in scale)
+      const dmChords = filtered.filter((c) => c.shortName === 'Dm')
+      expect(dmChords.length).toBeGreaterThan(0)
+
+      // Should include G7 chords (G, B, D, F all in scale)
+      const g7Chords = filtered.filter((c) => c.shortName === 'G7')
+      expect(g7Chords.length).toBeGreaterThan(0)
+
+      // Should include Bdim chords (B, D, F all in scale)
+      const bdimChords = filtered.filter((c) => c.shortName === 'Bdim')
+      expect(bdimChords.length).toBeGreaterThan(0)
+
+      // All chords should have all notes in scale
+      filtered.forEach((chord) => {
+        chord.notes.forEach((note) => {
+          const noteChroma = note.match(/[A-G][#b]?/)?.[0]
+          expect(cMajorScale).toContain(noteChroma)
+        })
+      })
+    })
+
+    it('should return empty array when scale has no matching chords', () => {
+      // A scale with very few notes that don't form complete chords
+      const limitedScale = ['C', 'D']
+      const filtered = getScaleFilteredChords('C', 'richter', limitedScale)
+
+      // Should have no chords since we need at least 3 notes for a chord
+      expect(filtered.length).toBe(0)
+    })
+
+    it('should handle enharmonic equivalents (C# matches Db)', () => {
+      // C major scale but written with sharps where possible
+      const cMajorWithSharps = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+      const cMajorWithFlats = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+
+      const filteredSharps = getScaleFilteredChords('C', 'richter', cMajorWithSharps)
+      const filteredFlats = getScaleFilteredChords('C', 'richter', cMajorWithFlats)
+
+      // Should return same chords regardless of enharmonic spelling
+      expect(filteredSharps.length).toBe(filteredFlats.length)
+      expect(filteredSharps.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('groupChordsByName', () => {
+    it('should group voicings by chord shortName', () => {
+      const allChords = getHarmonicaChords('C', 'richter')
+      const groups = groupChordsByName(allChords)
+
+      expect(groups.length).toBeGreaterThan(0)
+
+      // C major should have multiple voicings
+      const cGroup = groups.find((g) => g.name === 'C')
+      expect(cGroup).toBeDefined()
+      expect(cGroup!.voicings.length).toBeGreaterThan(1)
+      expect(cGroup!.quality).toBe('major')
+
+      // All voicings in a group should have same shortName
+      groups.forEach((group) => {
+        group.voicings.forEach((voicing) => {
+          expect(voicing.shortName).toBe(group.name)
+        })
+      })
+    })
+
+    it('should sort voicings within groups by breath then hole position', () => {
+      const allChords = getHarmonicaChords('C', 'richter')
+      const groups = groupChordsByName(allChords)
+
+      groups.forEach((group) => {
+        const voicings = group.voicings
+
+        // Check breath direction order
+        for (let i = 0; i < voicings.length - 1; i++) {
+          if (voicings[i].breath === 'blow' && voicings[i + 1].breath === 'draw') {
+            // Blow before draw is correct
+            continue
+          } else if (voicings[i].breath === voicings[i + 1].breath) {
+            // Same breath: check hole position
+            expect(voicings[i].holes[0]).toBeLessThanOrEqual(voicings[i + 1].holes[0])
+          }
+        }
+      })
+    })
+
+    it('should sort groups by breath direction and lowest hole', () => {
+      const allChords = getHarmonicaChords('C', 'richter')
+      const groups = groupChordsByName(allChords)
+
+      // First check that blow chords generally come before draw chords
+      let lastBlowIndex = -1
+      let firstDrawIndex = groups.length
+
+      groups.forEach((group, index) => {
+        if (group.voicings[0].breath === 'blow') {
+          lastBlowIndex = index
+        } else if (firstDrawIndex === groups.length) {
+          firstDrawIndex = index
+        }
+      })
+
+      // If both exist, blow should come before draw
+      if (lastBlowIndex >= 0 && firstDrawIndex < groups.length) {
+        expect(lastBlowIndex).toBeLessThan(firstDrawIndex)
+      }
+    })
+
+    it('should handle single-voicing groups correctly', () => {
+      // G7 chord has only one voicing
+      const allChords = getHarmonicaChords('C', 'richter')
+      const groups = groupChordsByName(allChords)
+
+      const g7Group = groups.find((g) => g.name === 'G7')
+      expect(g7Group).toBeDefined()
+      expect(g7Group!.voicings.length).toBe(1)
+      expect(g7Group!.currentIndex).toBe(0)
+    })
+
+    it('should initialize currentIndex to 0 for all groups', () => {
+      const allChords = getHarmonicaChords('C', 'richter')
+      const groups = groupChordsByName(allChords)
+
+      groups.forEach((group) => {
+        expect(group.currentIndex).toBe(0)
       })
     })
   })

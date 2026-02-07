@@ -4,7 +4,7 @@ import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType, ChordVoicing } from './data'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data'
 import { useHarmonicaScale, useTheme, useHashRouter } from './hooks'
-import { HoleColumn, Legend, ScaleDisplay, ChordDisplay, RotateOverlay, NavHeader } from './components'
+import { HoleColumn, Legend, ScaleDisplay, ChordExplorer, RotateOverlay, NavHeader } from './components'
 import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport } from './context'
 import { capitalizeWords } from './utils'
 
@@ -119,37 +119,46 @@ function ScalesPage() {
           harmonica={harmonica}
         />
 
-        <div
-          className={styles.harmonicaDisplay}
-          role="region"
-          aria-label={`${harmonicaKey} Diatonic Harmonica visualization showing ${songKey} ${scaleType} scale`}
-        >
-          <h2>
-            {harmonicaKey} Diatonic Harmonica
-            {tuning !== 'richter' && (
-              <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: 'var(--color-text-muted)' }}>
-                ({capitalizeWords(tuning)})
-              </span>
-            )}
-          </h2>
-          <div className={styles.holesContainer} role="group" aria-label="Harmonica holes 1 through 10">
-            {harmonica.holes.map((hole) => (
-              <HoleColumn
-                key={hole.hole}
-                hole={hole}
-                scaleNotes={scaleNotes}
-                isBlowPlayable={playableBlowHoles.includes(hole.hole)}
-                isDrawPlayable={playableDrawHoles.includes(hole.hole)}
-                isBlowInChord={chordBlowHoles.includes(hole.hole)}
-                isDrawInChord={chordDrawHoles.includes(hole.hole)}
-              />
-            ))}
+        <div className={styles.scaleContent}>
+          <div
+            className={styles.harmonicaDisplay}
+            role="region"
+            aria-label={`${harmonicaKey} Diatonic Harmonica visualization showing ${songKey} ${scaleType} scale`}
+          >
+            <h2>
+              {harmonicaKey} Diatonic Harmonica
+              {tuning !== 'richter' && (
+                <span style={{ marginLeft: '8px', fontSize: '0.75em', fontWeight: 'normal', color: 'var(--color-text-muted)' }}>
+                  ({capitalizeWords(tuning)})
+                </span>
+              )}
+            </h2>
+            <div className={styles.holesContainer} role="group" aria-label="Harmonica holes 1 through 10">
+              {harmonica.holes.map((hole) => (
+                <HoleColumn
+                  key={hole.hole}
+                  hole={hole}
+                  scaleNotes={scaleNotes}
+                  isBlowPlayable={playableBlowHoles.includes(hole.hole)}
+                  isDrawPlayable={playableDrawHoles.includes(hole.hole)}
+                  isBlowInChord={chordBlowHoles.includes(hole.hole)}
+                  isDrawInChord={chordDrawHoles.includes(hole.hole)}
+                />
+              ))}
+            </div>
+
+            <Legend />
           </div>
 
-          <Legend />
+          <div className={styles.chordExplorerWrapper}>
+            <ChordExplorer
+              harmonicaKey={harmonicaKey}
+              tuning={tuning}
+              scaleNotes={scaleNotes}
+              onChordSelect={handleChordSelect}
+            />
+          </div>
         </div>
-
-        <ChordDisplay harmonicaKey={harmonicaKey} onChordSelect={handleChordSelect} />
       </div>
     </>
   )

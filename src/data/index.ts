@@ -34,12 +34,17 @@ export {
 export {
   type ChordVoicing,
   type ChordQuality,
+  type TongueBlockingParams,
+  type ChordGroup,
+  DEFAULT_TONGUE_BLOCKING,
   getHarmonicaChords,
   getChordsByPosition,
   getCommonChords,
   findChordVoicings,
   getChordByName,
   getAllChords,
+  getScaleFilteredChords,
+  groupChordsByName,
 } from './chords'
 
 // Re-export everything from progressions
