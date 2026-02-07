@@ -1,59 +1,38 @@
 .pitchDetector {
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border-medium);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  margin: var(--spacing-lg) 0;
-  box-shadow: var(--shadow-card);
+  margin: var(--spacing-md) 0;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-}
-
-.title {
-  font-size: var(--font-lg);
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.micButton {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-md);
-  font-weight: 600;
-  border: 2px solid var(--color-border-medium);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* Single horizontal row: [mic] [♭ |---*--C-----|  ♯] [+5¢] */
+.tunerRow {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
 }
 
+/* Mic toggle button - compact circle */
+.micButton {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border-medium);
+  background: var(--color-bg-secondary);
+  font-size: var(--font-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
 .micButton:hover {
   border-color: var(--color-hover-border);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-hover);
-}
-
-.micButton:active {
-  transform: translateY(0);
-}
-
-.micButton:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
 }
 
 .micButton.listening {
   background: var(--color-stop-bg);
-  color: var(--color-text-inverse);
   border-color: var(--color-stop-bg);
 }
 
@@ -62,178 +41,171 @@
   border-color: var(--color-stop-bg-hover);
 }
 
-.micIcon {
-  font-size: var(--font-lg);
-}
-
-.display {
+/* The strip: ♭ [========track========] ♯ */
+.tunerStrip {
+  flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
-  min-height: 120px;
-  justify-content: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
 }
 
-.noteDisplay {
+.flatLabel,
+.sharpLabel {
+  flex-shrink: 0;
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  width: 1em;
   text-align: center;
 }
 
-.noteName {
-  font-size: var(--font-3xl);
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.frequency {
-  font-size: var(--font-md);
-  color: var(--color-text-muted);
-  margin: var(--spacing-xs) 0 0 0;
-}
-
-.tuningMeter {
-  width: 100%;
-  max-width: 400px;
-}
-
-.meterLabel {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--font-sm);
-  color: var(--color-text-muted);
-  margin-bottom: var(--spacing-xs);
-}
-
+/* The main track bar */
 .meterTrack {
   position: relative;
-  width: 100%;
-  height: 40px;
+  flex: 1;
+  height: 36px;
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-medium);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
 
-.meterCenter {
+/* Center tick (the "in tune" line) */
+.tickCenter {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  bottom: 0;
   width: 2px;
-  height: 100%;
-  background: var(--color-text-muted);
-  opacity: 0.5;
+  transform: translateX(-50%);
+  background: var(--color-border-dark);
 }
 
-.meterIndicator {
+/* Quarter ticks */
+.tick {
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  width: 1px;
+  background: var(--color-border-light);
+}
+
+.tickLeft {
+  left: 25%;
+}
+
+.tickRight {
+  left: 75%;
+}
+
+/* Note name centered in the track */
+.noteLabel {
   position: absolute;
   top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 8px;
-  height: 30px;
-  border-radius: var(--radius-xs);
-  transition: all 0.1s ease;
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  z-index: 1;
+  pointer-events: none;
+  text-shadow:
+    -1px -1px 0 var(--color-bg-secondary),
+     1px -1px 0 var(--color-bg-secondary),
+    -1px  1px 0 var(--color-bg-secondary),
+     1px  1px 0 var(--color-bg-secondary);
 }
 
-.meterIndicator.inTune {
-  background: var(--color-playable-bg);
-  box-shadow: 0 0 8px var(--color-playable-shadow);
-}
-
-.meterIndicator.slightlyOff {
-  background: var(--color-chord-minor);
-  box-shadow: 0 0 8px rgba(255, 152, 0, 0.4);
-}
-
-.meterIndicator.outOfTune {
-  background: var(--color-chord-dominant);
-  box-shadow: 0 0 8px rgba(244, 67, 54, 0.4);
-}
-
-.centsDisplay {
-  text-align: center;
-  margin-top: var(--spacing-xs);
-  font-size: var(--font-md);
-  font-weight: 600;
-}
-
-.centsDisplay.inTune {
+.noteLabel.inScale {
   color: var(--color-playable-bg);
 }
 
-.centsDisplay.slightlyOff {
+.noteLabel.noNote {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+/* Moving marker (the * indicator) */
+.marker {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 6px;
+  border-radius: 3px;
+  transform: translateX(-50%);
+  transition: left 0.08s ease-out;
+  z-index: 2;
+}
+
+.marker.inTune {
+  background: var(--color-playable-bg);
+  box-shadow: 0 0 6px var(--color-playable-shadow);
+}
+
+.marker.slightlyOff {
+  background: var(--color-chord-minor);
+}
+
+.marker.outOfTune {
+  background: var(--color-chord-dominant);
+}
+
+.marker.faded {
+  opacity: 0.35;
+}
+
+/* Cents readout to the right */
+.centsReadout {
+  flex-shrink: 0;
+  width: 3.5em;
+  text-align: right;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.centsReadout.inTune {
+  color: var(--color-playable-bg);
+}
+
+.centsReadout.slightlyOff {
   color: var(--color-chord-minor);
 }
 
-.centsDisplay.outOfTune {
+.centsReadout.outOfTune {
   color: var(--color-chord-dominant);
 }
 
+.centsReadout.faded {
+  opacity: 0.5;
+}
+
+/* Status / error messages below the strip */
 .statusMessage {
   text-align: center;
-  font-size: var(--font-md);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-sm);
 }
 
 .errorMessage {
   text-align: center;
-  font-size: var(--font-md);
-  color: var(--color-chord-dominant);
-  padding: var(--spacing-md);
-  background: rgba(244, 67, 54, 0.1);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-chord-dominant);
-}
-
-.inScaleIndicator {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
   font-size: var(--font-sm);
-  font-weight: 600;
-  margin-top: var(--spacing-sm);
+  color: var(--color-chord-dominant);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin-top: var(--spacing-xs);
 }
 
-.inScaleIndicator.inScale {
-  background: var(--color-playable-bg);
-  color: var(--color-playable-text);
-}
-
-.inScaleIndicator.notInScale {
-  background: var(--color-note-bg);
-  color: var(--color-note-text);
-  border: 1px solid var(--color-border-medium);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .pitchDetector {
-    padding: var(--spacing-md);
-  }
-
-  .header {
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    align-items: stretch;
-  }
-
-  .micButton {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .noteName {
-    font-size: var(--font-2xl);
+/* Responsive */
+@media (max-width: 480px) {
+  .centsReadout {
+    display: none;
   }
 }
 
-/* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-  .micButton,
-  .meterIndicator {
+  .marker {
     transition: none;
   }
 }
