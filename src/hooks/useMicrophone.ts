@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { detectPitch, type PitchResult } from '../utils/pitchDetection'
+import { detectPitch, type PitchResult, type PitchDebugInfo } from '../utils/pitchDetection'
 
 /** Size of the FFT buffer for frequency analysis */
 const FFT_SIZE = 2048
@@ -23,6 +23,8 @@ export interface UseMicrophoneResult {
   error: string | null
   /** Whether the browser supports the required Web Audio APIs */
   isSupported: boolean
+  /** Enable/disable debug logging to console */
+  setDebugMode: (enabled: boolean, expectedNote?: string) => void
 }
 
 let microphoneAudioContext: AudioContext | null = null
@@ -80,6 +82,20 @@ export function useMicrophone(): UseMicrophoneResult {
   const analyserRef = useRef<AnalyserNode | null>(null)
   const animationFrameRef = useRef<number | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
+  const debugModeRef = useRef(false)
+  const debugExpectedNoteRef = useRef<string | undefined>(undefined)
+  const debugCountRef = useRef(0)
+
+  const setDebugMode = useCallback((enabled: boolean, expectedNote?: string) => {
+    debugModeRef.current = enabled
+    debugExpectedNoteRef.current = expectedNote
+    debugCountRef.current = 0
+    if (enabled) {
+      console.log(`[PitchDebug] Debug mode ON${expectedNote ? ` — expecting: ${expectedNote}` : ''}`)
+    } else {
+      console.log('[PitchDebug] Debug mode OFF')
+    }
+  }, [])
 
   const startListening = useCallback(async () => {
     if (!isSupported) {
@@ -116,6 +132,7 @@ export function useMicrophone(): UseMicrophoneResult {
 
       // Start pitch detection loop
       const dataArray = new Float32Array(analyser.fftSize)
+      const debugInfo: PitchDebugInfo = { rms: 0, bestLag: -1, bestCorrelation: -1, confidence: 0, frequency: null, rejectedReason: null, sampleRate: 0, bufferSize: 0 }
 
       const detectPitchLoop = () => {
         if (!analyserRef.current) return
@@ -123,9 +140,28 @@ export function useMicrophone(): UseMicrophoneResult {
         // Get time-domain data
         analyserRef.current.getFloatTimeDomainData(dataArray)
 
-        // Detect pitch
-        const result = detectPitch(dataArray, context.sampleRate)
+        // Detect pitch (pass debug info object when debug mode is on)
+        const isDebug = debugModeRef.current
+        const result = detectPitch(dataArray, context.sampleRate, isDebug ? debugInfo : undefined)
         setPitchResult(result)
+
+        // Log debug info (throttled to every 15th frame ~4/sec)
+        if (isDebug) {
+          debugCountRef.current++
+          if (debugCountRef.current % 15 === 0) {
+            const expected = debugExpectedNoteRef.current
+            if (result) {
+              console.log(
+                `[PitchDebug] DETECTED: ${result.note} (${result.frequency.toFixed(1)} Hz) cents=${result.cents} conf=${result.confidence.toFixed(4)} rms=${debugInfo.rms.toFixed(4)}` +
+                (expected ? ` | expected=${expected} match=${result.note.replace(/\d+/, '') === expected.replace(/\d+/, '')}` : '')
+              )
+            } else {
+              console.log(
+                `[PitchDebug] REJECTED: reason=${debugInfo.rejectedReason} rms=${debugInfo.rms.toFixed(4)} lag=${debugInfo.bestLag} conf=${debugInfo.confidence.toFixed(4)} freq=${debugInfo.frequency?.toFixed(1) ?? 'n/a'}`
+              )
+            }
+          }
+        }
 
         // Continue loop
         animationFrameRef.current = requestAnimationFrame(detectPitchLoop)
@@ -180,5 +216,6 @@ export function useMicrophone(): UseMicrophoneResult {
     pitchResult,
     error,
     isSupported,
+    setDebugMode,
   }
 }

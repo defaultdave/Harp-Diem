@@ -16,6 +16,7 @@ interface PitchDetectionContextValue {
   pitchResult: PitchResult | null
   error: string | null
   isSupported: boolean
+  setDebugMode: (enabled: boolean, expectedNote?: string) => void
 }
 
 const PitchDetectionContext = createContext<PitchDetectionContextValue | null>(null)
@@ -37,6 +38,7 @@ export function PitchDetectionProvider({ children }: PitchDetectionProviderProps
         pitchResult: microphoneState.pitchResult,
         error: microphoneState.error,
         isSupported: microphoneState.isSupported,
+        setDebugMode: microphoneState.setDebugMode,
       }}
     >
       {children}

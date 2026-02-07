@@ -26,18 +26,41 @@ const MIN_FREQUENCY = 32
 /** Maximum frequency to detect (roughly C8) */
 const MAX_FREQUENCY = 4200
 
+/** Debug info returned alongside pitch result for diagnostics */
+export interface PitchDebugInfo {
+  rms: number
+  bestLag: number
+  bestCorrelation: number
+  confidence: number
+  frequency: number | null
+  rejectedReason: string | null
+  sampleRate: number
+  bufferSize: number
+}
+
 /**
  * Autocorrelation-based pitch detection algorithm.
  * Finds the fundamental frequency by detecting periodicity in the time-domain signal.
  *
  * @param dataArray - Float32Array of time-domain audio samples from AnalyserNode
  * @param sampleRate - Sample rate of the audio context (e.g., 44100 Hz)
+ * @param debug - If provided, debug info is written into this object
  * @returns PitchResult with detected frequency and note, or null if no clear pitch detected
  */
-export function detectPitch(dataArray: Float32Array, sampleRate: number): PitchResult | null {
+export function detectPitch(dataArray: Float32Array, sampleRate: number, debug?: PitchDebugInfo): PitchResult | null {
   // Calculate autocorrelation for different lags
   const bufferSize = dataArray.length
   const correlations = new Float32Array(bufferSize)
+
+  if (debug) {
+    debug.sampleRate = sampleRate
+    debug.bufferSize = bufferSize
+    debug.rejectedReason = null
+    debug.frequency = null
+    debug.bestLag = -1
+    debug.bestCorrelation = -1
+    debug.confidence = 0
+  }
 
   // Compute RMS to detect silence
   let rms = 0
@@ -47,8 +70,11 @@ export function detectPitch(dataArray: Float32Array, sampleRate: number): PitchR
   }
   rms = Math.sqrt(rms / bufferSize)
 
+  if (debug) debug.rms = rms
+
   // Silence threshold - if too quiet, don't detect pitch
   if (rms < 0.01) {
+    if (debug) debug.rejectedReason = `silence (rms=${rms.toFixed(6)} < 0.01)`
     return null
   }
 
@@ -78,22 +104,34 @@ export function detectPitch(dataArray: Float32Array, sampleRate: number): PitchR
     }
   }
 
+  if (debug) {
+    debug.bestLag = bestLag
+    debug.bestCorrelation = bestCorrelation
+  }
+
   if (bestLag === -1) {
+    if (debug) debug.rejectedReason = `no_peak (searched lags ${minLag}-${Math.min(maxLag, bufferSize)})`
     return null
   }
 
   // Calculate confidence as the ratio of peak correlation to zero-lag correlation
   const confidence = bestCorrelation / correlations[0]
 
+  if (debug) debug.confidence = confidence
+
   if (confidence < MIN_CONFIDENCE) {
+    if (debug) debug.rejectedReason = `low_confidence (${confidence.toFixed(4)} < ${MIN_CONFIDENCE})`
     return null
   }
 
   // Convert lag to frequency
   const frequency = sampleRate / bestLag
 
+  if (debug) debug.frequency = frequency
+
   // Sanity check frequency range
   if (frequency < MIN_FREQUENCY || frequency > MAX_FREQUENCY) {
+    if (debug) debug.rejectedReason = `out_of_range (${frequency.toFixed(1)} Hz outside ${MIN_FREQUENCY}-${MAX_FREQUENCY})`
     return null
   }
 

@@ -53,6 +53,7 @@ export {
 // Re-export from pitchDetection
 export {
   type PitchResult,
+  type PitchDebugInfo,
   detectPitch,
   frequencyToNote,
 } from './pitchDetection'
