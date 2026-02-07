@@ -6,3 +6,4 @@ export { useHarmonicaScale, type UseHarmonicaScaleResult } from './useHarmonicaS
 export { useTheme } from './useTheme'
 export { useHashRouter, type Route } from './useHashRouter'
 export { useMobileDetection } from './useMobileDetection'
+export { useMicrophone, type UseMicrophoneResult } from './useMicrophone'

@@ -1,0 +1,239 @@
+.pitchDetector {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin: var(--spacing-lg) 0;
+  box-shadow: var(--shadow-card);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.title {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.micButton {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-md);
+  font-weight: 600;
+  border: 2px solid var(--color-border-medium);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.micButton:hover {
+  border-color: var(--color-hover-border);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
+}
+
+.micButton:active {
+  transform: translateY(0);
+}
+
+.micButton:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.micButton.listening {
+  background: var(--color-stop-bg);
+  color: var(--color-text-inverse);
+  border-color: var(--color-stop-bg);
+}
+
+.micButton.listening:hover {
+  background: var(--color-stop-bg-hover);
+  border-color: var(--color-stop-bg-hover);
+}
+
+.micIcon {
+  font-size: var(--font-lg);
+}
+
+.display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-height: 120px;
+  justify-content: center;
+}
+
+.noteDisplay {
+  text-align: center;
+}
+
+.noteName {
+  font-size: var(--font-3xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.frequency {
+  font-size: var(--font-md);
+  color: var(--color-text-muted);
+  margin: var(--spacing-xs) 0 0 0;
+}
+
+.tuningMeter {
+  width: 100%;
+  max-width: 400px;
+}
+
+.meterLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+}
+
+.meterTrack {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.meterCenter {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  background: var(--color-text-muted);
+  opacity: 0.5;
+}
+
+.meterIndicator {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 30px;
+  border-radius: var(--radius-xs);
+  transition: all 0.1s ease;
+}
+
+.meterIndicator.inTune {
+  background: var(--color-playable-bg);
+  box-shadow: 0 0 8px var(--color-playable-shadow);
+}
+
+.meterIndicator.slightlyOff {
+  background: var(--color-chord-minor);
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.4);
+}
+
+.meterIndicator.outOfTune {
+  background: var(--color-chord-dominant);
+  box-shadow: 0 0 8px rgba(244, 67, 54, 0.4);
+}
+
+.centsDisplay {
+  text-align: center;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-md);
+  font-weight: 600;
+}
+
+.centsDisplay.inTune {
+  color: var(--color-playable-bg);
+}
+
+.centsDisplay.slightlyOff {
+  color: var(--color-chord-minor);
+}
+
+.centsDisplay.outOfTune {
+  color: var(--color-chord-dominant);
+}
+
+.statusMessage {
+  text-align: center;
+  font-size: var(--font-md);
+  color: var(--color-text-muted);
+  padding: var(--spacing-lg);
+}
+
+.errorMessage {
+  text-align: center;
+  font-size: var(--font-md);
+  color: var(--color-chord-dominant);
+  padding: var(--spacing-md);
+  background: rgba(244, 67, 54, 0.1);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-chord-dominant);
+}
+
+.inScaleIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  margin-top: var(--spacing-sm);
+}
+
+.inScaleIndicator.inScale {
+  background: var(--color-playable-bg);
+  color: var(--color-playable-text);
+}
+
+.inScaleIndicator.notInScale {
+  background: var(--color-note-bg);
+  color: var(--color-note-text);
+  border: 1px solid var(--color-border-medium);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pitchDetector {
+    padding: var(--spacing-md);
+  }
+
+  .header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: stretch;
+  }
+
+  .micButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .noteName {
+    font-size: var(--font-2xl);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .micButton,
+  .meterIndicator {
+    transition: none;
+  }
+}

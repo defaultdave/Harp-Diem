@@ -15,9 +15,10 @@ interface NoteSectionProps {
   holeNumber: number
   isBlow: boolean
   isInChord?: boolean
+  isDetectedNote?: boolean
 }
 
-const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumber, isBlow, isInChord = false }: NoteSectionProps) => {
+const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumber, isBlow, isInChord = false, isDetectedNote = false }: NoteSectionProps) => {
   const { showDegrees, noteDisplay } = useDisplaySettings()
   const { isNoteCurrentlyPlaying } = usePlayback()
   const isCurrentlyPlaying = isNoteCurrentlyPlaying(note, isBlow)
@@ -35,12 +36,12 @@ const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumbe
 
   return (
     <div
-      className={cn(styles.noteSection, isPlayable && styles.playable, isRootNote && styles.rootNote, isCurrentlyPlaying && styles.currentlyPlaying, isInChord && styles.inChord, breathDirection)}
+      className={cn(styles.noteSection, isPlayable && styles.playable, isRootNote && styles.rootNote, isCurrentlyPlaying && styles.currentlyPlaying, isInChord && styles.inChord, isDetectedNote && styles.detectedNote, breathDirection)}
       role="button"
       tabIndex={0}
       onClick={() => playTone(frequency)}
       onKeyDown={handleActivationKey(() => playTone(frequency))}
-      aria-label={`${label} ${note}${romanNumeral ? ` (degree ${romanNumeral})` : ''}${isPlayable ? ', in scale' : ', not in scale'}${isInChord ? ', in selected chord' : ''}${isCurrentlyPlaying ? ', currently playing' : ''}. Press to play.`}
+      aria-label={`${label} ${note}${romanNumeral ? ` (degree ${romanNumeral})` : ''}${isPlayable ? ', in scale' : ', not in scale'}${isInChord ? ', in selected chord' : ''}${isDetectedNote ? ', detected by tuner' : ''}${isCurrentlyPlaying ? ', currently playing' : ''}. Press to play.`}
     >
       <div className={styles.label}>{label}</div>
       <div className={styles.noteDisplay}>
@@ -58,6 +59,8 @@ interface HoleColumnProps {
   isDrawPlayable: boolean
   isBlowInChord?: boolean
   isDrawInChord?: boolean
+  isBlowDetected?: boolean
+  isDrawDetected?: boolean
 }
 
 export const HoleColumn = memo(function HoleColumn({
@@ -67,6 +70,8 @@ export const HoleColumn = memo(function HoleColumn({
   isDrawPlayable,
   isBlowInChord = false,
   isDrawInChord = false,
+  isBlowDetected = false,
+  isDrawDetected = false,
 }: HoleColumnProps) {
   const bendPlayability = getBendPlayability(hole, scaleNotes)
 
@@ -117,6 +122,7 @@ export const HoleColumn = memo(function HoleColumn({
           holeNumber={hole.hole}
           isBlow={true}
           isInChord={isBlowInChord}
+          isDetectedNote={isBlowDetected}
         />
       </div>
 
@@ -135,6 +141,7 @@ export const HoleColumn = memo(function HoleColumn({
           holeNumber={hole.hole}
           isBlow={false}
           isInChord={isDrawInChord}
+          isDetectedNote={isDrawDetected}
         />
         {hole.drawBends?.halfStepBend && (
           <NoteSection

@@ -4,9 +4,10 @@ import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType, ChordVoicing } from './data'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data'
 import { useHarmonicaScale, useTheme, useHashRouter } from './hooks'
-import { HoleColumn, Legend, ScaleDisplay, ChordExplorer, RotateOverlay, NavHeader } from './components'
-import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport } from './context'
+import { HoleColumn, Legend, ScaleDisplay, ChordExplorer, RotateOverlay, NavHeader, PitchDetector } from './components'
+import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport, PitchDetectionProvider, usePitchDetection } from './context'
 import { capitalizeWords } from './utils'
+import { Note } from 'tonal'
 
 // Lazy load Quiz page - only loaded when navigating to /quiz route
 const QuizPage = lazy(() => import('./components/Quiz').then(module => ({ default: module.QuizPage })))
@@ -20,6 +21,7 @@ function ScalesPage() {
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
   const [isChordPanelOpen, setIsChordPanelOpen] = useState(false) // collapsed by default
   const { setExportConfig } = useExport()
+  const { pitchResult } = usePitchDetection()
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
     harmonicaKey,
@@ -54,6 +56,29 @@ function ScalesPage() {
   const handleToggleChordPanel = () => {
     setIsChordPanelOpen(!isChordPanelOpen)
   }
+
+  // Map detected pitch to harmonica holes
+  const detectedBlowHoles = useMemo(() => {
+    if (!pitchResult) return []
+    const noteWithoutOctave = Note.get(pitchResult.note).pc
+    return harmonica.holes
+      .filter((hole) => {
+        const holeNote = Note.get(hole.blow.note).pc
+        return holeNote === noteWithoutOctave
+      })
+      .map((hole) => hole.hole)
+  }, [pitchResult, harmonica.holes])
+
+  const detectedDrawHoles = useMemo(() => {
+    if (!pitchResult) return []
+    const noteWithoutOctave = Note.get(pitchResult.note).pc
+    return harmonica.holes
+      .filter((hole) => {
+        const holeNote = Note.get(hole.draw.note).pc
+        return holeNote === noteWithoutOctave
+      })
+      .map((hole) => hole.hole)
+  }, [pitchResult, harmonica.holes])
 
   return (
     <>
@@ -116,6 +141,8 @@ function ScalesPage() {
       </div>
 
       <div ref={exportTargetRef}>
+        <PitchDetector scaleNotes={scaleNotes} />
+
         <ScaleDisplay
           songKey={songKey}
           scaleType={scaleType}
@@ -148,6 +175,8 @@ function ScalesPage() {
                   isDrawPlayable={playableDrawHoles.includes(hole.hole)}
                   isBlowInChord={chordBlowHoles.includes(hole.hole)}
                   isDrawInChord={chordDrawHoles.includes(hole.hole)}
+                  isBlowDetected={detectedBlowHoles.includes(hole.hole)}
+                  isDrawDetected={detectedDrawHoles.includes(hole.hole)}
                 />
               ))}
             </div>
@@ -215,12 +244,14 @@ function App() {
   return (
     <DisplaySettingsProvider>
       <PlaybackProvider>
-        <QuizProvider>
-          <ExportProvider>
-            <AppContent />
-            <RotateOverlay />
-          </ExportProvider>
-        </QuizProvider>
+        <PitchDetectionProvider>
+          <QuizProvider>
+            <ExportProvider>
+              <AppContent />
+              <RotateOverlay />
+            </ExportProvider>
+          </QuizProvider>
+        </PitchDetectionProvider>
       </PlaybackProvider>
     </DisplaySettingsProvider>
   )
