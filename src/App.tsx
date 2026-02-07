@@ -18,6 +18,7 @@ function ScalesPage() {
   const [tuning, setTuning] = useState<TuningType>('richter')
   const exportTargetRef = useRef<HTMLDivElement>(null)
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
+  const [isChordPanelOpen, setIsChordPanelOpen] = useState(false) // collapsed by default
   const { setExportConfig } = useExport()
 
   const { harmonica, scaleNotes, playableBlowHoles, playableDrawHoles } = useHarmonicaScale(
@@ -48,6 +49,10 @@ function ScalesPage() {
 
   const handleChordSelect = (chord: ChordVoicing | null) => {
     setSelectedChord(chord)
+  }
+
+  const handleToggleChordPanel = () => {
+    setIsChordPanelOpen(!isChordPanelOpen)
   }
 
   return (
@@ -119,7 +124,7 @@ function ScalesPage() {
           harmonica={harmonica}
         />
 
-        <div className={styles.scaleContent}>
+        <div className={`${styles.scaleContent} ${isChordPanelOpen ? '' : styles.scaleContentCollapsed}`}>
           <div
             className={styles.harmonicaDisplay}
             role="region"
@@ -150,13 +155,30 @@ function ScalesPage() {
             <Legend />
           </div>
 
-          <div className={styles.chordExplorerWrapper}>
-            <ChordExplorer
-              harmonicaKey={harmonicaKey}
-              tuning={tuning}
-              scaleNotes={scaleNotes}
-              onChordSelect={handleChordSelect}
-            />
+          <div className={styles.chordPanelColumn}>
+            <button
+              className={styles.chordPanelToggle}
+              onClick={handleToggleChordPanel}
+              aria-label={isChordPanelOpen ? 'Collapse chord panel' : 'Expand chord panel'}
+              aria-expanded={isChordPanelOpen}
+              type="button"
+            >
+              <span className={styles.toggleButtonText}>Chords</span>
+              <span className={styles.toggleChevron} aria-hidden="true">
+                {isChordPanelOpen ? '›' : '‹'}
+              </span>
+            </button>
+
+            {isChordPanelOpen && (
+              <div className={styles.chordExplorerWrapper}>
+                <ChordExplorer
+                  harmonicaKey={harmonicaKey}
+                  tuning={tuning}
+                  scaleNotes={scaleNotes}
+                  onChordSelect={handleChordSelect}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

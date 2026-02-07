@@ -10,6 +10,29 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <PlaybackProvider>{children}</PlaybackProvider>
 )
 
+describe('ChordExplorer - Component', () => {
+  it('renders without collapse button (toggle is in parent)', () => {
+    const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+
+    render(
+      <ChordExplorer
+        harmonicaKey="C"
+        tuning="richter"
+        scaleNotes={cMajorScale}
+        onChordSelect={vi.fn()}
+      />,
+      { wrapper: Wrapper }
+    )
+
+    // ChordExplorer should not have its own collapse button
+    const collapseButton = screen.queryByRole('button', { name: /collapse chord panel/i })
+    expect(collapseButton).not.toBeInTheDocument()
+
+    // But should render its content
+    expect(screen.getByText('Chords in Scale')).toBeInTheDocument()
+  })
+})
+
 describe('ChordExplorer', () => {
   it('renders chord cards for C major scale', () => {
     const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']

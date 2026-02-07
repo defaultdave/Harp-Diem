@@ -54,14 +54,18 @@
 }
 
 .scaleContent {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: var(--spacing-xl);
+}
+
+.scaleContentCollapsed {
+  gap: var(--spacing-md);
 }
 
 @media (min-width: 768px) {
   .scaleContent {
-    grid-template-columns: 3fr 2fr;
+    flex-direction: row;
   }
 }
 
@@ -71,6 +75,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   min-width: 0;
+  flex: 1;
 
   h2 {
     margin-top: 0;
@@ -78,10 +83,90 @@
   }
 }
 
+.chordPanelColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
 .chordExplorerWrapper {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.chordPanelToggle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--color-bg-card);
+  border: 2px solid var(--color-border-medium);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-card);
+}
+
+.chordPanelToggle:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-hover-border);
+  box-shadow: var(--shadow-hover);
+}
+
+.chordPanelToggle:focus {
+  outline: none;
+  border-color: var(--color-hover-border);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+}
+
+.toggleButtonText {
+  font-size: var(--font-base);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.toggleChevron {
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .chordPanelColumn {
+    flex-direction: row;
+    gap: 0;
+    flex-shrink: 0;
+  }
+
+  .chordPanelToggle {
+    flex-direction: column;
+    padding: var(--spacing-md) var(--spacing-sm);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    min-width: 48px;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    align-self: stretch;
+  }
+
+  .toggleChevron {
+    writing-mode: horizontal-tb;
+  }
 }
 
 .holesContainer {
