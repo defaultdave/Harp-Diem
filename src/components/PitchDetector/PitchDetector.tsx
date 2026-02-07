@@ -14,15 +14,11 @@ interface PitchDetectorProps {
 }
 
 export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
-  const { isListening, startListening, stopListening, pitchResult, error, isSupported, setDebugMode, referenceHz, setReferenceHz } = usePitchDetection()
+  const { isListening, startListening, stopListening, pitchResult, error, isSupported, referenceHz, setReferenceHz } = usePitchDetection()
   const [lastNote, setLastNote] = useState<string | null>(null)
   const [lastCents, setLastCents] = useState(0)
   const lastNoteRef = useRef<string | null>(null)
   const lastCentsRef = useRef(0)
-
-  // Debug mode state
-  const [debugEnabled, setDebugEnabled] = useState(false)
-  const [expectedNote, setExpectedNote] = useState('')
 
   // Keep the last detected note visible so the display doesn't flash
   const displayNote = pitchResult?.note ?? lastNote
@@ -46,19 +42,6 @@ export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
       } catch (err) {
         console.error('Failed to start microphone:', err)
       }
-    }
-  }
-
-  const handleToggleDebug = () => {
-    const next = !debugEnabled
-    setDebugEnabled(next)
-    setDebugMode(next, expectedNote || undefined)
-  }
-
-  const handleExpectedNoteChange = (value: string) => {
-    setExpectedNote(value)
-    if (debugEnabled) {
-      setDebugMode(true, value || undefined)
     }
   }
 
@@ -139,14 +122,9 @@ export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
           <span className={styles.sharpLabel}>♯</span>
         </div>
 
-        {displayNote && (
-          <div className={`${styles.centsReadout} ${tuningCategory ? styles[tuningCategory] : ''} ${!hasSignal ? styles.faded : ''}`}>
-            {displayCents > 0 ? '+' : ''}{displayCents}¢
-          </div>
-        )}
-        {!displayNote && isListening && (
-          <div className={styles.centsReadout}>···</div>
-        )}
+        <div className={`${styles.centsReadout} ${tuningCategory ? styles[tuningCategory] : ''} ${!displayNote || !hasSignal ? styles.faded : ''}`}>
+          {displayNote ? <>{displayCents > 0 ? '+' : ''}{displayCents}¢</> : isListening ? '···' : ''}
+        </div>
 
         <label className={styles.referenceHz} title="Reference pitch for A4 (most harmonicas use 442-443 Hz)">
           <span className={styles.referenceHzLabel}>A4</span>
@@ -163,32 +141,7 @@ export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
           <span className={styles.referenceHzUnit}>Hz</span>
         </label>
 
-        <button
-          className={`${styles.debugToggle} ${debugEnabled ? styles.debugActive : ''}`}
-          onClick={handleToggleDebug}
-          aria-label={debugEnabled ? 'Disable debug mode' : 'Enable debug mode'}
-          title="Toggle debug logging (open browser console)"
-          type="button"
-        >
-          🐛
-        </button>
       </div>
-
-      {debugEnabled && (
-        <div className={styles.debugPanel}>
-          <label className={styles.debugLabel}>
-            Playing:
-            <input
-              className={styles.debugInput}
-              type="text"
-              placeholder="e.g. C5"
-              value={expectedNote}
-              onChange={(e) => handleExpectedNoteChange(e.target.value)}
-            />
-          </label>
-          <span className={styles.debugHint}>Open browser console (F12) to see debug output</span>
-        </div>
-      )}
 
       {error && (
         <div className={styles.errorMessage} role="alert">{error}</div>

@@ -7,7 +7,6 @@ import { useHarmonicaScale, useTheme, useHashRouter } from './hooks'
 import { HoleColumn, Legend, ScaleDisplay, ChordExplorer, RotateOverlay, NavHeader, PitchDetector } from './components'
 import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport, PitchDetectionProvider, usePitchDetection } from './context'
 import { capitalizeWords } from './utils'
-import { Note } from 'tonal'
 
 // Lazy load Quiz page - only loaded when navigating to /quiz route
 const QuizPage = lazy(() => import('./components/Quiz').then(module => ({ default: module.QuizPage })))
@@ -57,29 +56,7 @@ function ScalesPage() {
     setIsChordPanelOpen(!isChordPanelOpen)
   }
 
-  // Map detected pitch to harmonica holes (octave-aware)
-  const detectedBlowHoles = useMemo(() => {
-    if (!pitchResult) return []
-    const detected = Note.get(pitchResult.note)
-    return harmonica.holes
-      .filter((hole) => {
-        const holeNote = Note.get(hole.blow.note)
-        return holeNote.pc === detected.pc && holeNote.oct === detected.oct
-      })
-      .map((hole) => hole.hole)
-  }, [pitchResult, harmonica.holes])
-
-  const detectedDrawHoles = useMemo(() => {
-    if (!pitchResult) return []
-    const detected = Note.get(pitchResult.note)
-    return harmonica.holes
-      .filter((hole) => {
-        const holeNote = Note.get(hole.draw.note)
-        return holeNote.pc === detected.pc && holeNote.oct === detected.oct
-      })
-      .map((hole) => hole.hole)
-  }, [pitchResult, harmonica.holes])
-
+  const detectedNote = pitchResult?.note ?? null
   const detectedCents = pitchResult?.cents ?? 0
 
   return (
@@ -143,8 +120,6 @@ function ScalesPage() {
       </div>
 
       <div ref={exportTargetRef}>
-        <PitchDetector scaleNotes={scaleNotes} />
-
         <ScaleDisplay
           songKey={songKey}
           scaleType={scaleType}
@@ -167,6 +142,7 @@ function ScalesPage() {
                 </span>
               )}
             </h2>
+            <PitchDetector scaleNotes={scaleNotes} />
             <div className={styles.holesContainer} role="group" aria-label="Harmonica holes 1 through 10">
               {harmonica.holes.map((hole) => (
                 <HoleColumn
@@ -177,8 +153,7 @@ function ScalesPage() {
                   isDrawPlayable={playableDrawHoles.includes(hole.hole)}
                   isBlowInChord={chordBlowHoles.includes(hole.hole)}
                   isDrawInChord={chordDrawHoles.includes(hole.hole)}
-                  isBlowDetected={detectedBlowHoles.includes(hole.hole)}
-                  isDrawDetected={detectedDrawHoles.includes(hole.hole)}
+                  detectedNote={detectedNote}
                   detectedCents={detectedCents}
                 />
               ))}

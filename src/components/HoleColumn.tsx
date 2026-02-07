@@ -4,6 +4,7 @@ import { getNoteDegree, degreeToRoman } from '../data'
 import { playTone, getTabNotation, labelToNoteType, cn, handleActivationKey, getBendPlayability } from '../utils'
 import { useDisplaySettings, usePlayback } from '../context'
 import type { NoteNames } from '../types'
+import { Note } from 'tonal'
 import styles from './HoleColumn.module.css'
 
 interface NoteSectionProps {
@@ -15,14 +16,22 @@ interface NoteSectionProps {
   holeNumber: number
   isBlow: boolean
   isInChord?: boolean
-  isDetectedNote?: boolean
+  detectedNote?: string | null
   detectedCents?: number
 }
 
-const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumber, isBlow, isInChord = false, isDetectedNote = false, detectedCents = 0 }: NoteSectionProps) => {
+const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumber, isBlow, isInChord = false, detectedNote = null, detectedCents = 0 }: NoteSectionProps) => {
   const { showDegrees, noteDisplay } = useDisplaySettings()
   const { isNoteCurrentlyPlaying } = usePlayback()
   const isCurrentlyPlaying = isNoteCurrentlyPlaying(note, isBlow)
+
+  // Self-match: compare this section's note against the detected pitch (octave-aware, enharmonic-safe)
+  const isDetectedNote = (() => {
+    if (!detectedNote) return false
+    const detectedMidi = Note.midi(detectedNote)
+    const selfMidi = Note.midi(note)
+    return selfMidi !== null && detectedMidi !== null && selfMidi === detectedMidi
+  })()
 
   // Compute degree for both Roman numeral display and root note detection
   const degree = isPlayable ? getNoteDegree(note, scaleNotes) : undefined
@@ -70,8 +79,7 @@ interface HoleColumnProps {
   isDrawPlayable: boolean
   isBlowInChord?: boolean
   isDrawInChord?: boolean
-  isBlowDetected?: boolean
-  isDrawDetected?: boolean
+  detectedNote?: string | null
   detectedCents?: number
 }
 
@@ -82,8 +90,7 @@ export const HoleColumn = memo(function HoleColumn({
   isDrawPlayable,
   isBlowInChord = false,
   isDrawInChord = false,
-  isBlowDetected = false,
-  isDrawDetected = false,
+  detectedNote = null,
   detectedCents = 0,
 }: HoleColumnProps) {
   const bendPlayability = getBendPlayability(hole, scaleNotes)
@@ -101,6 +108,8 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={true}
+            detectedNote={detectedNote}
+            detectedCents={detectedCents}
           />
         )}
         {hole.blowBends?.wholeStepBend && (
@@ -112,6 +121,8 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={true}
+            detectedNote={detectedNote}
+            detectedCents={detectedCents}
           />
         )}
         {hole.blowBends?.halfStepBend && (
@@ -123,6 +134,8 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={true}
+            detectedNote={detectedNote}
+            detectedCents={detectedCents}
           />
         )}
         {/* Blow Note - Middle */}
@@ -135,7 +148,7 @@ export const HoleColumn = memo(function HoleColumn({
           holeNumber={hole.hole}
           isBlow={true}
           isInChord={isBlowInChord}
-          isDetectedNote={isBlowDetected}
+          detectedNote={detectedNote}
           detectedCents={detectedCents}
         />
       </div>
@@ -155,7 +168,7 @@ export const HoleColumn = memo(function HoleColumn({
           holeNumber={hole.hole}
           isBlow={false}
           isInChord={isDrawInChord}
-          isDetectedNote={isDrawDetected}
+          detectedNote={detectedNote}
           detectedCents={detectedCents}
         />
         {hole.drawBends?.halfStepBend && (
@@ -167,6 +180,8 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={false}
+            detectedNote={detectedNote}
+            detectedCents={detectedCents}
           />
         )}
         {hole.drawBends?.wholeStepBend && (
@@ -178,6 +193,8 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={false}
+            detectedNote={detectedNote}
+            detectedCents={detectedCents}
           />
         )}
         {hole.drawBends?.minorThirdBend && (
@@ -189,6 +206,8 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={false}
+            detectedNote={detectedNote}
+            detectedCents={detectedCents}
           />
         )}
         {hole.overdraw && (
@@ -200,6 +219,8 @@ export const HoleColumn = memo(function HoleColumn({
             scaleNotes={scaleNotes}
             holeNumber={hole.hole}
             isBlow={false}
+            detectedNote={detectedNote}
+            detectedCents={detectedCents}
           />
         )}
       </div>
