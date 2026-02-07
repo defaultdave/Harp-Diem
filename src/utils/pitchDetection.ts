@@ -17,8 +17,10 @@ export interface PitchResult {
   confidence: number
 }
 
-/** Minimum confidence threshold for considering a detection valid */
-const MIN_CONFIDENCE = 0.9
+/** Minimum confidence threshold for considering a detection valid.
+ *  Real-world microphone input with background noise typically produces
+ *  confidence in the 0.3-0.6 range. 0.9 was unrealistically strict. */
+const MIN_CONFIDENCE = 0.25
 
 /** Minimum frequency to detect (roughly C1) */
 const MIN_FREQUENCY = 32
@@ -87,20 +89,20 @@ export function detectPitch(dataArray: Float32Array, sampleRate: number, debug?:
     correlations[lag] = sum
   }
 
-  // Find the first peak after lag 0
-  // Skip initial samples to avoid detecting too high frequencies
+  // Find the strongest correlation peak in the valid frequency range
   const minLag = Math.floor(sampleRate / MAX_FREQUENCY)
   const maxLag = Math.floor(sampleRate / MIN_FREQUENCY)
+  const searchEnd = Math.min(maxLag, bufferSize - 1)
 
   let bestLag = -1
   let bestCorrelation = -1
 
-  // Start from minLag to find first significant peak
-  for (let lag = minLag; lag < Math.min(maxLag, bufferSize); lag++) {
-    if (correlations[lag] > bestCorrelation && correlations[lag] > correlations[lag - 1] && correlations[lag] > correlations[lag + 1]) {
+  // Find the highest peak (local maximum) across all valid lags
+  for (let lag = minLag; lag < searchEnd; lag++) {
+    const isLocalMax = correlations[lag] > correlations[lag - 1] && correlations[lag] > correlations[lag + 1]
+    if (isLocalMax && correlations[lag] > bestCorrelation) {
       bestCorrelation = correlations[lag]
       bestLag = lag
-      break // Take the first peak for fundamental frequency
     }
   }
 
@@ -110,24 +112,25 @@ export function detectPitch(dataArray: Float32Array, sampleRate: number, debug?:
   }
 
   if (bestLag === -1) {
-    if (debug) debug.rejectedReason = `no_peak (searched lags ${minLag}-${Math.min(maxLag, bufferSize)})`
+    if (debug) debug.rejectedReason = `no_peak (searched lags ${minLag}-${searchEnd})`
     return null
   }
 
   // Calculate confidence as the ratio of peak correlation to zero-lag correlation
   const confidence = bestCorrelation / correlations[0]
 
-  if (debug) debug.confidence = confidence
+  // Always compute frequency so debug shows it even if confidence is too low
+  const frequency = sampleRate / bestLag
+
+  if (debug) {
+    debug.confidence = confidence
+    debug.frequency = frequency
+  }
 
   if (confidence < MIN_CONFIDENCE) {
     if (debug) debug.rejectedReason = `low_confidence (${confidence.toFixed(4)} < ${MIN_CONFIDENCE})`
     return null
   }
-
-  // Convert lag to frequency
-  const frequency = sampleRate / bestLag
-
-  if (debug) debug.frequency = frequency
 
   // Sanity check frequency range
   if (frequency < MIN_FREQUENCY || frequency > MAX_FREQUENCY) {

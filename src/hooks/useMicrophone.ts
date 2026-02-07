@@ -121,7 +121,7 @@ export function useMicrophone(): UseMicrophoneResult {
 
       const analyser = context.createAnalyser()
       analyser.fftSize = FFT_SIZE
-      analyser.smoothingTimeConstant = 0.8
+      analyser.smoothingTimeConstant = 0 // No smoothing — we need raw time-domain data for autocorrelation
       analyserRef.current = analyser
 
       // Connect microphone to analyser
