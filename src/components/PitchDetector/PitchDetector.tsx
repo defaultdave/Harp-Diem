@@ -2,7 +2,7 @@
  * PitchDetector component - always-visible tuner strip with a moving marker
  * showing detected pitch relative to the nearest note.
  */
-import { useState, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import { usePitchDetection } from '../../context'
 import { isNoteInScale } from '../../data'
 import type { NoteNames } from '../../types'
@@ -14,24 +14,12 @@ interface PitchDetectorProps {
 }
 
 export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
-  const { isListening, startListening, stopListening, pitchResult, error, isSupported, referenceHz, setReferenceHz } = usePitchDetection()
-  const [lastNote, setLastNote] = useState<string | null>(null)
-  const [lastCents, setLastCents] = useState(0)
-  const lastNoteRef = useRef<string | null>(null)
-  const lastCentsRef = useRef(0)
+  const { isListening, startListening, stopListening, pitchResult, lastPitchResult, error, isSupported, referenceHz, setReferenceHz } = usePitchDetection()
 
-  // Keep the last detected note visible so the display doesn't flash
-  const displayNote = pitchResult?.note ?? lastNote
-  const displayCents = pitchResult ? pitchResult.cents : (lastNote ? lastCents : 0)
+  // Show current pitch, or fall back to last detected pitch so display doesn't flash
+  const displayNote = pitchResult?.note ?? lastPitchResult?.note ?? null
+  const displayCents = pitchResult ? pitchResult.cents : (lastPitchResult ? lastPitchResult.cents : 0)
   const hasSignal = pitchResult !== null
-
-  // Update last known values when we get a result
-  if (pitchResult && (pitchResult.note !== lastNoteRef.current || pitchResult.cents !== lastCentsRef.current)) {
-    lastNoteRef.current = pitchResult.note
-    lastCentsRef.current = pitchResult.cents
-    if (pitchResult.note !== lastNote) setLastNote(pitchResult.note)
-    if (pitchResult.cents !== lastCents) setLastCents(pitchResult.cents)
-  }
 
   const handleToggleMic = async () => {
     if (isListening) {

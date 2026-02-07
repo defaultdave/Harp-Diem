@@ -27,7 +27,10 @@ interface PitchDetectionContextValue {
   isListening: boolean
   startListening: () => Promise<void>
   stopListening: () => void
+  /** Current pitch result, or null when no signal detected */
   pitchResult: PitchResult | null
+  /** Most recent non-null pitch result (persists when signal drops, for display continuity) */
+  lastPitchResult: PitchResult | null
   error: string | null
   isSupported: boolean
   setDebugMode: (enabled: boolean, expectedNote?: string) => void
@@ -55,6 +58,14 @@ export function PitchDetectionProvider({ children }: PitchDetectionProviderProps
 
   const microphoneState = useMicrophone(referenceHzRef)
 
+  // Track the most recent non-null pitch result for display continuity.
+  // Uses React's "store previous value" pattern: setState during render is safe
+  // when guarded by a condition to prevent infinite loops.
+  const [lastPitchResult, setLastPitchResult] = useState<PitchResult | null>(null)
+  if (microphoneState.pitchResult && microphoneState.pitchResult !== lastPitchResult) {
+    setLastPitchResult(microphoneState.pitchResult)
+  }
+
   return (
     <PitchDetectionContext.Provider
       value={{
@@ -62,6 +73,7 @@ export function PitchDetectionProvider({ children }: PitchDetectionProviderProps
         startListening: microphoneState.startListening,
         stopListening: microphoneState.stopListening,
         pitchResult: microphoneState.pitchResult,
+        lastPitchResult,
         error: microphoneState.error,
         isSupported: microphoneState.isSupported,
         setDebugMode: microphoneState.setDebugMode,

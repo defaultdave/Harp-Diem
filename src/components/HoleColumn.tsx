@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import type { HoleNote } from '../data'
 import { getNoteDegree, degreeToRoman } from '../data'
 import { playTone, getTabNotation, labelToNoteType, cn, handleActivationKey, getBendPlayability } from '../utils'
@@ -26,12 +26,12 @@ const NoteSection = ({ label, note, frequency, isPlayable, scaleNotes, holeNumbe
   const isCurrentlyPlaying = isNoteCurrentlyPlaying(note, isBlow)
 
   // Self-match: compare this section's note against the detected pitch (octave-aware, enharmonic-safe)
-  const isDetectedNote = (() => {
+  const isDetectedNote = useMemo(() => {
     if (!detectedNote) return false
     const detectedMidi = Note.midi(detectedNote)
     const selfMidi = Note.midi(note)
     return selfMidi !== null && detectedMidi !== null && selfMidi === detectedMidi
-  })()
+  }, [detectedNote, note])
 
   // Compute degree for both Roman numeral display and root note detection
   const degree = isPlayable ? getNoteDegree(note, scaleNotes) : undefined
