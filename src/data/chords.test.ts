@@ -7,9 +7,12 @@ import {
   getChordByName,
   getAllChords,
   getScaleFilteredChords,
+  getScaleFilteredTongueBlockingChords,
+  getTongueBlockingChords,
   groupChordsByName,
+  DEFAULT_TONGUE_BLOCKING,
 } from './chords'
-import type { ChordVoicing } from './chords'
+import type { ChordVoicing, TongueBlockingParams } from './chords'
 
 describe('Chords', () => {
   describe('getHarmonicaChords', () => {
@@ -502,6 +505,146 @@ describe('Chords', () => {
 
       groups.forEach((group) => {
         expect(group.currentIndex).toBe(0)
+      })
+    })
+  })
+
+  describe('Tongue Blocking Chords', () => {
+    describe('getTongueBlockingChords', () => {
+      it('should return only non-consecutive voicings', () => {
+        const chords = getTongueBlockingChords('C')
+        expect(chords.length).toBeGreaterThan(0)
+        chords.forEach((chord) => {
+          expect(chord.isConsecutive).toBe(false)
+        })
+      })
+
+      it('should have valid chord structure', () => {
+        const chords = getTongueBlockingChords('C')
+        chords.forEach((chord: ChordVoicing) => {
+          expect(chord.name).toBeTruthy()
+          expect(chord.shortName).toBeTruthy()
+          expect(chord.quality).toBeTruthy()
+          expect(chord.holes.length).toBeGreaterThanOrEqual(3)
+          expect(['blow', 'draw']).toContain(chord.breath)
+          expect(chord.notes.length).toBe(chord.holes.length)
+          expect(chord.tuning).toBe('richter')
+        })
+      })
+
+      it('should have holes within valid range (1-10)', () => {
+        const chords = getTongueBlockingChords('C')
+        chords.forEach((chord) => {
+          chord.holes.forEach((hole) => {
+            expect(hole).toBeGreaterThanOrEqual(1)
+            expect(hole).toBeLessThanOrEqual(10)
+          })
+        })
+      })
+
+      it('should respect maxSpan parameter', () => {
+        const params: TongueBlockingParams = { maxSpan: 3, minSkip: 1, maxSkip: 1 }
+        const chords = getTongueBlockingChords('C', 'richter', params)
+        chords.forEach((chord) => {
+          const sorted = [...chord.holes].sort((a, b) => a - b)
+          const span = sorted[sorted.length - 1] - sorted[0]
+          expect(span).toBeLessThanOrEqual(3)
+        })
+      })
+
+      it('should respect minSkip and maxSkip parameters', () => {
+        const params: TongueBlockingParams = { maxSpan: 6, minSkip: 2, maxSkip: 2 }
+        const chords = getTongueBlockingChords('C', 'richter', params)
+        chords.forEach((chord) => {
+          const sorted = [...chord.holes].sort((a, b) => a - b)
+          for (let i = 1; i < sorted.length; i++) {
+            const gap = sorted[i] - sorted[i - 1] - 1
+            if (gap > 0) {
+              expect(gap).toBeGreaterThanOrEqual(2)
+              expect(gap).toBeLessThanOrEqual(2)
+            }
+          }
+        })
+      })
+
+      it('should have holes in sorted order', () => {
+        const chords = getTongueBlockingChords('C')
+        chords.forEach((chord) => {
+          for (let i = 1; i < chord.holes.length; i++) {
+            expect(chord.holes[i]).toBeGreaterThan(chord.holes[i - 1])
+          }
+        })
+      })
+
+      it('should detect major chords', () => {
+        const chords = getTongueBlockingChords('C')
+        const majorChords = chords.filter((c) => c.quality === 'major')
+        expect(majorChords.length).toBeGreaterThan(0)
+      })
+
+      it('should work with different harmonica keys', () => {
+        const cChords = getTongueBlockingChords('C')
+        const gChords = getTongueBlockingChords('G')
+        expect(cChords.length).toBeGreaterThan(0)
+        expect(gChords.length).toBeGreaterThan(0)
+        // Same hole patterns should produce chords (possibly different qualities due to transposition)
+        expect(cChords.length).toBe(gChords.length)
+      })
+
+      it('should include both blow and draw voicings', () => {
+        const chords = getTongueBlockingChords('C')
+        const blowChords = chords.filter((c) => c.breath === 'blow')
+        const drawChords = chords.filter((c) => c.breath === 'draw')
+        expect(blowChords.length).toBeGreaterThan(0)
+        expect(drawChords.length).toBeGreaterThan(0)
+      })
+
+      it('should use default params when none provided', () => {
+        const defaultChords = getTongueBlockingChords('C')
+        const explicitChords = getTongueBlockingChords('C', 'richter', DEFAULT_TONGUE_BLOCKING)
+        expect(defaultChords.length).toBe(explicitChords.length)
+      })
+    })
+
+    describe('getScaleFilteredTongueBlockingChords', () => {
+      it('should filter tongue blocking chords by scale', () => {
+        const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+        const filtered = getScaleFilteredTongueBlockingChords('C', 'richter', cMajorScale)
+
+        expect(filtered.length).toBeGreaterThan(0)
+
+        // All returned chords should have all notes in scale
+        filtered.forEach((chord) => {
+          chord.notes.forEach((note) => {
+            const pitchClass = note.replace(/\d+$/, '')
+            expect(cMajorScale).toContain(pitchClass)
+          })
+        })
+      })
+
+      it('should return fewer chords than unfiltered', () => {
+        const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+        const all = getTongueBlockingChords('C')
+        const filtered = getScaleFilteredTongueBlockingChords('C', 'richter', cMajorScale)
+
+        expect(filtered.length).toBeLessThanOrEqual(all.length)
+      })
+
+      it('should return only non-consecutive voicings', () => {
+        const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+        const filtered = getScaleFilteredTongueBlockingChords('C', 'richter', cMajorScale)
+
+        filtered.forEach((chord) => {
+          expect(chord.isConsecutive).toBe(false)
+        })
+      })
+    })
+
+    describe('DEFAULT_TONGUE_BLOCKING', () => {
+      it('should have sensible defaults', () => {
+        expect(DEFAULT_TONGUE_BLOCKING.maxSpan).toBe(5)
+        expect(DEFAULT_TONGUE_BLOCKING.minSkip).toBe(1)
+        expect(DEFAULT_TONGUE_BLOCKING.maxSkip).toBe(2)
       })
     })
   })

@@ -40,6 +40,72 @@
   padding: var(--spacing-xl);
 }
 
+/* Tongue blocking section */
+.tongueBlockingSection {
+  margin-bottom: var(--spacing-md);
+}
+
+.tongueBlockingToggle {
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--color-hover-border);
+  }
+}
+
+.toggleActive {
+  background: var(--color-playable-bg);
+  color: var(--color-playable-text);
+  border-color: var(--color-playable-border);
+}
+
+.tongueBlockingControls {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-top: var(--spacing-sm);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.controlGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.controlLabel {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.controlSelect {
+  padding: 2px var(--spacing-xs);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-xs);
+  font-size: var(--font-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.sectionHeader {
+  margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-lg);
+}
+
 /* Quality legend */
 .qualityLegend {
   display: flex;

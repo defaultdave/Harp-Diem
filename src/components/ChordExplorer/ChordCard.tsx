@@ -24,6 +24,7 @@ export function ChordCard({ chordGroup, onChordSelect }: ChordCardProps) {
 
   const currentVoicing = chordGroup.voicings[currentIndex]
   const isSelected = areChordsSame(selectedChord, currentVoicing)
+  const isTongueBlocking = !currentVoicing.isConsecutive
 
   const handlePrevVoicing = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -86,6 +87,7 @@ export function ChordCard({ chordGroup, onChordSelect }: ChordCardProps) {
       className={cn(
         styles.chordCard,
         isSelected && styles.chordCardSelected,
+        isTongueBlocking && styles.chordCardTongueBlocking,
         getQualityClass()
       )}
       onClick={handleCardClick}
@@ -101,7 +103,10 @@ export function ChordCard({ chordGroup, onChordSelect }: ChordCardProps) {
     >
       {/* Chord name */}
       <div className={styles.chordName}>
-        <span className={styles.chordShortName}>{chordGroup.name}</span>
+        <div className={styles.chordNameRow}>
+          <span className={styles.chordShortName}>{chordGroup.name}</span>
+          {isTongueBlocking && <span className={styles.tongueBlockingBadge}>TB</span>}
+        </div>
         <span className={styles.chordFullName}>{currentVoicing.name}</span>
       </div>
 

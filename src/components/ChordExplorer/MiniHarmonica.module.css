@@ -35,3 +35,19 @@
   background: var(--color-breath-draw);
   border-color: var(--color-breath-draw-border);
 }
+
+.holeBlocked {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-bg-secondary),
+    var(--color-bg-secondary) 2px,
+    var(--color-border-light) 2px,
+    var(--color-border-light) 4px
+  );
+  border-color: var(--color-border-medium);
+}
+
+.holeBlocked .holeNumber {
+  color: var(--color-text-muted);
+  font-weight: bold;
+}
