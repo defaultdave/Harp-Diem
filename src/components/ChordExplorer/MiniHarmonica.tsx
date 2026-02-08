@@ -13,11 +13,14 @@ interface MiniHarmonicaProps {
 
 export function MiniHarmonica({ voicing }: MiniHarmonicaProps) {
   const holes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  const minHole = Math.min(...voicing.holes)
+  const maxHole = Math.max(...voicing.holes)
 
   return (
     <div className={styles.miniHarmonica} aria-label={`Holes ${voicing.holes.join(', ')}`}>
       {holes.map((hole) => {
         const isActive = voicing.holes.includes(hole)
+        const isBlocked = !voicing.isConsecutive && !isActive && hole >= minHole && hole <= maxHole
         return (
           <div
             key={hole}
@@ -25,11 +28,12 @@ export function MiniHarmonica({ voicing }: MiniHarmonicaProps) {
               styles.hole,
               isActive && styles.holeActive,
               isActive && voicing.breath === 'blow' && styles.holeBlow,
-              isActive && voicing.breath === 'draw' && styles.holeDraw
+              isActive && voicing.breath === 'draw' && styles.holeDraw,
+              isBlocked && styles.holeBlocked
             )}
-            aria-label={isActive ? `Hole ${hole}` : undefined}
+            aria-label={isActive ? `Hole ${hole}` : isBlocked ? `Hole ${hole} blocked` : undefined}
           >
-            <span className={styles.holeNumber}>{hole}</span>
+            <span className={styles.holeNumber}>{isBlocked ? '×' : hole}</span>
           </div>
         )
       })}

@@ -2,8 +2,9 @@
  * Chord generation and voicing utilities for diatonic harmonica.
  * @packageDocumentation
  */
-import { Note, Interval } from 'tonal'
+import { Note, Interval, Chord } from 'tonal'
 import type { HarmonicaKey, TuningType } from './harmonicas'
+import { getHarmonica } from './harmonicas'
 import { getChordKey } from '../utils'
 
 /** A chord voicing that can be played on a harmonica. */
@@ -23,19 +24,22 @@ export interface ChordVoicing {
 export type ChordQuality = 'major' | 'minor' | 'dominant7' | 'minor7' | 'diminished' | 'augmented'
 
 /**
- * Configuration for tongue blocking chord generation (Phase 2).
- * Defines how many consecutive holes can be blocked/played.
+ * Configuration for tongue blocking chord generation.
+ * Controls which non-adjacent hole combinations are valid.
  */
 export interface TongueBlockingParams {
-  /** Total holes that can be covered (default: 4) */
-  totalHoles: number
-  /** Holes on each side of split (default: 2) */
-  splitHoles: number
+  /** Maximum span between lowest and highest hole (default: 5) */
+  maxSpan: number
+  /** Minimum holes skipped between played holes (default: 1) */
+  minSkip: number
+  /** Maximum holes skipped between played holes (default: 2) */
+  maxSkip: number
 }
 
 export const DEFAULT_TONGUE_BLOCKING: TongueBlockingParams = {
-  totalHoles: 4,
-  splitHoles: 2,
+  maxSpan: 5,
+  minSkip: 1,
+  maxSkip: 2,
 }
 
 /**
@@ -507,4 +511,174 @@ export const groupChordsByName = (chords: ChordVoicing[]): ChordGroup[] => {
       if (aFirst.breath !== bFirst.breath) return aFirst.breath === 'blow' ? -1 : 1
       return aFirst.holes[0] - bFirst.holes[0]
     })
+}
+
+// --- Tongue Blocking Chord Generation ---
+
+const mapTonalQuality = (tonalQuality: string): ChordQuality | undefined => {
+  const q = tonalQuality.toLowerCase()
+  if (q.includes('diminished')) return 'diminished'
+  if (q.includes('augmented')) return 'augmented'
+  if (q.includes('minor') && q.includes('seventh')) return 'minor7'
+  if (q.includes('minor')) return 'minor'
+  if (q.includes('dominant') || q.includes('seventh')) return 'dominant7'
+  if (q.includes('major')) return 'major'
+  if (q === '' || q === 'major') return 'major'
+  return undefined
+}
+
+const getChordShortSymbol = (quality: ChordQuality): string => ({
+  major: '',
+  minor: 'm',
+  dominant7: '7',
+  minor7: 'm7',
+  diminished: 'dim',
+  augmented: 'aug',
+})[quality]
+
+const getChordQualityName = (quality: ChordQuality): string => ({
+  major: 'Major',
+  minor: 'Minor',
+  dominant7: 'Dominant 7th',
+  minor7: 'Minor 7th',
+  diminished: 'Diminished',
+  augmented: 'Augmented',
+})[quality]
+
+/**
+ * Generates all valid non-adjacent hole combinations for tongue blocking.
+ * Only allows combinations with exactly one contiguous group of blocked holes,
+ * reflecting real tongue blocking technique where the tongue covers one span.
+ *
+ * Valid: [1, 3] (block 2), [1, 4, 5] (block 2,3), [1, 2, 5] (block 3,4)
+ * Invalid: [1, 3, 5] (two separate blocked groups at 2 and 4)
+ */
+const generateHoleCombinations = (params: TongueBlockingParams): number[][] => {
+  const results: number[][] = []
+
+  const isValidCombination = (holes: number[]): boolean => {
+    const sorted = [...holes].sort((a, b) => a - b)
+    const span = sorted[sorted.length - 1] - sorted[0]
+    if (span > params.maxSpan) return false
+
+    // Count gaps and validate: only one contiguous gap allowed
+    let gapCount = 0
+    let totalSkipped = 0
+    for (let i = 1; i < sorted.length; i++) {
+      const gap = sorted[i] - sorted[i - 1] - 1
+      if (gap > 0) {
+        gapCount++
+        totalSkipped = gap
+      }
+    }
+
+    // Must have exactly one gap (one tongue-blocked section)
+    if (gapCount !== 1) return false
+
+    // The single gap must meet skip constraints
+    return totalSkipped >= params.minSkip && totalSkipped <= params.maxSkip
+  }
+
+  // Generate 3-note combinations
+  for (let a = 1; a <= 10; a++) {
+    for (let b = a + 1; b <= 10; b++) {
+      for (let c = b + 1; c <= 10; c++) {
+        const combo = [a, b, c]
+        if (isValidCombination(combo)) results.push(combo)
+      }
+    }
+  }
+
+  // Generate 4-note combinations
+  for (let a = 1; a <= 10; a++) {
+    for (let b = a + 1; b <= 10; b++) {
+      for (let c = b + 1; c <= 10; c++) {
+        for (let d = c + 1; d <= 10; d++) {
+          const combo = [a, b, c, d]
+          if (isValidCombination(combo)) results.push(combo)
+        }
+      }
+    }
+  }
+
+  return results
+}
+
+/**
+ * Gets all tongue blocking chord voicings for a given harmonica key and tuning.
+ * These are chords played with non-adjacent holes via tongue blocking technique.
+ */
+export const getTongueBlockingChords = (
+  harmonicaKey: HarmonicaKey,
+  tuning: TuningType = 'richter',
+  params: TongueBlockingParams = DEFAULT_TONGUE_BLOCKING,
+): ChordVoicing[] => {
+  const harmonica = getHarmonica(harmonicaKey, tuning)
+  const combinations = generateHoleCombinations(params)
+  const voicings: ChordVoicing[] = []
+
+  for (const breath of ['blow', 'draw'] as const) {
+    for (const holes of combinations) {
+      const notes = holes.map(h => {
+        const hole = harmonica.holes[h - 1]
+        return breath === 'blow' ? hole.blow.note : hole.draw.note
+      })
+
+      const pitchClasses = notes.map(n => Note.pitchClass(n))
+      const uniquePitchClasses = [...new Set(pitchClasses)]
+
+      // Need at least 3 unique pitch classes for a meaningful chord
+      if (uniquePitchClasses.length < 3) continue
+
+      const detected = Chord.detect(uniquePitchClasses)
+      if (detected.length === 0) continue
+
+      // Use the first detected chord symbol
+      const chordSymbol = detected[0]
+      const chordInfo = Chord.get(chordSymbol)
+      if (!chordInfo.name) continue
+
+      const quality = mapTonalQuality(chordInfo.quality)
+      if (!quality) continue
+
+      const rootNote = chordInfo.tonic || uniquePitchClasses[0]
+      const symbol = getChordShortSymbol(quality)
+      const qualityName = getChordQualityName(quality)
+
+      voicings.push({
+        name: `${rootNote} ${qualityName}`,
+        shortName: `${rootNote}${symbol}`,
+        quality,
+        holes: [...holes].sort((a, b) => a - b),
+        breath,
+        notes,
+        position: 1,
+        romanNumeral: '',
+        isConsecutive: false,
+        tuning,
+      })
+    }
+  }
+
+  return voicings
+}
+
+/**
+ * Gets tongue blocking chords filtered to only those with all notes in scale.
+ */
+export const getScaleFilteredTongueBlockingChords = (
+  harmonicaKey: HarmonicaKey,
+  tuning: TuningType,
+  scaleNotes: string[],
+  params: TongueBlockingParams = DEFAULT_TONGUE_BLOCKING,
+): ChordVoicing[] => {
+  const allChords = getTongueBlockingChords(harmonicaKey, tuning, params)
+
+  return allChords.filter(chord =>
+    chord.notes.every(note => {
+      const noteChroma = Note.chroma(note)
+      if (noteChroma === undefined) return false
+      return scaleNotes.some(scaleNote => Note.chroma(scaleNote) === noteChroma)
+    })
+  )
 }

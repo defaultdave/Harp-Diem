@@ -44,6 +44,8 @@ export {
   getChordByName,
   getAllChords,
   getScaleFilteredChords,
+  getScaleFilteredTongueBlockingChords,
+  getTongueBlockingChords,
   groupChordsByName,
 } from './chords'
 

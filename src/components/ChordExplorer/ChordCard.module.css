@@ -45,12 +45,32 @@
   border-left: 4px solid var(--color-chord-diminished);
 }
 
+.chordCardTongueBlocking {
+  border-left-style: dashed;
+}
+
 .chordName {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
   border-bottom: 1px solid var(--color-border-light);
   padding-bottom: var(--spacing-sm);
+}
+
+.chordNameRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.tongueBlockingBadge {
+  padding: 1px var(--spacing-xs);
+  background: var(--color-text-secondary);
+  color: var(--color-text-inverse);
+  font-size: var(--font-xs);
+  font-weight: bold;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.5px;
 }
 
 .chordShortName {

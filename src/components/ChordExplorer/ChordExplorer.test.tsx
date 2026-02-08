@@ -2,8 +2,9 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { ChordExplorer } from './ChordExplorer'
 import { ChordCard } from './ChordCard'
+import { MiniHarmonica } from './MiniHarmonica'
 import { PlaybackProvider } from '../../context'
-import type { ChordGroup } from '../../data'
+import type { ChordGroup, ChordVoicing } from '../../data'
 
 // Wrapper with required providers
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -194,5 +195,149 @@ describe('ChordCard', () => {
     // Should not show navigation
     expect(screen.queryByLabelText('Previous voicing')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Next voicing')).not.toBeInTheDocument()
+  })
+
+  it('shows TB badge for tongue blocking chords', () => {
+    const tongueBlockingGroup: ChordGroup = {
+      ...mockChordGroup,
+      voicings: [
+        {
+          ...mockChordGroup.voicings[0],
+          holes: [1, 3, 5],
+          isConsecutive: false,
+        },
+      ],
+    }
+
+    render(<ChordCard chordGroup={tongueBlockingGroup} />, { wrapper: Wrapper })
+    expect(screen.getByText('TB')).toBeInTheDocument()
+  })
+
+  it('does not show TB badge for consecutive chords', () => {
+    render(<ChordCard chordGroup={mockChordGroup} />, { wrapper: Wrapper })
+    expect(screen.queryByText('TB')).not.toBeInTheDocument()
+  })
+})
+
+describe('Tongue Blocking UI', () => {
+  it('renders tongue blocking toggle button', () => {
+    const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+
+    render(
+      <ChordExplorer
+        harmonicaKey="C"
+        tuning="richter"
+        scaleNotes={cMajorScale}
+        onChordSelect={vi.fn()}
+      />,
+      { wrapper: Wrapper }
+    )
+
+    expect(screen.getByText('Show Tongue Blocking')).toBeInTheDocument()
+  })
+
+  it('shows controls when tongue blocking is toggled on', () => {
+    const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+
+    render(
+      <ChordExplorer
+        harmonicaKey="C"
+        tuning="richter"
+        scaleNotes={cMajorScale}
+        onChordSelect={vi.fn()}
+      />,
+      { wrapper: Wrapper }
+    )
+
+    // Toggle on
+    fireEvent.click(screen.getByText('Show Tongue Blocking'))
+
+    // Controls should appear
+    expect(screen.getByLabelText('Max Span')).toBeInTheDocument()
+    expect(screen.getByLabelText('Min Skip')).toBeInTheDocument()
+    expect(screen.getByLabelText('Max Skip')).toBeInTheDocument()
+    // Button text should update
+    expect(screen.getByText('Hide Tongue Blocking')).toBeInTheDocument()
+  })
+
+  it('hides controls when tongue blocking is toggled off', () => {
+    const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+
+    render(
+      <ChordExplorer
+        harmonicaKey="C"
+        tuning="richter"
+        scaleNotes={cMajorScale}
+        onChordSelect={vi.fn()}
+      />,
+      { wrapper: Wrapper }
+    )
+
+    // Toggle on then off
+    fireEvent.click(screen.getByText('Show Tongue Blocking'))
+    fireEvent.click(screen.getByText('Hide Tongue Blocking'))
+
+    expect(screen.queryByLabelText('Max Span')).not.toBeInTheDocument()
+  })
+
+  it('shows tongue blocking chord section when enabled', () => {
+    const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+
+    render(
+      <ChordExplorer
+        harmonicaKey="C"
+        tuning="richter"
+        scaleNotes={cMajorScale}
+        onChordSelect={vi.fn()}
+      />,
+      { wrapper: Wrapper }
+    )
+
+    fireEvent.click(screen.getByText('Show Tongue Blocking'))
+
+    // Should show the tongue blocking section header
+    expect(screen.getByText('Tongue Blocking')).toBeInTheDocument()
+  })
+})
+
+describe('MiniHarmonica - Blocked Holes', () => {
+  it('shows blocked holes for tongue blocking chords', () => {
+    const tongueBlockingVoicing: ChordVoicing = {
+      name: 'C Major',
+      shortName: 'C',
+      quality: 'major',
+      holes: [1, 3, 5],
+      breath: 'blow',
+      notes: ['C4', 'G4', 'E5'],
+      position: 1,
+      romanNumeral: '',
+      isConsecutive: false,
+      tuning: 'richter',
+    }
+
+    render(<MiniHarmonica voicing={tongueBlockingVoicing} />)
+
+    // Holes 2 and 4 should be blocked (shown as ×)
+    const blockedHoles = screen.getAllByText('×')
+    expect(blockedHoles).toHaveLength(2)
+  })
+
+  it('does not show blocked holes for consecutive chords', () => {
+    const consecutiveVoicing: ChordVoicing = {
+      name: 'C Major',
+      shortName: 'C',
+      quality: 'major',
+      holes: [1, 2, 3],
+      breath: 'blow',
+      notes: ['C4', 'E4', 'G4'],
+      position: 1,
+      romanNumeral: 'I',
+      isConsecutive: true,
+      tuning: 'richter',
+    }
+
+    render(<MiniHarmonica voicing={consecutiveVoicing} />)
+
+    expect(screen.queryByText('×')).not.toBeInTheDocument()
   })
 })

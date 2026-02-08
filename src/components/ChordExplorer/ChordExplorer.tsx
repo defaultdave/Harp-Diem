@@ -2,9 +2,9 @@
  * Container component managing chord grid and scale-filtered chords.
  * @packageDocumentation
  */
-import { useMemo } from 'react'
-import type { HarmonicaKey, TuningType, ChordVoicing } from '../../data'
-import { getScaleFilteredChords, groupChordsByName } from '../../data'
+import { useMemo, useState } from 'react'
+import type { HarmonicaKey, TuningType, ChordVoicing, TongueBlockingParams } from '../../data'
+import { getScaleFilteredChords, getScaleFilteredTongueBlockingChords, groupChordsByName, DEFAULT_TONGUE_BLOCKING } from '../../data'
 import { cn } from '../../utils'
 import { ChordCard } from './ChordCard'
 import styles from './ChordExplorer.module.css'
@@ -26,11 +26,21 @@ export function ChordExplorer({
   scaleNotes,
   onChordSelect,
 }: ChordExplorerProps) {
+  const [showTongueBlocking, setShowTongueBlocking] = useState(false)
+  const [tbParams, setTbParams] = useState<TongueBlockingParams>(DEFAULT_TONGUE_BLOCKING)
+
   // Compute scale-filtered chords and group by name
   const chordGroups = useMemo(() => {
     const filtered = getScaleFilteredChords(harmonicaKey, tuning, scaleNotes)
     return groupChordsByName(filtered)
   }, [harmonicaKey, tuning, scaleNotes])
+
+  // Compute tongue blocking chords when enabled
+  const tongueBlockingGroups = useMemo(() => {
+    if (!showTongueBlocking) return []
+    const filtered = getScaleFilteredTongueBlockingChords(harmonicaKey, tuning, scaleNotes, tbParams)
+    return groupChordsByName(filtered)
+  }, [showTongueBlocking, harmonicaKey, tuning, scaleNotes, tbParams])
 
   return (
     <div className={styles.chordExplorer} role="region" aria-label="Chord explorer">
@@ -41,10 +51,64 @@ export function ChordExplorer({
         </p>
       </div>
 
-      {/* Phase 2: Tongue blocking config would go here */}
+      {/* Tongue blocking toggle and controls */}
+      <div className={styles.tongueBlockingSection}>
+        <button
+          className={cn(styles.tongueBlockingToggle, showTongueBlocking && styles.toggleActive)}
+          onClick={() => setShowTongueBlocking(!showTongueBlocking)}
+          aria-pressed={showTongueBlocking}
+        >
+          {showTongueBlocking ? 'Hide' : 'Show'} Tongue Blocking
+        </button>
+
+        {showTongueBlocking && (
+          <div className={styles.tongueBlockingControls}>
+            <div className={styles.controlGroup}>
+              <label htmlFor="tb-max-span" className={styles.controlLabel}>Max Span</label>
+              <select
+                id="tb-max-span"
+                className={styles.controlSelect}
+                value={tbParams.maxSpan}
+                onChange={(e) => setTbParams({ ...tbParams, maxSpan: Number(e.target.value) })}
+              >
+                <option value="3">3 holes</option>
+                <option value="4">4 holes</option>
+                <option value="5">5 holes</option>
+                <option value="6">6 holes</option>
+              </select>
+            </div>
+            <div className={styles.controlGroup}>
+              <label htmlFor="tb-min-skip" className={styles.controlLabel}>Min Skip</label>
+              <select
+                id="tb-min-skip"
+                className={styles.controlSelect}
+                value={tbParams.minSkip}
+                onChange={(e) => setTbParams({ ...tbParams, minSkip: Number(e.target.value) })}
+              >
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+            <div className={styles.controlGroup}>
+              <label htmlFor="tb-max-skip" className={styles.controlLabel}>Max Skip</label>
+              <select
+                id="tb-max-skip"
+                className={styles.controlSelect}
+                value={tbParams.maxSkip}
+                onChange={(e) => setTbParams({ ...tbParams, maxSkip: Number(e.target.value) })}
+              >
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className={styles.chordGrid}>
-        {chordGroups.length === 0 && (
+        {chordGroups.length === 0 && !showTongueBlocking && (
           <p className={styles.emptyState}>
             No chords available for this scale. Try a different scale or harmonica key.
           </p>
@@ -54,7 +118,25 @@ export function ChordExplorer({
         ))}
       </div>
 
-      {/* Quality legend (reuse from ChordDisplay) */}
+      {/* Tongue blocking chords section */}
+      {showTongueBlocking && tongueBlockingGroups.length > 0 && (
+        <>
+          <h3 className={styles.sectionHeader}>Tongue Blocking</h3>
+          <div className={styles.chordGrid}>
+            {tongueBlockingGroups.map((group) => (
+              <ChordCard key={`tb-${group.name}`} chordGroup={group} onChordSelect={onChordSelect} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {showTongueBlocking && tongueBlockingGroups.length === 0 && (
+        <p className={styles.emptyState}>
+          No tongue blocking chords found for this scale. Try adjusting parameters.
+        </p>
+      )}
+
+      {/* Quality legend */}
       <div className={styles.qualityLegend} role="note" aria-label="Chord quality color legend">
         <span className={styles.legendLabel}>Chord Quality:</span>
         <div className={styles.legendItems}>
