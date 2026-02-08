@@ -547,7 +547,11 @@ const getChordQualityName = (quality: ChordQuality): string => ({
 
 /**
  * Generates all valid non-adjacent hole combinations for tongue blocking.
- * Each combination has 3 or 4 holes within the span/skip constraints.
+ * Only allows combinations with exactly one contiguous group of blocked holes,
+ * reflecting real tongue blocking technique where the tongue covers one span.
+ *
+ * Valid: [1, 3] (block 2), [1, 4, 5] (block 2,3), [1, 2, 5] (block 3,4)
+ * Invalid: [1, 3, 5] (two separate blocked groups at 2 and 4)
  */
 const generateHoleCombinations = (params: TongueBlockingParams): number[][] => {
   const results: number[][] = []
@@ -557,29 +561,28 @@ const generateHoleCombinations = (params: TongueBlockingParams): number[][] => {
     const span = sorted[sorted.length - 1] - sorted[0]
     if (span > params.maxSpan) return false
 
-    // Check skip between each consecutive pair of played holes
-    let hasGap = false
+    // Count gaps and validate: only one contiguous gap allowed
+    let gapCount = 0
+    let totalSkipped = 0
     for (let i = 1; i < sorted.length; i++) {
       const gap = sorted[i] - sorted[i - 1] - 1
-      if (gap > 0) hasGap = true
-      if (gap > 0 && (gap < params.minSkip || gap > params.maxSkip)) return false
+      if (gap > 0) {
+        gapCount++
+        totalSkipped = gap
+      }
     }
 
-    // Must have at least one gap (otherwise it's a consecutive chord)
-    return hasGap
+    // Must have exactly one gap (one tongue-blocked section)
+    if (gapCount !== 1) return false
+
+    // The single gap must meet skip constraints
+    return totalSkipped >= params.minSkip && totalSkipped <= params.maxSkip
   }
 
   // Generate 3-note combinations
   for (let a = 1; a <= 10; a++) {
-    for (let b = a + 2; b <= 10; b++) {
-      for (let c = b + 1; c <= 10; c++) {
-        const combo = [a, b, c]
-        if (isValidCombination(combo)) results.push(combo)
-      }
-    }
-    // Also allow gap between b and c
     for (let b = a + 1; b <= 10; b++) {
-      for (let c = b + 2; c <= 10; c++) {
+      for (let c = b + 1; c <= 10; c++) {
         const combo = [a, b, c]
         if (isValidCombination(combo)) results.push(combo)
       }
@@ -598,14 +601,7 @@ const generateHoleCombinations = (params: TongueBlockingParams): number[][] => {
     }
   }
 
-  // Deduplicate (sorted string comparison)
-  const seen = new Set<string>()
-  return results.filter(combo => {
-    const key = combo.sort((a, b) => a - b).join(',')
-    if (seen.has(key)) return false
-    seen.add(key)
-    return true
-  })
+  return results
 }
 
 /**

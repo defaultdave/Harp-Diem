@@ -567,6 +567,19 @@ describe('Chords', () => {
         })
       })
 
+      it('should only allow one contiguous group of blocked holes', () => {
+        const chords = getTongueBlockingChords('C')
+        chords.forEach((chord) => {
+          const sorted = [...chord.holes].sort((a, b) => a - b)
+          let gapCount = 0
+          for (let i = 1; i < sorted.length; i++) {
+            if (sorted[i] - sorted[i - 1] > 1) gapCount++
+          }
+          // Every tongue blocking chord must have exactly one gap
+          expect(gapCount).toBe(1)
+        })
+      })
+
       it('should have holes in sorted order', () => {
         const chords = getTongueBlockingChords('C')
         chords.forEach((chord) => {
