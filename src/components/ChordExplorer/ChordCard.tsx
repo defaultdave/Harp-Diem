@@ -93,7 +93,7 @@ export function ChordCard({ chordGroup, onChordSelect }: ChordCardProps) {
       onClick={handleCardClick}
       role="button"
       tabIndex={0}
-      aria-label={`${currentVoicing.name} chord, voicing ${currentIndex + 1} of ${chordGroup.voicings.length}`}
+      aria-label={`${currentVoicing.name} chord, ${currentVoicing.romanNumeral}, voicing ${currentIndex + 1} of ${chordGroup.voicings.length}`}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
@@ -105,9 +105,13 @@ export function ChordCard({ chordGroup, onChordSelect }: ChordCardProps) {
       <div className={styles.chordName}>
         <div className={styles.chordNameRow}>
           <span className={styles.chordShortName}>{chordGroup.name}</span>
+          <span className={styles.romanNumeral}>{currentVoicing.romanNumeral}</span>
           {isTongueBlocking && <span className={styles.tongueBlockingBadge}>TB</span>}
         </div>
         <span className={styles.chordFullName}>{currentVoicing.name}</span>
+        <span className={styles.chordNotes}>
+          {currentVoicing.notes.map(n => n.replace(/\d+$/, '')).join(' – ')}
+        </span>
       </div>
 
       {/* Mini harmonica diagram */}

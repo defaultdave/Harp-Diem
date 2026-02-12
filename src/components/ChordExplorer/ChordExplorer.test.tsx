@@ -217,6 +217,16 @@ describe('ChordCard', () => {
     render(<ChordCard chordGroup={mockChordGroup} />, { wrapper: Wrapper })
     expect(screen.queryByText('TB')).not.toBeInTheDocument()
   })
+
+  it('displays roman numeral', () => {
+    render(<ChordCard chordGroup={mockChordGroup} />, { wrapper: Wrapper })
+    expect(screen.getByText('I')).toBeInTheDocument()
+  })
+
+  it('displays chord notes as pitch classes without octave numbers', () => {
+    render(<ChordCard chordGroup={mockChordGroup} />, { wrapper: Wrapper })
+    expect(screen.getByText('C – E – G')).toBeInTheDocument()
+  })
 })
 
 describe('Tongue Blocking UI', () => {
