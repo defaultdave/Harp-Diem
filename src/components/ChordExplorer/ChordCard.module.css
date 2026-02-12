@@ -84,6 +84,18 @@
   color: var(--color-text-secondary);
 }
 
+.romanNumeral {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.chordNotes {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.5px;
+}
+
 .breathIndicator {
   display: flex;
   justify-content: center;

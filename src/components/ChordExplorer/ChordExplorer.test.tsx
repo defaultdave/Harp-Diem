@@ -217,6 +217,16 @@ describe('ChordCard', () => {
     render(<ChordCard chordGroup={mockChordGroup} />, { wrapper: Wrapper })
     expect(screen.queryByText('TB')).not.toBeInTheDocument()
   })
+
+  it('displays roman numeral', () => {
+    render(<ChordCard chordGroup={mockChordGroup} />, { wrapper: Wrapper })
+    expect(screen.getByText('I')).toBeInTheDocument()
+  })
+
+  it('displays chord notes as pitch classes without octave numbers', () => {
+    render(<ChordCard chordGroup={mockChordGroup} />, { wrapper: Wrapper })
+    expect(screen.getByText('C – E – G')).toBeInTheDocument()
+  })
 })
 
 describe('Tongue Blocking UI', () => {
@@ -236,7 +246,7 @@ describe('Tongue Blocking UI', () => {
     expect(screen.getByText('Show Tongue Blocking')).toBeInTheDocument()
   })
 
-  it('shows controls when tongue blocking is toggled on', () => {
+  it('toggles tongue blocking section on and off', () => {
     const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
 
     render(
@@ -251,33 +261,11 @@ describe('Tongue Blocking UI', () => {
 
     // Toggle on
     fireEvent.click(screen.getByText('Show Tongue Blocking'))
-
-    // Controls should appear
-    expect(screen.getByLabelText('Max Span')).toBeInTheDocument()
-    expect(screen.getByLabelText('Min Skip')).toBeInTheDocument()
-    expect(screen.getByLabelText('Max Skip')).toBeInTheDocument()
-    // Button text should update
     expect(screen.getByText('Hide Tongue Blocking')).toBeInTheDocument()
-  })
 
-  it('hides controls when tongue blocking is toggled off', () => {
-    const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-
-    render(
-      <ChordExplorer
-        harmonicaKey="C"
-        tuning="richter"
-        scaleNotes={cMajorScale}
-        onChordSelect={vi.fn()}
-      />,
-      { wrapper: Wrapper }
-    )
-
-    // Toggle on then off
-    fireEvent.click(screen.getByText('Show Tongue Blocking'))
+    // Toggle off
     fireEvent.click(screen.getByText('Hide Tongue Blocking'))
-
-    expect(screen.queryByLabelText('Max Span')).not.toBeInTheDocument()
+    expect(screen.getByText('Show Tongue Blocking')).toBeInTheDocument()
   })
 
   it('shows tongue blocking chord section when enabled', () => {
@@ -297,6 +285,27 @@ describe('Tongue Blocking UI', () => {
 
     // Should show the tongue blocking section header
     expect(screen.getByText('Tongue Blocking')).toBeInTheDocument()
+  })
+
+  it('does not show parameter controls (simplified API)', () => {
+    const cMajorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+
+    render(
+      <ChordExplorer
+        harmonicaKey="C"
+        tuning="richter"
+        scaleNotes={cMajorScale}
+        onChordSelect={vi.fn()}
+      />,
+      { wrapper: Wrapper }
+    )
+
+    fireEvent.click(screen.getByText('Show Tongue Blocking'))
+
+    // Should NOT show parameter controls (removed in this PR)
+    expect(screen.queryByLabelText('Max Span')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Min Skip')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Max Skip')).not.toBeInTheDocument()
   })
 })
 

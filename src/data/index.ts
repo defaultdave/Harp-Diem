@@ -34,9 +34,7 @@ export {
 export {
   type ChordVoicing,
   type ChordQuality,
-  type TongueBlockingParams,
   type ChordGroup,
-  DEFAULT_TONGUE_BLOCKING,
   getHarmonicaChords,
   getChordsByPosition,
   getCommonChords,
