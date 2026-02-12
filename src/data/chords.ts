@@ -98,6 +98,17 @@ const getChordQualityName = (quality: ChordQuality): string => ({
   augmented: 'Augmented',
 })[quality]
 
+/** More specific name when tonal's chord type is a subtype of our quality category */
+const getSpecificQualityName = (tonalType: string, quality: ChordQuality): string => {
+  if (quality === 'diminished') {
+    switch (tonalType) {
+      case 'half-diminished': return 'Half-Diminished 7th'
+      case 'diminished seventh': return 'Diminished 7th'
+    }
+  }
+  return getChordQualityName(quality)
+}
+
 // --- Position & roman numeral computation ---
 
 /** Maps semitone distance from harmonica key to circle-of-fifths position. */
@@ -183,7 +194,7 @@ const detectChord = (
 
     const rootNote = chordInfo.tonic || uniquePitchClasses[0]
     const symbol = getChordShortSymbol(quality)
-    const qualityName = getChordQualityName(quality)
+    const qualityName = getSpecificQualityName(chordInfo.type.toLowerCase(), quality)
     const position = computePosition(rootNote, harmonicaKey)
     const romanNumeral = computeRomanNumeral(rootNote, harmonicaKey, quality)
 

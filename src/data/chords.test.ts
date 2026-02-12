@@ -232,6 +232,15 @@ describe('Chords', () => {
       )
       expect(bdim?.romanNumeral).toBe('vii°')
     })
+
+    it('should name 4-note Bdim voicing as Half-Diminished 7th', () => {
+      const chords = getHarmonicaChords('C')
+      const bdim4 = chords.find(
+        c => c.shortName === 'Bdim' && c.isConsecutive && c.holes.length === 4
+      )
+      expect(bdim4?.name).toBe('B Half-Diminished 7th')
+      expect(bdim4?.quality).toBe('diminished')
+    })
   })
 
   describe('Position computation', () => {
