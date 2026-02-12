@@ -244,6 +244,39 @@ describe('Chords', () => {
       expect(gMajor123?.notes).toEqual(['G3', 'B3', 'D4'])
       expect(gMajor123?.shortName).toBe('G')
     })
+
+    it('should name inverted voicings by chord root, not bass note', () => {
+      // G Major [1,2,3,4] draw has notes D4,G4,B4,D5 (D is bass, G is root)
+      // On D harmonica, this transposes to E,A,C#,E which is A Major (not E Major)
+      const dChords = getHarmonicaChords('D')
+      const inversion = dChords.find(
+        (c) =>
+          c.holes.length === 4 &&
+          c.holes[0] === 1 &&
+          c.holes[3] === 4 &&
+          c.breath === 'draw' &&
+          c.quality === 'major'
+      )
+      expect(inversion).toBeDefined()
+      expect(inversion?.shortName).toBe('A')
+      expect(inversion?.name).toBe('A Major')
+    })
+
+    it('should name inverted voicings correctly for C harmonica too', () => {
+      // G Major [1,2,3,4] draw: D4,G4,B4,D5 — root is G, not D
+      const cChords = getHarmonicaChords('C')
+      const inversion = cChords.find(
+        (c) =>
+          c.holes.length === 4 &&
+          c.holes[0] === 1 &&
+          c.holes[3] === 4 &&
+          c.breath === 'draw' &&
+          c.quality === 'major'
+      )
+      expect(inversion).toBeDefined()
+      expect(inversion?.shortName).toBe('G')
+      expect(inversion?.name).toBe('G Major')
+    })
   })
 
   describe('New API Functions', () => {

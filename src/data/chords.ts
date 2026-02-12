@@ -263,28 +263,9 @@ const transposeVoicing = (
 ): ChordVoicing => {
   // Simple case - no transposition needed
   if (targetKey === 'C') {
-    const rootNote = Note.pitchClass(baseVoicing.notes[0])
-    const qualitySymbol = {
-      major: '',
-      minor: 'm',
-      dominant7: '7',
-      minor7: 'm7',
-      diminished: 'dim',
-      augmented: 'aug',
-    }[baseVoicing.quality]
-
-    const qualityName = {
-      major: 'Major',
-      minor: 'Minor',
-      dominant7: 'Dominant 7th',
-      minor7: 'Minor 7th',
-      diminished: 'Diminished',
-      augmented: 'Augmented',
-    }[baseVoicing.quality]
-
     return {
-      name: `${rootNote} ${qualityName}`,
-      shortName: `${rootNote}${qualitySymbol}`,
+      name: baseVoicing.name,
+      shortName: baseVoicing.shortName,
       quality: baseVoicing.quality,
       holes: baseVoicing.holes,
       breath: baseVoicing.breath,
@@ -309,8 +290,10 @@ const transposeVoicing = (
 
   const transposedNotes = baseVoicing.notes.map(transposeNote)
 
-  // Get the chord name from the transposed root
-  const rootNote = Note.pitchClass(transposedNotes[0])
+  // Transpose the chord root from the base voicing name, not from the first note
+  // (first note may be an inversion, e.g. G Major [1,2,3,4] has D as bass, not G)
+  const baseRoot = baseVoicing.shortName.match(/^([A-G][#b]?)/)?.[1] || Note.pitchClass(baseVoicing.notes[0])
+  const rootNote = Note.pitchClass(transposeNote(baseRoot + '4'))
   const qualitySymbol = {
     major: '',
     minor: 'm',
