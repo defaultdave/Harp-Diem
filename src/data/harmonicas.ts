@@ -114,12 +114,13 @@ const calculateBends = (
  * - country: Hole 5 draw raised for country/bluegrass
  * - melody-maker: Lee Oskar design with multiple modifications
  */
-export type TuningType = 'richter' | 'paddy-richter' | 'natural-minor' | 'country' | 'melody-maker'
+export type TuningType = 'richter' | 'paddy-richter' | 'natural-minor' | 'lee-oskar-natural-minor' | 'country' | 'melody-maker'
 
 export const TUNING_TYPES: TuningType[] = [
   'richter',
   'paddy-richter',
   'natural-minor',
+  'lee-oskar-natural-minor',
   'country',
   'melody-maker',
 ]
@@ -142,6 +143,10 @@ const TUNINGS: Record<TuningType, TuningDefinition> = {
   'natural-minor': {
     blowNotes: ['C4', 'Eb4', 'G4', 'C5', 'Eb5', 'G5', 'C6', 'Eb6', 'G6', 'C7'],
     drawNotes: ['D4', 'G4', 'Bb4', 'D5', 'F5', 'Ab5', 'Bb5', 'D6', 'F6', 'Ab6'],
+  },
+  'lee-oskar-natural-minor': {
+    blowNotes: ['C4', 'Eb4', 'G4', 'C5', 'Eb5', 'G5', 'C6', 'Eb6', 'G6', 'C7'],
+    drawNotes: ['D4', 'G4', 'Bb4', 'D5', 'F5', 'A5', 'Bb5', 'D6', 'F6', 'A6'],
   },
   'country': {
     blowNotes: ['C4', 'E4', 'G4', 'C5', 'E5', 'G5', 'C6', 'E6', 'G6', 'C7'],

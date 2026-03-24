@@ -228,11 +228,12 @@ describe('Harmonicas', () => {
       expect(SCALE_TYPES.length).toBeGreaterThan(0)
     })
 
-    it('should have all 5 tuning types defined', () => {
-      expect(TUNING_TYPES).toHaveLength(5)
+    it('should have all 6 tuning types defined', () => {
+      expect(TUNING_TYPES).toHaveLength(6)
       expect(TUNING_TYPES).toContain('richter')
       expect(TUNING_TYPES).toContain('paddy-richter')
       expect(TUNING_TYPES).toContain('natural-minor')
+      expect(TUNING_TYPES).toContain('lee-oskar-natural-minor')
       expect(TUNING_TYPES).toContain('country')
       expect(TUNING_TYPES).toContain('melody-maker')
     })
@@ -273,6 +274,25 @@ describe('Harmonicas', () => {
       expect(naturalMinor.holes[1].blow.note).toBe('Eb4')
       // Hole 3 draw should be Bb (minor 7th) instead of B
       expect(naturalMinor.holes[2].draw.note).toBe('Bb4')
+    })
+
+    it('Lee Oskar Natural Minor should have A (not Ab) on holes 6 and 10 draw', () => {
+      const leeOskar = getHarmonica('C', 'lee-oskar-natural-minor')
+      const naturalMinor = getHarmonica('C', 'natural-minor')
+
+      // Blow notes should be identical
+      expect(leeOskar.holes[1].blow.note).toBe('Eb4')
+
+      // Holes 6 and 10 draw: A (raised 6th) instead of Ab (flat 6th)
+      expect(naturalMinor.holes[5].draw.note).toBe('Ab5')
+      expect(leeOskar.holes[5].draw.note).toBe('A5')
+      expect(naturalMinor.holes[9].draw.note).toBe('Ab6')
+      expect(leeOskar.holes[9].draw.note).toBe('A6')
+
+      // Other draw notes should match natural minor
+      expect(leeOskar.holes[0].draw.note).toBe('D4')
+      expect(leeOskar.holes[4].draw.note).toBe('F5')
+      expect(leeOskar.holes[6].draw.note).toBe('Bb5')
     })
 
     it('Country should have raised hole 5 draw', () => {
