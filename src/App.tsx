@@ -3,7 +3,7 @@ import styles from './App.module.css'
 import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType, ChordVoicing } from './data'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data'
-import { useHarmonicaScale, useTheme, useHashRouter } from './hooks'
+import { useHarmonicaScale, useTheme, useHashRouter, useDeepLinking } from './hooks'
 import { HoleColumn, Legend, ScaleDisplay, ChordExplorer, RotateOverlay, NavHeader, PitchDetector } from './components'
 import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport, PitchDetectionProvider, usePitchDetection } from './context'
 import { capitalizeWords } from './utils'
@@ -12,10 +12,11 @@ import { capitalizeWords } from './utils'
 const QuizPage = lazy(() => import('./components/Quiz').then(module => ({ default: module.QuizPage })))
 
 function ScalesPage() {
-  const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>('C')
-  const [songKey, setSongKey] = useState<HarmonicaKey>('C')
-  const [scaleType, setScaleType] = useState<ScaleType>('major')
-  const [tuning, setTuning] = useState<TuningType>('richter')
+  const { initialParams, updateURL } = useDeepLinking()
+  const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>(initialParams.harpKey)
+  const [songKey, setSongKey] = useState<HarmonicaKey>(initialParams.songKey)
+  const [scaleType, setScaleType] = useState<ScaleType>(initialParams.scaleType)
+  const [tuning, setTuning] = useState<TuningType>(initialParams.tuning)
   const exportTargetRef = useRef<HTMLDivElement>(null)
   const [selectedChord, setSelectedChord] = useState<ChordVoicing | null>(null)
   const [isChordPanelOpen, setIsChordPanelOpen] = useState(false) // collapsed by default
@@ -67,7 +68,11 @@ function ScalesPage() {
           <select
             id="harmonica-key"
             value={harmonicaKey}
-            onChange={(e) => setHarmonicaKey(e.target.value as HarmonicaKey)}
+            onChange={(e) => {
+              const val = e.target.value as HarmonicaKey
+              setHarmonicaKey(val)
+              updateURL({ harpKey: val, songKey, scaleType, tuning })
+            }}
           >
             {AVAILABLE_KEYS.map((key) => (
               <option key={key} value={key}>
@@ -79,7 +84,11 @@ function ScalesPage() {
 
         <div className={styles.controlGroup}>
           <label htmlFor="song-key">Song Key:</label>
-          <select value={songKey} onChange={(e) => setSongKey(e.target.value as HarmonicaKey)} id="song-key">
+          <select value={songKey} onChange={(e) => {
+              const val = e.target.value as HarmonicaKey
+              setSongKey(val)
+              updateURL({ harpKey: harmonicaKey, songKey: val, scaleType, tuning })
+            }} id="song-key">
             {AVAILABLE_KEYS.map((key) => (
               <option key={key} value={key}>
                 {key}
@@ -93,7 +102,11 @@ function ScalesPage() {
           <select
             id="scale-type"
             value={scaleType}
-            onChange={(e) => setScaleType(e.target.value as ScaleType)}
+            onChange={(e) => {
+              const val = e.target.value as ScaleType
+              setScaleType(val)
+              updateURL({ harpKey: harmonicaKey, songKey, scaleType: val, tuning })
+            }}
           >
             {SCALE_TYPES.map((type) => (
               <option key={type} value={type}>
@@ -108,7 +121,11 @@ function ScalesPage() {
           <select
             id="tuning"
             value={tuning}
-            onChange={(e) => setTuning(e.target.value as TuningType)}
+            onChange={(e) => {
+              const val = e.target.value as TuningType
+              setTuning(val)
+              updateURL({ harpKey: harmonicaKey, songKey, scaleType, tuning: val })
+            }}
           >
             {TUNING_TYPES.map((t) => (
               <option key={t} value={t}>
