@@ -2,9 +2,59 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Harp-Diem</title>
+
+    <title>Harp Diem — Harmonica Scale Visualizer</title>
+    <meta
+      name="description"
+      content="Seize the harmonica! Visualize diatonic harmonica scales — pick your harmonica key, song key, scale type, and tuning to instantly see which holes to play, explore chords, and tune up with a built-in pitch detector."
+    />
+    <meta name="theme-color" content="#4a90e2" />
+    <link rel="canonical" href="https://harpdiem.com/" />
+
+    <!-- Icons & PWA -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Open Graph (Facebook, LinkedIn, Slack, etc.) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Harp Diem" />
+    <meta property="og:title" content="Harp Diem — Harmonica Scale Visualizer" />
+    <meta
+      property="og:description"
+      content="Seize the harmonica! Visualize diatonic harmonica scales by key, tuning, and scale type — see exactly which holes to play."
+    />
+    <meta property="og:url" content="https://harpdiem.com/" />
+    <meta property="og:image" content="https://harpdiem.com/social-preview.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Harp Diem — a harmonica scale visualizer showing playable holes and notes" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Harp Diem — Harmonica Scale Visualizer" />
+    <meta
+      name="twitter:description"
+      content="Seize the harmonica! Visualize diatonic harmonica scales by key, tuning, and scale type."
+    />
+    <meta name="twitter:image" content="https://harpdiem.com/social-preview.png" />
+    <meta name="twitter:image:alt" content="Harp Diem harmonica scale visualizer interface" />
+
+    <!-- Structured data (allowed under a strict CSP: ld+json is data, not executed) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Harp Diem",
+        "description": "A diatonic harmonica scale visualizer with chords, a built-in tuner, and a practice quiz.",
+        "url": "https://harpdiem.com/",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any (modern web browser)",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

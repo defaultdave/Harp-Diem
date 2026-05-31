@@ -1,11 +1,16 @@
 {
   "name": "harp-diem",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20.17.0",
+    "npm": ">=10"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "assets": "node scripts/generate-assets.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
@@ -14,21 +19,24 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
+    "predeploy:gh-pages": "VITE_BASE_PATH=/Harp-Diem/ npm run build",
+    "deploy:gh-pages": "gh-pages -d dist",
     "prepare": "husky",
     "docs": "typedoc",
     "docs:serve": "typedoc && npx serve docs"
   },
   "dependencies": {
+    "@sentry/react": "^10.55.0",
     "html2canvas": "^1.4.1",
-    "jspdf": "^4.0.0",
+    "jspdf": "^4.2.1",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "tonal": "6.4.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.57.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@types/html2canvas": "^0.5.35",
@@ -45,7 +53,6 @@
     "jsdom": "^27.4.0",
     "lint-staged": "^16.2.7",
     "rollup-plugin-visualizer": "^6.0.5",
-    "tonal": "6.4.2",
     "typedoc": "^0.28.16",
     "typedoc-rhineai-theme": "^1.2.0",
     "typescript": "~5.9.3",
@@ -54,6 +61,6 @@
     "vitest": "^4.0.16"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "npm run test -- --run"
+    "*.{ts,tsx}": "eslint --fix"
   }
 }

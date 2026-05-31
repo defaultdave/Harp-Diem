@@ -57,3 +57,13 @@ export {
   detectPitch,
   frequencyToNote,
 } from './pitchDetection'
+
+// Re-export from logger
+export {
+  type ErrorReporter,
+  setErrorReporter,
+  logDebug,
+  logWarn,
+  reportError,
+  initErrorReporting,
+} from './logger'

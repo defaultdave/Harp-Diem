@@ -13,8 +13,12 @@ export default defineConfig({
       brotliSize: true,
     }),
   ],
-  base: '/Harp-Diem/',
+  // Default to '/' for root-domain hosting (AWS S3 + CloudFront).
+  // The gh-pages deploy script overrides this via VITE_BASE_PATH=/Harp-Diem/.
+  base: process.env.VITE_BASE_PATH || '/',
   build: {
+    // Do not ship source maps to production (avoids exposing readable source).
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {

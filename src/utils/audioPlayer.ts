@@ -4,6 +4,7 @@
 
 import { Note } from 'tonal'
 import type { ChordInProgression } from '../data'
+import { reportError } from './logger'
 
 /** Delay between arpeggiated notes in milliseconds for a natural strummed sound */
 const ARPEGGIATE_DELAY_MS = 30
@@ -21,7 +22,13 @@ let audioContext: AudioContext | null = null
  */
 function getAudioContext(): AudioContext {
   if (!audioContext) {
-    audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+    const AudioContextCtor =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!AudioContextCtor) {
+      throw new Error('Web Audio API is not supported in this browser')
+    }
+    audioContext = new AudioContextCtor()
   }
   return audioContext
 }
@@ -100,7 +107,7 @@ export async function playTone(frequency: number, duration: number = 0.5): Promi
       gainNodes.push(gainNode)
     })
   } catch (error) {
-    console.error('Failed to play tone:', error)
+    reportError(error, { context: 'playTone', frequency })
   }
 }
 

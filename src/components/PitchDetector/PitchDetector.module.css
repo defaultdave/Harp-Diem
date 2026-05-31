@@ -218,6 +218,7 @@
 .referenceHzInput:focus {
   outline: none;
   border-color: var(--color-hover-border);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
 }
 
 .referenceHzUnit {

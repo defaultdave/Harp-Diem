@@ -50,6 +50,9 @@ export function PitchDetectionProvider({ children }: PitchDetectionProviderProps
   const referenceHzRef = useRef(referenceHz)
 
   const setReferenceHz = (hz: number) => {
+    // Ignore non-finite input (e.g. an empty/intermediate value yields NaN) so we
+    // never persist "NaN" to localStorage.
+    if (!Number.isFinite(hz)) return
     const clamped = Math.max(410, Math.min(460, Math.round(hz)))
     referenceHzRef.current = clamped
     setReferenceHzState(clamped)

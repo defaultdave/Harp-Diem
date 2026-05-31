@@ -67,8 +67,13 @@
   --color-note-label: #718096;
 
   /* Interactive states */
-  --color-focus-ring: rgba(74, 85, 104, 0.15);
+  /* Saturated, higher-opacity ring so the focus indicator meets WCAG 2.1 non-text contrast (>=3:1). */
+  --color-focus-ring: rgba(37, 99, 235, 0.7);
   --color-hover-border: #4a5568;
+
+  /* Detected-note (pitch detection) outline colors — theme-aware */
+  --color-detected: #e03131;
+  --color-detected-playable: #099268;
 
   /* Stop/danger colors */
   --color-stop-bg: #dc3545;
@@ -141,8 +146,12 @@
   --color-note-label: #cbd5e0;
 
   /* Interactive states */
-  --color-focus-ring: rgba(226, 232, 240, 0.2);
+  --color-focus-ring: rgba(147, 197, 253, 0.85);
   --color-hover-border: #e2e8f0;
+
+  /* Detected-note (pitch detection) outline colors — brighter for dark mode */
+  --color-detected: #ff8787;
+  --color-detected-playable: #38d9a9;
 
   /* Stop/danger colors */
   --color-stop-bg: #fc8181;

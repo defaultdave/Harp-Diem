@@ -1,0 +1,22 @@
+# Terraform working files
+.terraform/
+.terraform.tfstate.lock.info
+
+# State — contains resource data; never commit. (Use a remote backend for teams.)
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Variable files may contain personal data (e.g. your email)
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# Local overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# NOTE: .terraform.lock.hcl is intentionally NOT ignored — commit it to pin provider versions.

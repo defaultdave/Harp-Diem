@@ -284,7 +284,7 @@
 
 /* Detected note from pitch detector - use outline to avoid layout shift */
 .detectedNote {
-  outline: 2.5px solid #ff6b6b;
+  outline: 2.5px solid var(--color-detected);
   outline-offset: -1px;
   box-shadow: 0 0 12px rgba(255, 107, 107, 0.6);
   z-index: 5;
@@ -293,7 +293,7 @@
 
 /* When detected note is also playable */
 .playable.detectedNote {
-  outline-color: #4ecdc4;
+  outline-color: var(--color-detected-playable);
   box-shadow: 0 0 12px rgba(78, 205, 196, 0.7);
 }
 

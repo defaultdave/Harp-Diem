@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// Base URL is environment-aware so the same tests run against local dev (base '/')
+// and any deployed environment. Override with PLAYWRIGHT_BASE_URL in CI / against AWS.
+const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173/';
+
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
@@ -8,7 +12,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:5173/Harp-Diem/',
+    baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -20,7 +24,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173/Harp-Diem/',
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
   },
 });

@@ -4,7 +4,7 @@ import './print.css'
 import type { HarmonicaKey, ScaleType, TuningType, ChordVoicing } from './data'
 import { AVAILABLE_KEYS, SCALE_TYPES, TUNING_TYPES, getHarmonicaPosition } from './data'
 import { useHarmonicaScale, useTheme, useHashRouter, useDeepLinking } from './hooks'
-import { HoleColumn, Legend, ScaleDisplay, ChordExplorer, RotateOverlay, NavHeader, PitchDetector } from './components'
+import { HoleColumn, Legend, ScaleDisplay, ChordExplorer, RotateOverlay, NavHeader, PitchDetector, ErrorBoundary } from './components'
 import { DisplaySettingsProvider, PlaybackProvider, QuizProvider, ExportProvider, useExport, PitchDetectionProvider, usePitchDetection } from './context'
 import { capitalizeWords } from './utils'
 
@@ -229,9 +229,11 @@ function AppContent() {
       <main className={styles.main}>
         {route === '/' && <ScalesPage />}
         {route === '/quiz' && (
-          <Suspense fallback={<div className={styles.loading}>Loading quiz...</div>}>
-            <QuizPage />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<div className={styles.loading}>Loading quiz...</div>}>
+              <QuizPage />
+            </Suspense>
+          </ErrorBoundary>
         )}
         {route === '/practice' && (
           <Suspense fallback={<div className={styles.loading}>Loading practice...</div>}>
@@ -239,6 +241,26 @@ function AppContent() {
           </Suspense>
         )}
       </main>
+
+      <footer
+        style={{
+          textAlign: 'center',
+          padding: '1.25rem',
+          fontSize: '0.8rem',
+          color: 'var(--color-text-secondary)',
+        }}
+      >
+        <a href={`${import.meta.env.BASE_URL}privacy.html`} style={{ color: 'inherit' }}>Privacy</a>
+        {' · '}
+        <a
+          href="https://github.com/defaultdave/Harp-Diem"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'inherit' }}
+        >
+          Source on GitHub
+        </a>
+      </footer>
     </div>
   )
 }

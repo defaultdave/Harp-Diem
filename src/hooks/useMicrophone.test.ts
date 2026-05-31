@@ -178,14 +178,16 @@ describe('useMicrophone', () => {
     })
 
     it('handles permission denied error', async () => {
-      getUserMediaMock.mockRejectedValue(new Error('Permission denied'))
+      getUserMediaMock.mockRejectedValue(new DOMException('Permission denied', 'NotAllowedError'))
       const { result } = renderHook(() => useMicrophone())
 
       await act(async () => {
         await result.current.startListening()
       })
 
-      expect(result.current.error).toBe('Permission denied')
+      expect(result.current.error).toBe(
+        'Microphone permission was denied. Enable mic access in your browser settings and try again.'
+      )
       expect(result.current.isListening).toBe(false)
     })
 
@@ -197,7 +199,9 @@ describe('useMicrophone', () => {
         await result.current.startListening()
       })
 
-      expect(result.current.error).toBe('Failed to access microphone')
+      expect(result.current.error).toBe(
+        'Could not access the microphone. Please check your browser settings and try again.'
+      )
       expect(result.current.isListening).toBe(false)
     })
 
@@ -205,11 +209,13 @@ describe('useMicrophone', () => {
       const { result } = renderHook(() => useMicrophone())
 
       // First call fails
-      getUserMediaMock.mockRejectedValueOnce(new Error('Permission denied'))
+      getUserMediaMock.mockRejectedValueOnce(new DOMException('Permission denied', 'NotAllowedError'))
       await act(async () => {
         await result.current.startListening()
       })
-      expect(result.current.error).toBe('Permission denied')
+      expect(result.current.error).toBe(
+        'Microphone permission was denied. Enable mic access in your browser settings and try again.'
+      )
 
       // Second call succeeds
       getUserMediaMock.mockResolvedValue(mockStream)
