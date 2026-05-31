@@ -45,8 +45,8 @@
 - **Export**: html2canvas + jsPDF for PNG/PDF export (lazy-loaded)
 - **Documentation**: TypeDoc with rhineai theme
 - **Styling**: CSS Grid with responsive design and CSS custom properties
-- **Deployment**: GitHub Pages via gh-pages
-- **Code Quality**: Husky + lint-staged for pre-commit hooks (runs tests on staged .ts/.tsx files)
+- **Deployment**: AWS S3 + CloudFront via Terraform (see [DEPLOYMENT.md](DEPLOYMENT.md)); GitHub Pages retained as a legacy target
+- **Code Quality**: Husky + lint-staged for pre-commit hooks (runs ESLint `--fix` on staged .ts/.tsx files)
 - **Bundle Analysis**: rollup-plugin-visualizer
 
 ## Project Structure
@@ -220,16 +220,20 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system architecture, and [ar
 | `npm run test:e2e:ui` | Run E2E tests in interactive UI mode |
 | `npm run test:e2e:headed` | Run E2E tests in headed browser mode |
 | `npm run lint` | Run ESLint |
-| `npm run deploy` | Deploy to GitHub Pages |
+| `npm run deploy:gh-pages` | Build and deploy to GitHub Pages (legacy) |
 | `npm run docs` | Generate API documentation |
 | `npm run docs:serve` | Generate and serve API docs locally |
 
 ## Deployment
 
-The app is deployed to GitHub Pages:
+The app is deployed to **AWS S3 + CloudFront**, provisioned with Terraform and deployed automatically by GitHub Actions on push to `main`. See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full runbook and **[terraform/README.md](terraform/README.md)** for an annotated, learning-oriented walkthrough of the infrastructure.
 
 ```bash
-npm run deploy          # Build and deploy to GitHub Pages
+# Production build (root-domain base path, used by CI)
+npm run build
+
+# Legacy GitHub Pages deploy (builds with base /Harp-Diem/)
+npm run deploy:gh-pages
 ```
 
 ## Contributing
@@ -240,7 +244,7 @@ npm run deploy          # Build and deploy to GitHub Pages
 4. Build successfully: `npm run build`
 5. Submit a pull request
 
-Pre-commit hooks (via Husky) automatically run tests on staged files. If tests fail, the commit will be blocked.
+Pre-commit hooks (via Husky + lint-staged) automatically run ESLint `--fix` on staged `.ts/.tsx` files. The full test suite, type-check, and build run in CI (see [DEPLOYMENT.md](DEPLOYMENT.md)).
 
 ## License
 

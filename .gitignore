@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Use npm only — guard against stray lockfiles from other package managers
+pnpm-lock.yaml
+yarn.lock
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -25,6 +29,7 @@ dist-ssr
 .aider*
 .claude-workspace/
 .worktrees/
+.claude/worktrees/
 
 # Playwright
 /test-results/
@@ -34,3 +39,7 @@ dist-ssr
 
 # Generated documentation
 /docs/
+
+# Local-only working notes / reference material (not part of the shipped app)
+/reference/
+/deep-linking-issue.md
