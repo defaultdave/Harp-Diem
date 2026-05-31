@@ -1,0 +1,105 @@
+name: CI
+
+# Verify every push/PR. Deploy to AWS only on push to main (via OIDC — no stored keys).
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+# Least privilege by default. The deploy job opts into id-token below.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Build, lint, type-check, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npx eslint .
+
+      - name: Type-check & build
+        run: npm run build # runs `tsc -b && vite build` (base defaults to '/')
+
+      - name: Unit tests
+        run: npm test -- --run
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E tests
+        run: npm run test:e2e
+
+  deploy:
+    name: Deploy to S3 + CloudFront
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # required to request the OIDC token
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build (production)
+        run: npm run build
+        env:
+          # Optional: when set, errors are reported to Sentry. Unset => Sentry is tree-shaken out.
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Upload to S3
+        env:
+          BUCKET: ${{ vars.S3_BUCKET }}
+        run: |
+          set -euo pipefail
+          # Safety: never sync --delete an empty/broken build over the live site.
+          test -f dist/index.html || { echo "ERROR: dist/index.html missing — aborting deploy" >&2; exit 1; }
+          # 1) Fingerprinted assets are immutable — cache them for a year.
+          aws s3 sync dist/assets "s3://$BUCKET/assets" --delete \
+            --cache-control "public,max-age=31536000,immutable"
+          # 2) Everything else (icons, manifest, robots, sitemap, privacy, html) — short cache.
+          #    The dev-only bundle report (stats.html) is never uploaded.
+          aws s3 sync dist "s3://$BUCKET" --delete \
+            --exclude "assets/*" --exclude "stats.html" \
+            --cache-control "public,max-age=300,must-revalidate"
+          # 3) index.html must always revalidate so a new deploy shows immediately.
+          aws s3 cp dist/index.html "s3://$BUCKET/index.html" \
+            --cache-control "no-cache" --content-type "text/html"
+          # 4) Pin the PWA manifest content-type (S3 may otherwise guess octet-stream).
+          aws s3 cp dist/manifest.webmanifest "s3://$BUCKET/manifest.webmanifest" \
+            --cache-control "public,max-age=300,must-revalidate" \
+            --content-type "application/manifest+json"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          # Invalidate everything: hashed /assets are immutable and don't strictly need it,
+          # but index.html and the non-hashed root files (manifest, icons, robots, ...) do.
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" \
+            --paths "/*"
