@@ -28,9 +28,25 @@ export type ErrorReporter = (error: unknown, context?: Record<string, unknown>) 
 
 let externalReporter: ErrorReporter | null = null
 
+// Buffer errors reported before an external reporter is registered (e.g. during
+// startup while Sentry is still loading via dynamic import) so they aren't lost.
+// Bounded to avoid unbounded growth if a reporter is never registered.
+const MAX_PENDING_ERRORS = 25
+const pendingErrors: Array<{ error: unknown; context?: Record<string, unknown> }> = []
+
 /** Register (or clear with `null`) the external error-reporting sink. */
 export function setErrorReporter(reporter: ErrorReporter | null): void {
   externalReporter = reporter
+  if (reporter && pendingErrors.length > 0) {
+    const queued = pendingErrors.splice(0, pendingErrors.length)
+    for (const item of queued) {
+      try {
+        reporter(item.error, item.context)
+      } catch {
+        // A failing error reporter must never break the app.
+      }
+    }
+  }
 }
 
 /** Debug-level log. Stripped from production builds. */
@@ -54,10 +70,15 @@ export function reportError(error: unknown, context?: Record<string, unknown>): 
   if (isDev) {
     console.error('[error]', error, context ?? '')
   }
-  try {
-    externalReporter?.(error, context)
-  } catch {
-    // A failing error reporter must never break the app.
+  if (externalReporter) {
+    try {
+      externalReporter(error, context)
+    } catch {
+      // A failing error reporter must never break the app.
+    }
+  } else if (pendingErrors.length < MAX_PENDING_ERRORS) {
+    // No reporter yet — buffer until one is registered (see setErrorReporter).
+    pendingErrors.push({ error, context })
   }
 }
 

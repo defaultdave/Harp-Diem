@@ -3,6 +3,8 @@ import { reportError, setErrorReporter, logDebug, logWarn, initErrorReporting } 
 
 describe('logger', () => {
   beforeEach(() => {
+    // Drain any buffered reports left by a previous test, then clear the reporter.
+    setErrorReporter(() => {})
     setErrorReporter(null)
   })
   afterEach(() => {
@@ -45,6 +47,15 @@ describe('logger', () => {
       reportError(new Error('logged'))
 
       expect(spy).toHaveBeenCalled()
+    })
+
+    it('buffers errors reported before a reporter is registered, then flushes on registration', () => {
+      reportError(new Error('early'), { phase: 'startup' })
+      const reporter = vi.fn()
+
+      setErrorReporter(reporter)
+
+      expect(reporter).toHaveBeenCalledWith(expect.any(Error), { phase: 'startup' })
     })
   })
 

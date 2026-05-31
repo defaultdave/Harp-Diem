@@ -242,7 +242,7 @@ function AppContent() {
           color: 'var(--color-text-secondary)',
         }}
       >
-        <a href="/privacy.html" style={{ color: 'inherit' }}>Privacy</a>
+        <a href={`${import.meta.env.BASE_URL}privacy.html`} style={{ color: 'inherit' }}>Privacy</a>
         {' · '}
         <a
           href="https://github.com/defaultdave/Harp-Diem"
