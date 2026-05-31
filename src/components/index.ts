@@ -1,3 +1,4 @@
+export { BendPracticePage } from './BendPractice'
 export { ChordExplorer } from './ChordExplorer'
 export { ErrorBoundary } from './ErrorBoundary'
 export { ExportButton } from './ExportButton'

@@ -4,11 +4,12 @@
  */
 import { useState, useEffect, useCallback } from 'react'
 
-export type Route = '/' | '/quiz'
+export type Route = '/' | '/quiz' | '/practice'
 
 function parseHash(): Route {
   const hash = window.location.hash
   if (hash === '#/quiz') return '/quiz'
+  if (hash === '#/practice') return '/practice'
   return '/'
 }
 

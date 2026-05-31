@@ -1,0 +1,143 @@
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.headerCard {
+  background: var(--color-bg-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.title {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.description {
+  margin: 0;
+  font-size: var(--font-base);
+  color: var(--color-text-secondary);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--spacing-lg);
+  background: var(--color-bg-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.controlGroup label {
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.controlGroup select {
+  padding: 0.75rem;
+  border: 2px solid var(--color-border-medium);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-base);
+  cursor: pointer;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  transition: border-color 0.3s;
+}
+
+.controlGroup select:hover {
+  border-color: var(--color-hover-border);
+}
+
+.controlGroup select:focus {
+  outline: none;
+  border-color: var(--color-hover-border);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+}
+
+.card,
+.practiceCard {
+  background: var(--color-bg-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.practiceCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+.micButton,
+.primaryButton,
+.secondaryButton {
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid var(--color-border-medium);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  transition: all 0.2s ease;
+}
+
+.micButton:hover,
+.primaryButton:hover,
+.secondaryButton:hover {
+  border-color: var(--color-hover-border);
+}
+
+.micButton.listening {
+  background: var(--color-stop-bg);
+  border-color: var(--color-stop-bg);
+  color: var(--color-text-inverse);
+}
+
+.primaryButton {
+  background: var(--color-breath-draw-bg);
+  border-color: var(--color-breath-draw-border);
+}
+
+.micButton:disabled,
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.empty {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.error {
+  margin: 0;
+  text-align: center;
+  font-size: var(--font-sm);
+  color: var(--color-chord-dominant);
+}

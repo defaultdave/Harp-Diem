@@ -33,6 +33,13 @@ export function NavHeader({ currentRoute, onNavigate, theme, onToggleTheme }: Na
         >
           Quiz
         </button>
+        <button
+          className={`${styles.navTab} ${currentRoute === '/practice' ? styles.navTabActive : ''}`}
+          onClick={() => onNavigate('/practice')}
+          aria-current={currentRoute === '/practice' ? 'page' : undefined}
+        >
+          Practice
+        </button>
       </nav>
 
       <div className={styles.actions}>
