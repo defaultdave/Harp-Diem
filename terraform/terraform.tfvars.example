@@ -1,0 +1,14 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored (it can contain your email); this example is not.
+
+domain_name        = "harpdiem.com"
+aws_region         = "us-east-1"
+github_repository  = "defaultdave/Harp-Diem"
+budget_alert_email = "you@example.com" # REQUIRED — where budget alerts are sent
+
+# Optional overrides (defaults shown):
+# github_deploy_branch        = "main"
+# monthly_budget_usd          = 10
+# price_class                 = "PriceClass_100"
+# create_hosted_zone          = true   # false if you already have a Route 53 zone for the domain
+# create_github_oidc_provider = true   # false if the GitHub OIDC provider already exists in the account
