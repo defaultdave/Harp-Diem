@@ -1,0 +1,109 @@
+.meter {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.edgeLabel {
+  flex-shrink: 0;
+  font-size: var(--font-md);
+  color: var(--color-text-muted);
+  width: 1em;
+  text-align: center;
+}
+
+.track {
+  position: relative;
+  flex: 1;
+  height: 48px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Gray "in range" band (±15 cents → 30% of the track, centered) */
+.rangeZone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 35%;
+  width: 30%;
+  background: var(--color-border-light);
+  opacity: 0.5;
+}
+
+/* Blue "laser accurate" band (±5 cents → 10% of the track, centered) */
+.laserZone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 45%;
+  width: 10%;
+  background: var(--color-breath-draw-bg);
+}
+
+.centerLine {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--color-border-dark);
+}
+
+.marker {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 6px;
+  border-radius: 3px;
+  transform: translateX(-50%);
+  transition: left 0.08s ease-out;
+  z-index: 2;
+  background: var(--color-chord-dominant);
+}
+
+.marker.inRange {
+  background: var(--color-chord-minor);
+}
+
+.marker.laser {
+  background: var(--color-breath-draw);
+  box-shadow: 0 0 8px var(--color-breath-draw);
+}
+
+.readout {
+  flex-shrink: 0;
+  width: 3.5em;
+  text-align: right;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.readout.inRange {
+  color: var(--color-chord-minor);
+}
+
+.readout.laser {
+  color: var(--color-breath-draw);
+}
+
+.readout.off {
+  color: var(--color-chord-dominant);
+}
+
+.readout.faded {
+  opacity: 0.5;
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker {
+    transition: none;
+  }
+}

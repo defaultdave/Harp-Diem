@@ -22,13 +22,14 @@
 - **Chord Explorer**: Collapsible side panel showing scale-filtered chords with voicing navigation (arrows to browse different voicings) and MiniHarmonica previews on each chord card
 - **Interactive Chord Highlighting**: Click any chord to highlight its constituent holes on the harmonica
 - **Position Display**: Shows the harmonica position (1st position = straight harp, 2nd position = cross harp, etc.) calculated via Circle of Fifths
-- **Page Navigation**: Tab-based navigation between Scales and Quiz pages via NavHeader
-- **Code Splitting**: Quiz page is lazy-loaded for faster initial load
+- **Page Navigation**: Tab-based navigation between Scales, Quiz, and Practice pages via NavHeader
+- **Code Splitting**: Quiz and Practice pages are lazy-loaded for faster initial load
 - **Dark Mode**: Toggle between light and dark themes with system preference detection and localStorage persistence
 - **Mobile Support**: Portrait mobile users see a prompt to rotate their device for the best harmonica viewing experience
 - **Audio Playback**: Click any note or chord to hear it played with piano-like synthesis
 - **Keyboard Accessible**: Full keyboard navigation with Enter/Space to play notes
 - **Key Identification Quiz**: Test your ear training skills by identifying keys from chord progressions
+- **Bending Practice Mode**: Guided bend training at the `/practice` page with real-time pitch feedback — pick a target bend by difficulty, hear a reference tone, then hold the bend within tolerance while a cents-accuracy meter and hold-progress ring track your pitch (requires microphone access)
 - **Export Options**: Save harmonica diagrams as PNG or PDF, or print directly
 - **Interval Display**: Toggle to show intervals between consecutive scale notes
 - **API Documentation**: TypeDoc-generated API documentation with the rhineai theme
@@ -54,6 +55,7 @@
 ```
 src/
 ├── components/           # UI components (barrel exports via index.ts)
+│   ├── BendPractice/     # Bending practice mode with real-time pitch feedback (lazy-loaded)
 │   ├── ChordExplorer/    # Chord explorer with voicing navigation
 │   ├── ExportButton/     # PNG/PDF export button
 │   ├── HoleColumn.tsx    # Individual harmonica hole (memo-optimized)

@@ -56,3 +56,12 @@ export {
   generateQuestion,
   ALL_KEYS,
 } from './progressions'
+
+// Re-export everything from bendExercises
+export {
+  type BendType,
+  type BendDifficulty,
+  type BendExercise,
+  BEND_DIFFICULTIES,
+  getBendExercises,
+} from './bendExercises'

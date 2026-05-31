@@ -48,6 +48,7 @@ npm run test:e2e:ui    # Run E2E tests in interactive UI mode
 - `useTheme`: Manages light/dark theme with localStorage persistence and system preference detection
 - `useMobileDetection`: Detects mobile devices in portrait orientation for rotate overlay
 - `useMicrophone`: Manages microphone access via MediaStream, real-time pitch detection using AnalyserNode with FFT analysis, and cleanup lifecycle
+- `useBendPractice`: Bending Practice state machine (`idle → playingTarget → userPlaying → feedback`). Plays a target tone via `playTone()`, then compares the live microphone frequency to the target in **raw cents** (`1200 * log2(detected / target)`) — bends land between chromatic notes, so the detector's rounded note is not used. Tracks hold-within-tolerance time to pass an exercise
 
 ### Contexts
 
@@ -84,6 +85,11 @@ All note transposition, interval calculation, and scale generation uses [tonal.j
 - `Legend`: Display toggles for tab notation and scale degrees
 - `RotateOverlay`: Mobile prompt to rotate device for optimal viewing
 - `PitchDetector`: Tuner strip with microphone toggle, real-time pitch visualization (note + cents offset), in-scale highlighting, and configurable A4 reference pitch
+- `BendPracticePage`: Bending Practice page (hash route `#/practice`, lazy-loaded). Key/tuning/difficulty selectors, exercise picker, and live feedback. Composes `BendTargetDisplay` (target note + hold-progress ring), `BendAccuracyMeter` (horizontal cents meter centered on the target), and `BendProgressTracker` (exercise progress bar). Exercises come from `src/data/bendExercises.ts` (`getBendExercises(key, tuning, difficulty)`)
+
+### Routing
+
+Hash-based routing via `useHashRouter` (`src/hooks/useHashRouter.ts`). Routes: `/` (Scales), `/quiz` (Quiz, lazy), `/practice` (Bending Practice, lazy). Tabs rendered by `NavHeader`.
 
 ### Dev Container
 

@@ -11,6 +11,9 @@ import { capitalizeWords } from './utils'
 // Lazy load Quiz page - only loaded when navigating to /quiz route
 const QuizPage = lazy(() => import('./components/Quiz').then(module => ({ default: module.QuizPage })))
 
+// Lazy load Bending Practice page - only loaded when navigating to /practice route
+const BendPracticePage = lazy(() => import('./components/BendPractice').then(module => ({ default: module.BendPracticePage })))
+
 function ScalesPage() {
   const { initialParams, updateURL } = useDeepLinking()
   const [harmonicaKey, setHarmonicaKey] = useState<HarmonicaKey>(initialParams.harpKey)
@@ -228,6 +231,11 @@ function AppContent() {
         {route === '/quiz' && (
           <Suspense fallback={<div className={styles.loading}>Loading quiz...</div>}>
             <QuizPage />
+          </Suspense>
+        )}
+        {route === '/practice' && (
+          <Suspense fallback={<div className={styles.loading}>Loading practice...</div>}>
+            <BendPracticePage />
           </Suspense>
         )}
       </main>

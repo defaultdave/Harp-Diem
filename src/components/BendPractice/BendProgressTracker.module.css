@@ -1,0 +1,67 @@
+.tracker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.count {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.segments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.segmentItem {
+  flex: 1;
+  min-width: 16px;
+}
+
+.segment {
+  display: block;
+  width: 100%;
+  height: 10px;
+  padding: 0;
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-xs);
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.segment:hover {
+  border-color: var(--color-hover-border);
+}
+
+.segment.completed {
+  background: var(--color-playable-bg);
+  border-color: var(--color-playable-border);
+}
+
+.segment.current {
+  border-color: var(--color-breath-draw);
+  box-shadow: 0 0 0 2px var(--color-breath-draw-bg);
+}
+
+.segment:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+}
