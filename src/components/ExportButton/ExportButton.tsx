@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { exportAsPNG, exportAsPDF, printView, type ExportOptions } from '../../utils'
+import { exportAsPNG, exportAsPDF, printView, type ExportOptions, reportError } from '../../utils'
 import styles from './ExportButton.module.css'
 
 interface ExportButtonProps {
@@ -10,6 +10,7 @@ interface ExportButtonProps {
 export function ExportButton({ exportOptions, targetRef }: ExportButtonProps) {
   const [isExporting, setIsExporting] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+  const [exportError, setExportError] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -45,6 +46,7 @@ export function ExportButton({ exportOptions, targetRef }: ExportButtonProps) {
     if (!targetRef.current || isExporting) return
 
     setShowMenu(false)
+    setExportError(null)
     setIsExporting(true)
 
     try {
@@ -60,9 +62,12 @@ export function ExportButton({ exportOptions, targetRef }: ExportButtonProps) {
           break
       }
     } catch (error) {
-      console.error('Export failed:', error)
-      // Note: Using alert for simplicity. In production, consider using a toast notification system.
-      alert('Export failed. Please try again.')
+      reportError(error, { context: 'ExportButton', type })
+      setExportError(
+        type === 'print'
+          ? 'Could not open the print dialog. Please try again.'
+          : `Could not export as ${type.toUpperCase()}. Please try again.`
+      )
     } finally {
       setIsExporting(false)
     }
@@ -120,6 +125,40 @@ export function ExportButton({ exportOptions, targetRef }: ExportButtonProps) {
             aria-label="Open print dialog"
           >
             <span aria-hidden="true">🖨️</span> Print
+          </button>
+        </div>
+      )}
+
+      {exportError && (
+        <div
+          role="alert"
+          style={{
+            marginTop: '8px',
+            padding: '6px 10px',
+            background: 'var(--color-chord-dominant, #c0392b)',
+            color: '#fff',
+            borderRadius: '4px',
+            fontSize: '0.85rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <span>{exportError}</span>
+          <button
+            type="button"
+            onClick={() => setExportError(null)}
+            aria-label="Dismiss error"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '1rem',
+              lineHeight: 1,
+            }}
+          >
+            ×
           </button>
         </div>
       )}

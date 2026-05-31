@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 import { getOrdinalSuffix } from './string'
+import { reportError } from './logger'
 
 /** Metadata for generating export filenames. */
 export interface ExportOptions {
@@ -53,7 +54,7 @@ export async function exportAsPNG(element: HTMLElement | null, options: ExportOp
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
   } catch (error) {
-    console.error('Error exporting as PNG:', error)
+    reportError(error, { context: 'exportAsPNG' })
     throw new Error('Failed to export as PNG')
   }
 }
@@ -106,7 +107,7 @@ export async function exportAsPDF(element: HTMLElement | null, options: ExportOp
     const fileName = generateFileName(options, 'pdf')
     pdf.save(fileName)
   } catch (error) {
-    console.error('Error exporting as PDF:', error)
+    reportError(error, { context: 'exportAsPDF' })
     throw new Error('Failed to export as PDF')
   }
 }

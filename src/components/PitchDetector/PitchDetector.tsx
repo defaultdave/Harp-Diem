@@ -7,6 +7,7 @@ import { usePitchDetection } from '../../context'
 import { isNoteInScale } from '../../data'
 import type { NoteNames } from '../../types'
 import { Note } from 'tonal'
+import { reportError } from '../../utils'
 import styles from './PitchDetector.module.css'
 
 interface PitchDetectorProps {
@@ -28,7 +29,7 @@ export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
       try {
         await startListening()
       } catch (err) {
-        console.error('Failed to start microphone:', err)
+        reportError(err, { context: 'PitchDetector.startListening' })
       }
     }
   }
@@ -77,6 +78,7 @@ export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
           className={`${styles.micButton} ${isListening ? styles.listening : ''}`}
           onClick={handleToggleMic}
           aria-label={isListening ? 'Stop microphone' : 'Start microphone'}
+          title="Audio is analyzed in your browser only — nothing is recorded or uploaded."
           type="button"
         >
           {isListening ? '⏹' : '🎤'}
@@ -129,6 +131,30 @@ export function PitchDetector({ scaleNotes }: PitchDetectorProps) {
           <span className={styles.referenceHzUnit}>Hz</span>
         </label>
 
+      </div>
+
+      {/*
+        Screen-reader live region. Announces the note name and scale membership only —
+        intentionally NOT the cents value, which updates ~60x/sec and would flood
+        assistive tech. noteLabel / noteInScale change infrequently enough to be useful.
+      */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          position: 'absolute',
+          width: 1,
+          height: 1,
+          padding: 0,
+          margin: -1,
+          overflow: 'hidden',
+          clip: 'rect(0 0 0 0)',
+          whiteSpace: 'nowrap',
+          border: 0,
+        }}
+      >
+        {noteLabel ? `Detected ${noteLabel}, ${noteInScale ? 'in scale' : 'not in scale'}` : ''}
       </div>
 
       {error && (

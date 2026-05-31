@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { detectPitch, type PitchResult, type PitchDebugInfo } from '../utils/pitchDetection'
+import { logDebug, reportError } from '../utils/logger'
 
 /** Size of the FFT buffer for frequency analysis */
 const FFT_SIZE = 2048
@@ -35,7 +36,13 @@ let microphoneAudioContext: AudioContext | null = null
  */
 function getMicrophoneAudioContext(): AudioContext {
   if (!microphoneAudioContext) {
-    microphoneAudioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+    const AudioContextCtor =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!AudioContextCtor) {
+      throw new Error('Web Audio API is not supported in this browser')
+    }
+    microphoneAudioContext = new AudioContextCtor()
   }
   return microphoneAudioContext
 }
@@ -72,6 +79,35 @@ function checkBrowserSupport(): boolean {
   return hasMediaDevices && Boolean(hasAudioContext)
 }
 
+/**
+ * Map a getUserMedia / Web Audio failure to a user-friendly, actionable message.
+ */
+function getMicrophoneErrorMessage(err: unknown): string {
+  // getUserMedia rejects with a DOMException, which is NOT `instanceof Error` in
+  // browsers — read `.name` by property so both DOMException and Error are handled.
+  const name =
+    typeof err === 'object' && err !== null && 'name' in err
+      ? String((err as { name: unknown }).name)
+      : ''
+  switch (name) {
+    case 'NotAllowedError':
+    case 'PermissionDeniedError':
+      return 'Microphone permission was denied. Enable mic access in your browser settings and try again.'
+    case 'SecurityError':
+      return 'Microphone access requires a secure (HTTPS) connection.'
+    case 'NotFoundError':
+    case 'DevicesNotFoundError':
+      return 'No microphone was found. Connect a microphone and try again.'
+    case 'NotReadableError':
+    case 'TrackStartError':
+      return 'Your microphone is already in use by another application.'
+    case 'OverconstrainedError':
+      return 'No microphone matches the requested audio settings.'
+    default:
+      return 'Could not access the microphone. Please check your browser settings and try again.'
+  }
+}
+
 export function useMicrophone(referenceHzRef?: React.RefObject<number>): UseMicrophoneResult {
   const [isListening, setIsListening] = useState(false)
   const [pitchResult, setPitchResult] = useState<PitchResult | null>(null)
@@ -91,9 +127,9 @@ export function useMicrophone(referenceHzRef?: React.RefObject<number>): UseMicr
     debugExpectedNoteRef.current = expectedNote
     debugCountRef.current = 0
     if (enabled) {
-      console.log(`[PitchDebug] Debug mode ON${expectedNote ? ` — expecting: ${expectedNote}` : ''}`)
+      logDebug(`[PitchDebug] Debug mode ON${expectedNote ? ` — expecting: ${expectedNote}` : ''}`)
     } else {
-      console.log('[PitchDebug] Debug mode OFF')
+      logDebug('[PitchDebug] Debug mode OFF')
     }
   }, [])
 
@@ -152,12 +188,12 @@ export function useMicrophone(referenceHzRef?: React.RefObject<number>): UseMicr
           if (debugCountRef.current % 15 === 0) {
             const expected = debugExpectedNoteRef.current
             if (result) {
-              console.log(
+              logDebug(
                 `[PitchDebug] DETECTED: ${result.note} (${result.frequency.toFixed(1)} Hz) cents=${result.cents} conf=${result.confidence.toFixed(4)} rms=${debugInfo.rms.toFixed(4)}` +
                 (expected ? ` | expected=${expected} match=${result.note.replace(/\d+/, '') === expected.replace(/\d+/, '')}` : '')
               )
             } else {
-              console.log(
+              logDebug(
                 `[PitchDebug] REJECTED: reason=${debugInfo.rejectedReason} rms=${debugInfo.rms.toFixed(4)} lag=${debugInfo.bestLag} conf=${debugInfo.confidence.toFixed(4)} freq=${debugInfo.frequency?.toFixed(1) ?? 'n/a'}`
               )
             }
@@ -171,8 +207,8 @@ export function useMicrophone(referenceHzRef?: React.RefObject<number>): UseMicr
       detectPitchLoop()
 
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to access microphone'
-      setError(errorMessage)
+      setError(getMicrophoneErrorMessage(err))
+      reportError(err, { context: 'startListening' })
       setIsListening(false)
     }
   }, [isSupported, referenceHzRef])
