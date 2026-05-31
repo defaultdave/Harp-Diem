@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a90e2" />
+      <stop offset="100%" stop-color="#23507f" />
+    </linearGradient>
+    <linearGradient id="body" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#cfe0f5" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <text x="600" y="180" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="104" font-weight="700" fill="#ffffff">Harp Diem</text>
+  <text x="600" y="248" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="40" fill="#e2effb">Seize the harmonica — visualize diatonic harmonica scales</text>
+  <g transform="translate(330,210) scale(5.4)">
+    <rect x="15" y="35" width="70" height="30" rx="4" fill="url(#body)" stroke="#102a47" stroke-width="2" />
+    <rect x="15" y="33" width="70" height="4" rx="2" fill="#ffffff" stroke="#102a47" stroke-width="1" />
+    <rect x="15" y="63" width="70" height="4" rx="2" fill="#9cc0ea" stroke="#102a47" stroke-width="1" />
+    <rect x="20" y="40" width="6" height="20" rx="1" fill="#16324f" />
+    <rect x="29" y="40" width="6" height="20" rx="1" fill="#16324f" />
+    <rect x="38" y="40" width="6" height="20" rx="1" fill="#16324f" />
+    <rect x="47" y="40" width="6" height="20" rx="1" fill="#16324f" />
+    <rect x="56" y="40" width="6" height="20" rx="1" fill="#16324f" />
+    <rect x="65" y="40" width="6" height="20" rx="1" fill="#16324f" />
+    <rect x="74" y="40" width="6" height="20" rx="1" fill="#16324f" />
+    <circle cx="18" cy="50" r="2" fill="#102a47" />
+    <circle cx="82" cy="50" r="2" fill="#102a47" />
+  </g>
+</svg>
